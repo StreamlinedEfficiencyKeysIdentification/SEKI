@@ -86,15 +86,15 @@ class HomePage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/hardware');
+                Navigator.pushNamed(context, '/group');
               },
-              child: Text('Registrar Novo hardware'),
+              child: Text('Registrar Nova Empresa'),
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/group');
+                Navigator.pushNamed(context, '/hardware');
               },
-              child: Text('Registrar Novo Grupo'),
+              child: Text('Registrar Novo Equipamento'),
             ),
           ],
         ),
