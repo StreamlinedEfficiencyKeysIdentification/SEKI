@@ -42,63 +42,159 @@ class HomePage extends StatelessWidget {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Home'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () => _logout(context),
+ @override
+Widget build(BuildContext context) {
+  
+  return Scaffold(
+    appBar: AppBar(
+      title: Text(''),
+      actions: [
+        IconButton(
+  icon: Icon(Icons.logout, color: Colors.white),
+  onPressed: () => _logout(context),
+),
+      ],
+      backgroundColor: Color(0xff035fab),
+    ),
+    body: Column(
+      crossAxisAlignment: CrossAxisAlignment.start, // Alinhar o conteúdo à esquerda
+      children: [
+        FutureBuilder<String?>(
+          future: _getUserName(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text('Erro ao carregar o nome do usuário.'),
+              );
+            } else {
+              String? userName = snapshot.data;
+              return Padding(
+                padding: EdgeInsets.all(20),
+                child: Text(
+                  userName != null
+                      ? 'Bem-vindo,\n$userName!'
+                      : 'Usuário desconhecido.',
+                  // textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 24, color: Colors.white),
+                ),
+              );
+            }
+          },
+        ),
+        Expanded(
+          child: ListView(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            children: [
+              SizedBox(height: 20),
+             ElevatedButton(
+  onPressed: () {
+  },
+  style: ElevatedButton.styleFrom(
+    padding: EdgeInsets.symmetric(vertical: 20),
+    backgroundColor: Color.fromRGBO(255, 255, 255, 0.4),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(20),
+      side: BorderSide(color: Colors.white),
+    ),
+  ),
+    child: Padding(
+    padding: const EdgeInsets.only(left: 20),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    
+    children: [
+      Text(
+        'Empresas',
+        style: TextStyle(fontSize: 16, color: Color.fromARGB(255, 255, 255, 255),),
+      ),
+      SizedBox(height: 20), 
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              // Ação para editar
+            },
+            style: ElevatedButton.styleFrom(
+              shape: CircleBorder(),
+              padding: EdgeInsets.all(30),
+            ),
+            child: Icon(Icons.edit, color: Color(0xff035fab),),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              // Ação para visualizar
+            },
+            style: ElevatedButton.styleFrom(
+              shape: CircleBorder(),
+              padding: EdgeInsets.all(30),
+            ),
+            child: Icon(Icons.visibility, color: Color(0xff035fab),),
+          ),
+          ElevatedButton(
+            onPressed: () {
+    Navigator.pushNamed(context, '/register');
+            },
+            style: ElevatedButton.styleFrom(
+              shape: CircleBorder(),
+              padding: EdgeInsets.all(30),
+              
+            ),
+            child: Icon(Icons.add, color:Color(0xff035fab),),
           ),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            FutureBuilder<String?>(
-              future: _getUserName(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  return Text('Erro ao carregar o nome do usuário.');
-                } else {
-                  String? userName = snapshot.data;
-                  return Text(
-                    userName != null
-                        ? 'Bem-vindo,\n$userName!'
-                        : 'Usuário desconhecido.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 24),
-                  );
-                }
-              },
-            ),
-            SizedBox(height: 20), // Espaçamento entre o texto e o botão
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/register');
-              },
-              child: Text('Registrar Novo Usuário'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/hardware');
-              },
-              child: Text('Registrar Novo hardware'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/group');
-              },
-              child: Text('Registrar Novo Grupo'),
-            ),
-          ],
+    ],
+  ),
+),
+             ),
+
+              SizedBox(height: 10), 
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/hardware');
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+               backgroundColor: Color.fromRGBO(255, 255, 255, 0.4), 
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20), 
+                    side: BorderSide(color: Colors.white),
+                  ),
+                ),
+                child: Text(
+                  'Registrar Novo hardware',
+                  style: TextStyle(fontSize: 16, color: Colors.white),
+                ),
+              ),
+              SizedBox(height: 10), 
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/group');
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                   backgroundColor: Color.fromRGBO(255, 255, 255, 0.4), 
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20), 
+                    side: BorderSide(color: Colors.white),
+                  ),
+                ),
+                child: Text(
+                  'Registrar Novo Grupo',
+                  style: TextStyle(fontSize: 16,color: Colors.white),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
-  }
+      ],
+    ),
+    backgroundColor: Color(0xff035fab),
+  );
+}
 }
