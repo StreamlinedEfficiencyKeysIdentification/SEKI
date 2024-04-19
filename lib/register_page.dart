@@ -6,25 +6,144 @@ import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class RegisterPage extends StatelessWidget {
-  RegisterPage({Key? key}) : super(key: key);
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _nomeController = TextEditingController();
-  final TextEditingController _empresaController = TextEditingController();
-  final TextEditingController _nivelController = TextEditingController();
-  final TextEditingController _statusController = TextEditingController();
-  final TextEditingController _geradorController = TextEditingController();
+Future<Map<String, String>> _getUsuarioLogado() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? usuarioLogado = prefs.getString('usuarioLogado');
 
-  Future<String?> _getUsuarioLogado() async {
+  if (usuarioLogado != null) {
+    // Buscar documento do usuário no Firestore
+    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+        .collection('Usuarios')
+        .doc(usuarioLogado)
+        .get();
+
+    if (userSnapshot.exists) {
+      // Retornar o UID, o nível e a empresa do usuário
+      return {
+        'uid': usuarioLogado,
+        'nivel': userSnapshot['IDnivel'] as String? ?? '',
+        'empresa': userSnapshot['IDempresa'] as String? ?? '',
+      };
+    }
+  }
+  // Se não encontrar o usuário ou houver um erro, retornar um mapa vazio
+  return {};
+}
+
+class AutocompleteEmpresaExample extends StatelessWidget {
+  final void Function(String) onEmpresaSelected;
+
+  const AutocompleteEmpresaExample({
+    required this.onEmpresaSelected,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Map<String, String?>>(
+      future: _getUsuarioLogado(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}'); // Tratar erros
+        }
+
+        // Obter o nível do usuário logado
+        String? nivel = snapshot.data?['nivel'];
+
+        // Se o nível for null ou vazio, não há permissões, retornar uma lista vazia
+        if (nivel == null || nivel.isEmpty) {
+          return const SizedBox();
+        }
+
+        // Se o nível for 1, permitir que o usuário selecione qualquer empresa
+        // Se o nível for 2, filtrar as empresas com base na empresa associada ao usuário
+        // Se o nível for 3, permitir que o usuário selecione qualquer empresa
+        String? empresa = snapshot.data?['empresa'];
+        Query empresasQuery = FirebaseFirestore.instance.collection('Empresa');
+        if (nivel == '2') {
+          empresasQuery = empresasQuery.where('EmpresaPai', isEqualTo: empresa);
+        }
+
+        return StreamBuilder<QuerySnapshot>(
+          stream: empresasQuery.snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}'); // Tratar erros
+            }
+
+            final empresas = snapshot.data?.docs.map((doc) {
+                  return {
+                    'RazaoSocial': doc['RazaoSocial'] as String,
+                    'ID': doc.id, // Adicione o ID do documento
+                  };
+                }).toList() ??
+                [];
+
+            return Autocomplete<String>(
+              optionsBuilder: (TextEditingValue textEditingValue) {
+                if (textEditingValue.text.isEmpty) {
+                  return const Iterable<String>.empty();
+                }
+                return empresas
+                    .where((empresa) =>
+                        empresa['RazaoSocial'] != null &&
+                        empresa['RazaoSocial']!
+                            .toLowerCase()
+                            .contains(textEditingValue.text.toLowerCase()))
+                    .map((empresa) => empresa['RazaoSocial'] as String);
+              },
+              onSelected: (String selection) {
+                // Encontre o ID correspondente à RazaoSocial selecionada
+                final selectedEmpresa = empresas.firstWhere(
+                  (empresa) => empresa['RazaoSocial'] == selection,
+                );
+                onEmpresaSelected(selectedEmpresa['ID'] as String);
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class RegisterPage extends StatefulWidget {
+  RegisterPage({Key? key}) : super(key: key);
+
+  @override
+  _RegisterPageState createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
+  String _empresaSelecionada = '';
+  bool _switchValue = false;
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _nomeController = TextEditingController();
+  final TextEditingController _nivelController = TextEditingController();
+
+  Future<Map<String, String>> _getUsuarioLogado() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? usuarioLogado = prefs.getString('usuarioLogado');
 
     if (usuarioLogado != null) {
-      return usuarioLogado;
-    } else {
-      return null;
+      // Buscar documento do usuário no Firestore
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('Usuarios')
+          .doc(usuarioLogado)
+          .get();
+
+      if (userSnapshot.exists) {
+        // Retornar o UID, o nível e a empresa do usuário
+        return {
+          'uid': usuarioLogado,
+          'nivel': userSnapshot['IDnivel'] as String? ?? '',
+          'empresa': userSnapshot['IDempresa'] as String? ?? '',
+        };
+      }
     }
+    // Se não encontrar o usuário ou houver um erro, retornar um mapa vazio
+    return {};
   }
 
   @override
@@ -46,30 +165,42 @@ class RegisterPage extends StatelessWidget {
               controller: _nomeController,
               decoration: const InputDecoration(labelText: 'Nome'),
             ),
-            TextFormField(
-              controller: _empresaController,
-              decoration: const InputDecoration(labelText: 'Empresa'),
+            AutocompleteEmpresaExample(
+              onEmpresaSelected: (empresa) {
+                setState(() {
+                  _empresaSelecionada =
+                      empresa; // Atualizar o estado do campo 'IDempresa'
+                });
+              },
             ),
             TextFormField(
               controller: _nivelController,
               decoration: const InputDecoration(labelText: 'Nível de Acesso'),
             ),
-            TextFormField(
-              controller: _statusController,
-              decoration: const InputDecoration(labelText: 'Status'),
-            ),
-            TextFormField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            TextFormField(
-              controller: _geradorController,
-              decoration: const InputDecoration(labelText: 'Gerador de senha'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  _switchValue ? 'Usuário Ativo' : 'Usuário Inativo',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: _switchValue ? Colors.green : Colors.red,
+                  ),
+                ),
+                SwitchExample(
+                  onValueChanged: (value) {
+                    setState(() {
+                      _switchValue = value;
+                    });
+                  },
+                ),
+              ],
             ),
             ElevatedButton(
               onPressed: () {
-                _register(context);
+                _register(context,
+                    _empresaSelecionada); // Chamar _register passando _empresaSelecionada
               },
               child: const Text('Register'),
             ),
@@ -110,19 +241,26 @@ class RegisterPage extends StatelessWidget {
     }
   }
 
-  void _register(BuildContext context) async {
+  void _register(BuildContext context, String empresaSelecionadaId) async {
     String email = _emailController.text.trim();
-    String password = _passwordController.text.trim();
+    String password = '123456789';
     String nome = _nomeController.text.trim();
-    String empresa = _empresaController.text.trim();
+    // String empresa = _empresaController.text.trim();
     String nivel = _nivelController.text.trim();
-    String status = _statusController.text.trim();
+    bool switchValue = _switchValue;
+    String status;
     String user_name = nome;
     String user_email = email;
     String user_subject = 'Criação de Usuário';
     String message =
         'Seu usuário foi criado com sucesso! Para entrar no sistema, acesse com o e-mail: $email e senha: $password .';
-    String? usuarioLogado = await _getUsuarioLogado();
+    Map<String, String> userInfo = await _getUsuarioLogado();
+
+    if (switchValue) {
+      status = 'Ativo';
+    } else {
+      status = 'Inativo';
+    }
 
     var logger = Logger(
       printer: PrettyPrinter(),
@@ -143,7 +281,8 @@ class RegisterPage extends StatelessWidget {
       // Por exemplo, você pode criar um documento na coleção 'users' com o UID como identificador
       await FirebaseFirestore.instance.collection('Usuarios').doc(uid).set({
         'Email': email,
-        'IDempresa': empresa,
+        'IDempresa':
+            empresaSelecionadaId, // Armazenar a empresa selecionada como IDempresa
         'IDnivel': nivel,
         'Nome': nome,
         'Status': status,
@@ -155,7 +294,7 @@ class RegisterPage extends StatelessWidget {
           .doc(uid)
           .set({
         'PrimeiroAcesso': true,
-        'QuemCriou': usuarioLogado,
+        'QuemCriou': userInfo['uid'], // Armazenar o UID do usuário que criou
         // Outros campos...
       });
 
@@ -183,5 +322,48 @@ class RegisterPage extends StatelessWidget {
     } catch (e) {
       logger.e(e.toString());
     }
+  }
+}
+
+class SwitchExample extends StatefulWidget {
+  final void Function(bool) onValueChanged;
+
+  const SwitchExample({super.key, required this.onValueChanged});
+
+  @override
+  State<SwitchExample> createState() => _SwitchExampleState();
+}
+
+class _SwitchExampleState extends State<SwitchExample> {
+  bool light1 = false;
+
+  final MaterialStateProperty<Icon?> thumbIcon =
+      MaterialStateProperty.resolveWith<Icon?>(
+    (Set<MaterialState> states) {
+      if (states.contains(MaterialState.selected)) {
+        return const Icon(Icons.check);
+      }
+      return const Icon(Icons.close);
+    },
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Switch(
+          thumbIcon: thumbIcon,
+          value: light1,
+          onChanged: (bool value) {
+            setState(() {
+              light1 = value;
+            });
+            widget
+                .onValueChanged(value); // Chama a função de retorno de chamada
+          },
+        ),
+      ],
+    );
   }
 }
