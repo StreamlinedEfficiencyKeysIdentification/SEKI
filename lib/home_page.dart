@@ -42,159 +42,419 @@ class HomePage extends StatelessWidget {
     }
   }
 
- @override
-Widget build(BuildContext context) {
-  
-  return Scaffold(
-    appBar: AppBar(
-      title: Text(''),
-      actions: [
-        IconButton(
-  icon: Icon(Icons.logout, color: Colors.white),
-  onPressed: () => _logout(context),
-),
-      ],
-      backgroundColor: Color(0xff035fab),
-    ),
-    body: Column(
-      crossAxisAlignment: CrossAxisAlignment.start, // Alinhar o conteúdo à esquerda
-      children: [
-        FutureBuilder<String?>(
-          future: _getUserName(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Text('Erro ao carregar o nome do usuário.'),
-              );
-            } else {
-              String? userName = snapshot.data;
-              return Padding(
-                padding: EdgeInsets.all(20),
-                child: Text(
-                  userName != null
-                      ? 'Bem-vindo,\n$userName!'
-                      : 'Usuário desconhecido.',
-                  // textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 24, color: Colors.white),
-                ),
-              );
-            }
-          },
-        ),
-        Expanded(
-          child: ListView(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            children: [
-              SizedBox(height: 20),
-             ElevatedButton(
-  onPressed: () {
-  },
-  style: ElevatedButton.styleFrom(
-    padding: EdgeInsets.symmetric(vertical: 20),
-    backgroundColor: Color.fromRGBO(255, 255, 255, 0.4),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(20),
-      side: BorderSide(color: Colors.white),
-    ),
-  ),
-    child: Padding(
-    padding: const EdgeInsets.only(left: 20),
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    
-    children: [
-      Text(
-        'Empresas',
-        style: TextStyle(fontSize: 16, color: Color.fromARGB(255, 255, 255, 255),),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(''),
+        actions: [
+          
+        ],
+        backgroundColor: Color(0xff035fab),
       ),
-      SizedBox(height: 20), 
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ElevatedButton(
-            onPressed: () {
-              // Ação para editar
+          FutureBuilder<String?>(
+            future: _getUserName(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Text('Erro ao carregar o nome do usuário.'),
+                );
+              } else {
+                String? userName = snapshot.data;
+                return Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Text(
+                    userName != null
+                        ? 'Bem-vindo,\n$userName!'
+                        : 'Usuário desconhecido.',
+                    style: TextStyle(fontSize: 24, color: Colors.white),
+                  ),
+                );
+              }
             },
-            style: ElevatedButton.styleFrom(
-              shape: CircleBorder(),
-              padding: EdgeInsets.all(30),
-            ),
-            child: Icon(Icons.edit, color: Color(0xff035fab),),
           ),
-          ElevatedButton(
-            onPressed: () {
-              // Ação para visualizar
-            },
-            style: ElevatedButton.styleFrom(
-              shape: CircleBorder(),
-              padding: EdgeInsets.all(30),
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              children: [
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    // Adicione ação aqui
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    backgroundColor: Color.fromRGBO(255, 255, 255, 0.4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(color: Colors.white),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Empresas',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color.fromARGB(255, 255, 255, 255),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                // Ação para editar
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: CircleBorder(),
+                                padding: EdgeInsets.all(30),
+                              ),
+                              child: Icon(Icons.edit, color: Color(0xff035fab), size: 35,),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                // Ação para visualizar
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: CircleBorder(),
+                                padding: EdgeInsets.all(30),
+                              ),
+                              child: Icon(Icons.visibility, color: Color(0xff035fab), size: 35,),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/register');
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: CircleBorder(),
+                                padding: EdgeInsets.all(30),
+                              ),
+                              child: Icon(Icons.add, color:Color(0xff035fab), size: 35,),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    // Adicione ação aqui
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    backgroundColor: Color.fromRGBO(255, 255, 255, 0.4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(color: Colors.white),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Usuário',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color.fromARGB(255, 255, 255, 255),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                // Ação para editar
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: CircleBorder(),
+                                padding: EdgeInsets.all(30),
+                              ),
+                              child: Icon(Icons.edit, color: Color(0xff035fab), size: 35,),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                // Ação para visualizar
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: CircleBorder(),
+                                padding: EdgeInsets.all(30),
+                              ),
+                              child: Icon(Icons.visibility, color: Color(0xff035fab), size: 35,),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/register');
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: CircleBorder(),
+                                padding: EdgeInsets.all(30),
+                              ),
+                              child: Icon(Icons.add, color:Color(0xff035fab), size: 35,),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    // Adicione ação aqui
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    backgroundColor: Color.fromRGBO(255, 255, 255, 0.4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(color: Colors.white),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Máquina',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color.fromARGB(255, 255, 255, 255),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                // Ação para editar
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: CircleBorder(),
+                                padding: EdgeInsets.all(30),
+                              ),
+                              child: Icon(Icons.edit, color: Color(0xff035fab), size: 35,),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                // Ação para visualizar
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: CircleBorder(),
+                                padding: EdgeInsets.all(30),
+                              ),
+                              child: Icon(Icons.visibility, color: Color(0xff035fab), size: 35,),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/group');
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: CircleBorder(),
+                                padding: EdgeInsets.all(30),
+                              ),
+                              child: Icon(Icons.add, color:Color(0xff035fab), size: 35,),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    // Adicione ação aqui
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    backgroundColor: Color.fromRGBO(255, 255, 255, 0.4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(color: Colors.white),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Chamado',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color.fromARGB(255, 255, 255, 255),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                // Ação para editar
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: CircleBorder(),
+                                padding: EdgeInsets.all(30),
+                              ),
+                              child: Icon(Icons.edit, color: Color(0xff035fab), size: 35,),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                // Ação para visualizar
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: CircleBorder(),
+                                padding: EdgeInsets.all(30),
+                              ),
+                              child: Icon(Icons.visibility, color: Color(0xff035fab), size: 35,),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/register');
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: CircleBorder(),
+                                padding: EdgeInsets.all(30),
+                              ),
+                              child: Icon(Icons.add, color:Color(0xff035fab), size: 35,),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    // Adicione ação aqui
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    backgroundColor: Color.fromRGBO(255, 255, 255, 0.4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(color: Colors.white),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Cadastrar QRcode',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color.fromARGB(255, 255, 255, 255),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                // Ação para editar
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: CircleBorder(),
+                                padding: EdgeInsets.all(30),
+                              ),
+                              child: Icon(Icons.edit, color: Color(0xff035fab),),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                // Ação para visualizar
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: CircleBorder(),
+                                padding: EdgeInsets.all(30),
+                              ),
+                              child: Icon(Icons.visibility, color: Color(0xff035fab),),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/register');
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: CircleBorder(),
+                                padding: EdgeInsets.all(30),
+                              ),
+                              child: Icon(Icons.add, color:Color(0xff035fab),),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-            child: Icon(Icons.visibility, color: Color(0xff035fab),),
-          ),
-          ElevatedButton(
-            onPressed: () {
-    Navigator.pushNamed(context, '/register');
-            },
-            style: ElevatedButton.styleFrom(
-              shape: CircleBorder(),
-              padding: EdgeInsets.all(30),
-              
-            ),
-            child: Icon(Icons.add, color:Color(0xff035fab),),
           ),
         ],
       ),
-    ],
+      backgroundColor: Color(0xff035fab),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Ação do botão de contador
+        },
+        child: Icon(Icons.qr_code, color: Color(0xff035fab),),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      ),
+      bottomNavigationBar: ClipRRect(
+  borderRadius: BorderRadius.only(
+    topLeft: Radius.circular(20.0),
+    topRight: Radius.circular(20.0),
   ),
-),
-             ),
-
-              SizedBox(height: 10), 
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/hardware');
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 20),
-               backgroundColor: Color.fromRGBO(255, 255, 255, 0.4), 
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20), 
-                    side: BorderSide(color: Colors.white),
-                  ),
-                ),
-                child: Text(
-                  'Registrar Novo hardware',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
-                ),
-              ),
-              SizedBox(height: 10), 
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/group');
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                   backgroundColor: Color.fromRGBO(255, 255, 255, 0.4), 
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20), 
-                    side: BorderSide(color: Colors.white),
-                  ),
-                ),
-                child: Text(
-                  'Registrar Novo Grupo',
-                  style: TextStyle(fontSize: 16,color: Colors.white),
-                ),
-              ),
-            ],
-          ),
+  child: BottomAppBar(
+    color: Colors.white,
+    elevation: 50,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        IconButton(
+          icon: Icon(Icons.logout, color: Color(0xff035fab)),
+          onPressed: () => _logout(context),
+        ),
+        IconButton(
+          onPressed: () {
+            // Adicione ação para o segundo ícone do menu footer
+          },
+          icon: Icon(Icons.home, color: Color(0xff035fab)),
+        ),
+        IconButton(
+          onPressed: () {
+            // Adicione ação para o terceiro ícone do menu footer
+          },
+          icon: Icon(Icons.people_alt, color: Color(0xff035fab)),
         ),
       ],
-    ),
-    backgroundColor: Color(0xff035fab),
-  );
-}
+   ),
+   ),
+   ),
+    );
+
+
+  }
 }
