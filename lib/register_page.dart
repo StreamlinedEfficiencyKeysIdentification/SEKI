@@ -1,114 +1,18 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
-
-Future<Map<String, String>> _getUsuarioLogado() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  String? usuarioLogado = prefs.getString('usuarioLogado');
-
-  if (usuarioLogado != null) {
-    // Buscar documento do usuário no Firestore
-    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-        .collection('Usuarios')
-        .doc(usuarioLogado)
-        .get();
-
-    if (userSnapshot.exists) {
-      // Retornar o UID, o nível e a empresa do usuário
-      return {
-        'uid': usuarioLogado,
-        'nivel': userSnapshot['IDnivel'] as String? ?? '',
-        'empresa': userSnapshot['IDempresa'] as String? ?? '',
-      };
-    }
-  }
-  // Se não encontrar o usuário ou houver um erro, retornar um mapa vazio
-  return {};
-}
-
-class AutocompleteEmpresaExample extends StatelessWidget {
-  final void Function(String) onEmpresaSelected;
-
-  const AutocompleteEmpresaExample({
-    required this.onEmpresaSelected,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<Map<String, String?>>(
-      future: _getUsuarioLogado(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}'); // Tratar erros
-        }
-
-        // Obter o nível do usuário logado
-        String? nivel = snapshot.data?['nivel'];
-
-        // Se o nível for null ou vazio, não há permissões, retornar uma lista vazia
-        if (nivel == null || nivel.isEmpty) {
-          return const SizedBox();
-        }
-
-        // Se o nível for 1, permitir que o usuário selecione qualquer empresa
-        // Se o nível for 2, filtrar as empresas com base na empresa associada ao usuário
-        // Se o nível for 3, permitir que o usuário selecione qualquer empresa
-        String? empresa = snapshot.data?['empresa'];
-        Query empresasQuery = FirebaseFirestore.instance.collection('Empresa');
-        if (nivel == '2') {
-          empresasQuery = empresasQuery.where('EmpresaPai', isEqualTo: empresa);
-        }
-
-        return StreamBuilder<QuerySnapshot>(
-          stream: empresasQuery.snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}'); // Tratar erros
-            }
-
-            final empresas = snapshot.data?.docs.map((doc) {
-                  return {
-                    'RazaoSocial': doc['RazaoSocial'] as String,
-                    'ID': doc.id, // Adicione o ID do documento
-                  };
-                }).toList() ??
-                [];
-
-            return Autocomplete<String>(
-              optionsBuilder: (TextEditingValue textEditingValue) {
-                if (textEditingValue.text.isEmpty) {
-                  return const Iterable<String>.empty();
-                }
-                return empresas
-                    .where((empresa) =>
-                        empresa['RazaoSocial'] != null &&
-                        empresa['RazaoSocial']!
-                            .toLowerCase()
-                            .contains(textEditingValue.text.toLowerCase()))
-                    .map((empresa) => empresa['RazaoSocial'] as String);
-              },
-              onSelected: (String selection) {
-                // Encontre o ID correspondente à RazaoSocial selecionada
-                final selectedEmpresa = empresas.firstWhere(
-                  (empresa) => empresa['RazaoSocial'] == selection,
-                );
-                onEmpresaSelected(selectedEmpresa['ID'] as String);
-              },
-            );
-          },
-        );
-      },
-    );
-  }
-}
+import '../controllers/usuario_controller.dart';
+import 'models/usuario_model.dart';
+import 'views/combo_box_empresa.dart';
+import 'views/combo_box_nivel_acesso.dart';
 
 class RegisterPage extends StatefulWidget {
-  RegisterPage({Key? key}) : super(key: key);
+  const RegisterPage({super.key});
 
   @override
   _RegisterPageState createState() => _RegisterPageState();
@@ -116,35 +20,11 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   String _empresaSelecionada = '';
+  String _nivelSelecionado = '';
   bool _switchValue = false;
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nomeController = TextEditingController();
-  final TextEditingController _nivelController = TextEditingController();
-
-  Future<Map<String, String>> _getUsuarioLogado() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? usuarioLogado = prefs.getString('usuarioLogado');
-
-    if (usuarioLogado != null) {
-      // Buscar documento do usuário no Firestore
-      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-          .collection('Usuarios')
-          .doc(usuarioLogado)
-          .get();
-
-      if (userSnapshot.exists) {
-        // Retornar o UID, o nível e a empresa do usuário
-        return {
-          'uid': usuarioLogado,
-          'nivel': userSnapshot['IDnivel'] as String? ?? '',
-          'empresa': userSnapshot['IDempresa'] as String? ?? '',
-        };
-      }
-    }
-    // Se não encontrar o usuário ou houver um erro, retornar um mapa vazio
-    return {};
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +45,7 @@ class _RegisterPageState extends State<RegisterPage> {
               controller: _nomeController,
               decoration: const InputDecoration(labelText: 'Nome'),
             ),
-            AutocompleteEmpresaExample(
+            ComboBoxEmpresa(
               onEmpresaSelected: (empresa) {
                 setState(() {
                   _empresaSelecionada =
@@ -173,9 +53,13 @@ class _RegisterPageState extends State<RegisterPage> {
                 });
               },
             ),
-            TextFormField(
-              controller: _nivelController,
-              decoration: const InputDecoration(labelText: 'Nível de Acesso'),
+            ComboBoxNivelAcesso(
+              onNivelSelected: (nivel) {
+                setState(() {
+                  _nivelSelecionado =
+                      nivel; // Atualizar o estado do campo 'IDempresa'
+                });
+              },
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -199,8 +83,8 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             ElevatedButton(
               onPressed: () {
-                _register(context,
-                    _empresaSelecionada); // Chamar _register passando _empresaSelecionada
+                _register(context, _empresaSelecionada,
+                    _nivelSelecionado); // Chamar _register passando _empresaSelecionada
               },
               child: const Text('Register'),
             ),
@@ -241,12 +125,11 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
-  void _register(BuildContext context, String empresaSelecionadaId) async {
+  void _register(BuildContext context, String empresaSelecionadaId,
+      String nivelSelecionado) async {
     String email = _emailController.text.trim();
     String password = '123456789';
     String nome = _nomeController.text.trim();
-    // String empresa = _empresaController.text.trim();
-    String nivel = _nivelController.text.trim();
     bool switchValue = _switchValue;
     String status;
     String user_name = nome;
@@ -254,7 +137,14 @@ class _RegisterPageState extends State<RegisterPage> {
     String user_subject = 'Criação de Usuário';
     String message =
         'Seu usuário foi criado com sucesso! Para entrar no sistema, acesse com o e-mail: $email e senha: $password .';
-    Map<String, String> userInfo = await _getUsuarioLogado();
+    Usuario usuario = await UsuarioController.getUsuarioLogado();
+
+    // Converter os dados do objeto Usuario em um Map<String, String>
+    Map<String, String> userInfo = {
+      'uid': usuario.uid,
+      'nivel': usuario.nivel,
+      'empresa': usuario.empresa,
+    };
 
     if (switchValue) {
       status = 'Ativo';
@@ -283,7 +173,7 @@ class _RegisterPageState extends State<RegisterPage> {
         'Email': email,
         'IDempresa':
             empresaSelecionadaId, // Armazenar a empresa selecionada como IDempresa
-        'IDnivel': nivel,
+        'IDnivel': nivelSelecionado,
         'Nome': nome,
         'Status': status,
         // Outros campos...
