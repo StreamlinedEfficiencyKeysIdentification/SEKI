@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../controllers/usuario_controller.dart';
+import 'models/usuario_model.dart';
 
 class GroupPage extends StatefulWidget {
-  GroupPage({Key? key}) : super(key: key);
+  const GroupPage({super.key});
 
   @override
-  _GroupPageState createState() => _GroupPageState();
+  GroupPageState createState() => GroupPageState();
 }
 
-class _GroupPageState extends State<GroupPage> {
+class GroupPageState extends State<GroupPage> {
   final TextEditingController _cnpjController = TextEditingController();
   final TextEditingController _razaosocialController = TextEditingController();
   bool _switchValue = false;
@@ -33,73 +34,6 @@ class _GroupPageState extends State<GroupPage> {
     return nextId;
   }
 
-  Future<String?> _getUsuarioLogado() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? usuarioLogado = prefs.getString('usuarioLogado');
-
-    if (usuarioLogado != null) {
-      DocumentSnapshot<Map<String, dynamic>> userDoc = await FirebaseFirestore
-          .instance
-          .collection('Usuarios')
-          .doc(usuarioLogado)
-          .get();
-
-      if (userDoc.exists) {
-        return usuarioLogado; // Retorna o ID do usuário logado se o documento existir
-      } else {
-        print('Documento do usuário não encontrado no Firestore.');
-        return null; // Retorna null se o documento do usuário não for encontrado
-      }
-    } else {
-      print('Usuário não logado.');
-      return null; // Retorna null se o usuário não estiver logado
-    }
-  }
-
-  Future<String> _getIDnivel() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? usuarioLogado = prefs.getString('usuarioLogado');
-
-    if (usuarioLogado != null) {
-      DocumentSnapshot<Map<String, dynamic>> userIDnivel =
-          await FirebaseFirestore.instance
-              .collection('Usuarios')
-              .doc(usuarioLogado)
-              .get();
-
-      if (userIDnivel.exists) {
-        String? idNivel = userIDnivel.data()?['IDnivel'];
-        if (idNivel != null) {
-          return idNivel; // Retorna o ID do nível se existir
-        } else {
-          print('ID do nível não encontrado para o usuário.');
-          return ''; // Retorna uma string vazia se o ID do nível não for encontrado
-        }
-      } else {
-        print('Documento do usuário não encontrado no Firestore.');
-        return ''; // Retorna uma string vazia se o documento do usuário não for encontrado
-      }
-    } else {
-      print('Usuário não logado.');
-      return ''; // Retorna uma string vazia se o usuário não estiver logado
-    }
-  }
-
-  Future<DocumentSnapshot<Map<String, dynamic>>?> _getUsuarioEmpresa(
-      String uid) async {
-    DocumentSnapshot<Map<String, dynamic>> userDoc =
-        await FirebaseFirestore.instance.collection('Usuarios').doc(uid).get();
-    if (userDoc.exists) {
-      String idEmpresa = userDoc['IDempresa'];
-      return FirebaseFirestore.instance
-          .collection('Empresa')
-          .doc(idEmpresa)
-          .get();
-    } else {
-      return null;
-    }
-  }
-
   Future<void> cadastrarEmpresa() async {
     // Obtenha os valores dos campos de texto
     String cnpj = _cnpjController.text.trim();
@@ -107,17 +41,13 @@ class _GroupPageState extends State<GroupPage> {
     bool switchValue = _switchValue;
     String status;
 
+    Usuario usuario = await UsuarioController.getUsuarioLogado();
+
     if (switchValue) {
       status = 'Ativo';
     } else {
       status = 'Inativo';
     }
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? usuarioLogado = prefs.getString('usuarioLogado');
-
-    DocumentSnapshot<Map<String, dynamic>>? empresaDoc =
-        await _getUsuarioEmpresa(usuarioLogado!);
 
     // Obtém o próximo ID disponível
     int proximoId = await _getProximoId();
@@ -132,21 +62,16 @@ class _GroupPageState extends State<GroupPage> {
       'RazaoSocial': razaoSocial,
       'Status': status,
       'QuemCriou':
-          usuarioLogado, // Adicione o valor do Switch aos dados da empresa
+          usuario.uid, // Adicione o valor do Switch aos dados da empresa
     };
 
-    String? nivel = await _getIDnivel();
-    int idNivel = int.tryParse(nivel) ?? 0;
+    int nivel = int.tryParse(usuario.nivel) ?? 0;
 
-    String? empresaPai = empresaDoc?['EmpresaPai'];
+    String empresaPai = usuario.empresa;
 
     // Adiciona o campo EmpresaPai se existir
-    if (idNivel == 1) {
-      if (empresaPai != null) {
-        dadosEmpresa['EmpresaPai'] = proximoId.toString();
-      } else {
-        dadosEmpresa['EmpresaPai'] = empresaPai;
-      }
+    if (nivel == 1) {
+      dadosEmpresa['EmpresaPai'] = proximoId.toString();
     } else {
       dadosEmpresa['EmpresaPai'] = empresaPai;
     }
@@ -159,7 +84,7 @@ class _GroupPageState extends State<GroupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cadastrar Grupo'),
+        title: const Text('Cadastrar Empresa'),
       ),
       body: Center(
         child: Column(
@@ -174,48 +99,54 @@ class _GroupPageState extends State<GroupPage> {
               controller: _razaosocialController,
               decoration: const InputDecoration(labelText: 'Razao Social'),
             ),
-            FutureBuilder<String?>(
-              future: _getUsuarioLogado(),
+            FutureBuilder<Usuario>(
+              future: UsuarioController.getUsuarioLogado(),
               builder: (context, snapshot) {
-                if (snapshot.hasError || snapshot.data == null) {
-                  return const Text('Erro: Usuário não logado.');
-                } else {
-                  String usuarioLogado = snapshot.data!;
-                  return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>?>(
-                    future: _getUsuarioEmpresa(usuarioLogado),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasError) {
-                        return const Text(
-                            'Erro ao carregar os dados do usuário.');
-                      } else {
-                        DocumentSnapshot<Map<String, dynamic>>? empresaDoc =
-                            snapshot.data;
-                        return FutureBuilder<String?>(
-                          future: _getIDnivel(),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasError) {
-                              return const Text(
-                                  'Erro ao carregar o nível do usuário.');
-                            } else {
-                              int nivel =
-                                  int.tryParse(snapshot.data ?? '') ?? 0;
-                              String? empresaPai = empresaDoc?['RazaoSocial'];
+                if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}'); // Tratar erros
+                }
 
-                              if (nivel == 1) {
-                                return const SizedBox(); // Retorna um widget vazio se o nível for 1
-                              } else {
-                                return TextFormField(
-                                  initialValue: empresaPai,
-                                  decoration: const InputDecoration(
-                                    labelText: 'EmpresaPai',
-                                  ),
-                                  readOnly: true,
-                                );
-                              }
-                            }
-                          },
-                        );
+                var usuario = snapshot.data;
+                if (usuario == null) {
+                  return const Text(
+                      'Usuário não encontrado'); // Lidar com o caso em que o usuário não existe
+                }
+
+                // Você já tem os dados do usuário aqui, não precisa chamar a função getEmpresa
+                String? idEmpresa = usuario.empresa;
+                String? nivel = usuario.nivel;
+
+                // Se o nível for null ou vazio, não há permissões, retornar uma lista vazia
+                if (nivel.isEmpty) {
+                  return const SizedBox();
+                } else if (nivel == '1') {
+                  return const SizedBox();
+                } else {
+                  return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                    future: FirebaseFirestore.instance
+                        .collection('Empresa')
+                        .doc(idEmpresa)
+                        .get(),
+                    builder: (context, empresaSnapshot) {
+                      if (empresaSnapshot.hasError) {
+                        return Text(
+                            'Erro ao obter dados da empresa: ${empresaSnapshot.error}');
                       }
+
+                      var empresaData = empresaSnapshot.data?.data();
+                      if (empresaData == null) {
+                        return const Text(
+                            'Empresa não encontrada'); // Lidar com o caso em que a empresa não existe
+                      }
+
+                      String? razaoSocial = empresaData['RazaoSocial'];
+
+                      return TextFormField(
+                        initialValue: razaoSocial,
+                        decoration:
+                            const InputDecoration(labelText: 'Empresa Pai'),
+                        readOnly: true,
+                      );
                     },
                   );
                 }
@@ -257,8 +188,7 @@ class _GroupPageState extends State<GroupPage> {
 class SwitchExample extends StatefulWidget {
   final void Function(bool) onValueChanged;
 
-  const SwitchExample({Key? key, required this.onValueChanged})
-      : super(key: key);
+  const SwitchExample({super.key, required this.onValueChanged});
 
   @override
   State<SwitchExample> createState() => _SwitchExampleState();
