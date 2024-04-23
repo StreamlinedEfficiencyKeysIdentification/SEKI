@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
         //'checagem': (context) => ChecagemPage(),
         '/login': (context) => LoginPage(),
         '/register': (context) => const RegisterPage(),
-        '/alterar_senha': (context) => FirstAccessPage(),
+        '/alterar_senha': (context) => const FirstAccessPage(),
         '/home': (context) => const HomePage(),
         '/hardware': (context) => HardwarePage(),
         '/group': (context) => const GroupPage(),
