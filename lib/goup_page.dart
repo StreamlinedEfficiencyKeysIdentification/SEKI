@@ -107,17 +107,13 @@ class GroupPageState extends State<GroupPage> {
                 }
 
                 var usuario = snapshot.data;
-                if (usuario == null) {
-                  return const Text(
-                      'Usuário não encontrado'); // Lidar com o caso em que o usuário não existe
-                }
 
                 // Você já tem os dados do usuário aqui, não precisa chamar a função getEmpresa
-                String? idEmpresa = usuario.empresa;
-                String? nivel = usuario.nivel;
+                String? idEmpresa = usuario?.empresa;
+                String? nivel = usuario?.nivel;
 
                 // Se o nível for null ou vazio, não há permissões, retornar uma lista vazia
-                if (nivel.isEmpty) {
+                if (nivel == null || nivel.isEmpty) {
                   return const SizedBox();
                 } else if (nivel == '1') {
                   return const SizedBox();
