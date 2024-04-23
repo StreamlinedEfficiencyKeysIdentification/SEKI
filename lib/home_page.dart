@@ -1,10 +1,12 @@
+// ignore_for_file: avoid_print, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   Future<String?> _getUserName() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -46,10 +48,10 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: const Text('Home'),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: const Icon(Icons.logout),
             onPressed: () => _logout(context),
           ),
         ],
@@ -62,9 +64,9 @@ class HomePage extends StatelessWidget {
               future: _getUserName(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
+                  return const CircularProgressIndicator();
                 } else if (snapshot.hasError) {
-                  return Text('Erro ao carregar o nome do usuário.');
+                  return const Text('Erro ao carregar o nome do usuário.');
                 } else {
                   String? userName = snapshot.data;
                   return Text(
@@ -72,29 +74,29 @@ class HomePage extends StatelessWidget {
                         ? 'Bem-vindo,\n$userName!'
                         : 'Usuário desconhecido.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 24),
+                    style: const TextStyle(fontSize: 24),
                   );
                 }
               },
             ),
-            SizedBox(height: 20), // Espaçamento entre o texto e o botão
+            const SizedBox(height: 20), // Espaçamento entre o texto e o botão
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/register');
               },
-              child: Text('Registrar Novo Usuário'),
+              child: const Text('Registrar Novo Usuário'),
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/group');
               },
-              child: Text('Registrar Nova Empresa'),
+              child: const Text('Registrar Nova Empresa'),
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/hardware');
               },
-              child: Text('Registrar Novo Equipamento'),
+              child: const Text('Registrar Novo Equipamento'),
             ),
           ],
         ),

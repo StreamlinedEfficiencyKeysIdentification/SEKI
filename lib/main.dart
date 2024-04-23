@@ -41,11 +41,11 @@ class MyApp extends StatelessWidget {
         '/': (context) => ChecagemPage(), // '/': (context) => inicio(),
         //'checagem': (context) => ChecagemPage(),
         '/login': (context) => LoginPage(),
-        '/register': (context) => RegisterPage(),
+        '/register': (context) => const RegisterPage(),
         '/alterar_senha': (context) => FirstAccessPage(),
-        '/home': (context) => HomePage(),
+        '/home': (context) => const HomePage(),
         '/hardware': (context) => HardwarePage(),
-        '/group': (context) => GroupPage(),
+        '/group': (context) => const GroupPage(),
       },
     );
   }

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 // import 'package:logger/logger.dart';
 
 class HardwarePage extends StatelessWidget {
-  HardwarePage({Key? key}) : super(key: key);
+  HardwarePage({super.key});
   final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _marcaController = TextEditingController();
   final TextEditingController _modeloController = TextEditingController();
