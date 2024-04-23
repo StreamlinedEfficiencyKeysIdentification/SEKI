@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import '../controllers/usuario_controller.dart';
 import 'models/usuario_model.dart';
+import 'utils/password_generator.dart';
 import 'views/combo_box_empresa.dart';
 import 'views/combo_box_nivel_acesso.dart';
 
@@ -140,7 +141,7 @@ class _RegisterPageState extends State<RegisterPage> {
   void _register(BuildContext context, String empresaSelecionadaId,
       String nivelSelecionado) async {
     String email = _emailController.text.trim();
-    String password = '123456789';
+    String password = generateRandomPassword();
     String nome = _nomeController.text.trim();
     bool switchValue = _switchValue;
     String status;
