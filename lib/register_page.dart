@@ -1,10 +1,9 @@
-// ignore_for_file: library_private_types_in_public_api, non_constant_identifier_names, prefer_const_declarations, avoid_print
+// ignore_for_file: library_private_types_in_public_api, non_constant_identifier_names, prefer_const_declarations, avoid_print, use_build_context_synchronously
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
 import '../controllers/usuario_controller.dart';
 import 'models/usuario_model.dart';
@@ -83,8 +82,23 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             ElevatedButton(
               onPressed: () {
-                _register(context, _empresaSelecionada,
-                    _nivelSelecionado); // Chamar _register passando _empresaSelecionada
+                String email = _emailController.text.trim();
+                String nome = _nomeController.text.trim();
+
+                if (email.isEmpty ||
+                    nome.isEmpty ||
+                    _empresaSelecionada.isEmpty ||
+                    _nivelSelecionado.isEmpty) {
+                  // Se algum dos campos estiver vazio, informe ao usuário e não prossiga com o registro
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Por favor, preencha todos os campos.'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                } else {
+                  _register(context, _empresaSelecionada, _nivelSelecionado);
+                }
               },
               child: const Text('Register'),
             ),
@@ -102,7 +116,7 @@ class _RegisterPageState extends State<RegisterPage> {
     var url = Uri.parse('https://api.emailjs.com/api/v1.0/email/send');
 
     try {
-      var response = await http.post(url,
+      await http.post(url,
           headers: {
             'origin': 'http://localhost',
             'Content-Type': 'application/json',
@@ -118,8 +132,6 @@ class _RegisterPageState extends State<RegisterPage> {
               'message': message,
             },
           }));
-
-      print('[Enviado] ${response.body}');
     } catch (e) {
       print('[Erro ao enviar email]');
     }
@@ -139,22 +151,11 @@ class _RegisterPageState extends State<RegisterPage> {
         'Seu usuário foi criado com sucesso! Para entrar no sistema, acesse com o e-mail: $email e senha: $password .';
     Usuario usuario = await UsuarioController.getUsuarioLogado();
 
-    // Converter os dados do objeto Usuario em um Map<String, String>
-    Map<String, String> userInfo = {
-      'uid': usuario.uid,
-      'nivel': usuario.nivel,
-      'empresa': usuario.empresa,
-    };
-
     if (switchValue) {
       status = 'Ativo';
     } else {
       status = 'Inativo';
     }
-
-    var logger = Logger(
-      printer: PrettyPrinter(),
-    );
 
     try {
       // Registrar usuário no Firebase Authentication
@@ -184,7 +185,7 @@ class _RegisterPageState extends State<RegisterPage> {
           .doc(uid)
           .set({
         'PrimeiroAcesso': true,
-        'QuemCriou': userInfo['uid'], // Armazenar o UID do usuário que criou
+        'QuemCriou': usuario.uid, // Armazenar o UID do usuário que criou
         // Outros campos...
       });
 
@@ -196,21 +197,41 @@ class _RegisterPageState extends State<RegisterPage> {
         message: message,
       );
 
-      print('Usuário registrado com sucesso!');
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        logger.d('The password provided is too weak.');
-      } else if (e.code == 'email-already-in-use') {
-        logger.d('The account already exists for that email.');
-      } else if (e.code == 'invalid-email') {
-        logger.d('The email is invalidl.');
-      } else if (e.code == 'email-already-in-use') {
-        logger.d('The account already exists for that email.');
-      } else {
-        logger.d('User and/or password is invalid.');
-      }
+      // Mostra a mensagem de erro na tela
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Usuário registrado com sucesso!'),
+          backgroundColor: Colors.green,
+        ),
+      );
     } catch (e) {
-      logger.e(e.toString());
+      // Trate os erros de autenticação
+      String errorMessage = '';
+
+      // Mensagens de erro específicas podem ser tratadas aqui
+      if (e is FirebaseAuthException) {
+        switch (e.code) {
+          case 'invalid-email':
+            errorMessage = 'Email não está no formato correto.';
+            break;
+          case 'email-already-in-use':
+            errorMessage = 'O e-mail já está sendo usado por outra conta.';
+            break;
+          // Adicione mais casos conforme necessário para outros erros
+          default:
+            errorMessage = 'Erro ao registrar usuário (E-mail).';
+        }
+      } else {
+        errorMessage = 'Erro ao fazer login.';
+      }
+
+      // Mostra a mensagem de erro na tela
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 }

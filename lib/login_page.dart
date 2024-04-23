@@ -14,6 +14,17 @@ class LoginPage extends StatelessWidget {
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
 
+    if (email.isEmpty || password.isEmpty) {
+      // Se algum dos campos estiver vazio, informe ao usuário e não prossiga com o login
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, preencha todos os campos.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return; // Retorna para evitar a execução do código de login
+    }
+
     try {
       // Faça login do usuário com email e senha
       UserCredential userCredential =
@@ -61,6 +72,29 @@ class LoginPage extends StatelessWidget {
     } catch (e) {
       // Trate os erros de autenticação
       print('Erro ao fazer login: $e');
+      String errorMessage = '';
+
+      // Mensagens de erro específicas podem ser tratadas aqui
+      if (e is FirebaseAuthException) {
+        switch (e.code) {
+          case 'invalid-email':
+            errorMessage = 'Email não está no formato correto.';
+            break;
+          // Adicione mais casos conforme necessário para outros erros
+          default:
+            errorMessage = 'Usuário e/ou Senha incorretos.';
+        }
+      } else {
+        errorMessage = 'Erro ao fazer login.';
+      }
+
+      // Mostra a mensagem de erro na tela
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
