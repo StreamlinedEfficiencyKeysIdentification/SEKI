@@ -32,7 +32,7 @@ String generateRandomPassword() {
   // Gerar uma senha aleatória com 12 caracteres
   String password = '';
   Random random = Random();
-  for (int i = 0; i < 12; i++) {
+  for (int i = 0; i < 8; i++) {
     int choice = random.nextInt(4);
     switch (choice) {
       case 0:
