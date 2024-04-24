@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'goup_page.dart';
 import 'hardware_page.dart';
 import 'login_page.dart';
+import 'redefinir_senha.dart';
 import 'register_page.dart';
 import 'home_page.dart';
 import 'alterar_senha.dart';
@@ -38,11 +39,12 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         // ignore: prefer_const_constructors
-        '/': (context) => ChecagemPage(), // '/': (context) => inicio(),
-        //'checagem': (context) => ChecagemPage(),
+        '/': (context) => ChecagemPage(),
         '/login': (context) => LoginPage(),
+        '/reset_password': (context) => const ResetPasswordPage(),
         '/register': (context) => const RegisterPage(),
-        '/alterar_senha': (context) => const FirstAccessPage(),
+        '/alterar_senha': (context) => FirstAccessPage(
+            title: ModalRoute.of(context)!.settings.arguments as String),
         '/home': (context) => const HomePage(),
         '/hardware': (context) => HardwarePage(),
         '/group': (context) => const GroupPage(),
