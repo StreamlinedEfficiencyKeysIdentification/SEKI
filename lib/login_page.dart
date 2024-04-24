@@ -49,6 +49,7 @@ class LoginPage extends StatelessWidget {
 
       if (userDoc.exists) {
         bool primeiroAcesso = userDoc.data()!['PrimeiroAcesso'] ?? false;
+        bool redefinirSenha = userDoc.data()!['RedefinirSenha'] ?? false;
 
         await FirebaseFirestore.instance
             .collection('DetalheUsuario')
@@ -58,9 +59,11 @@ class LoginPage extends StatelessWidget {
               .serverTimestamp(), // Use FieldValue.serverTimestamp() para obter a hora atual no servidor
         });
 
-        if (primeiroAcesso) {
+        if (primeiroAcesso || redefinirSenha) {
           // Se for o primeiro acesso, redirecione para a tela de alteração de senha
-          Navigator.pushReplacementNamed(context, '/alterar_senha');
+          Navigator.pushReplacementNamed(context, '/alterar_senha',
+              arguments:
+                  primeiroAcesso ? 'Primeiro Acesso' : 'Redefina sua Senha');
         } else {
           // Se não for o primeiro acesso, redirecione para a tela principal
           Navigator.pushReplacementNamed(context, '/home');
@@ -117,6 +120,12 @@ class LoginPage extends StatelessWidget {
               controller: _passwordController,
               decoration: const InputDecoration(labelText: 'Password'),
               obscureText: true,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/reset_password');
+              },
+              child: const Text('Esqueci minha senha'),
             ),
             const SizedBox(height: 16.0),
             ElevatedButton(
