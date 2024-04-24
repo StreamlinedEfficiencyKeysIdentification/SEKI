@@ -63,16 +63,41 @@ class ResetPasswordPageState extends State<ResetPasswordPage> {
 
     String email = _emailController.text.trim();
 
-    try {
-      // Enviar e-mail de redefinição de senha
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    if (email.isEmpty) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Por favor, insira um e-mail.';
+      });
+      return;
+    }
 
+    // Adiciona validação para verificar se o email está formatado corretamente
+    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Por favor, insira um e-mail válido.';
+      });
+      return;
+    }
+
+    try {
       // Obter UID do usuário correspondente ao e-mail
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('Usuarios')
           .where('Email', isEqualTo: email)
           .limit(1)
           .get();
+
+      if (querySnapshot.docs.isEmpty) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = 'E-mail não registrado.';
+        });
+        return;
+      }
+
+      // Enviar e-mail de redefinição de senha
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
 
       String userId = querySnapshot.docs.first.id;
 
