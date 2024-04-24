@@ -5,7 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class FirstAccessPage extends StatefulWidget {
-  const FirstAccessPage({super.key});
+  final String title;
+
+  const FirstAccessPage({super.key, required this.title});
 
   @override
   FirstAccessPageState createState() => FirstAccessPageState();
@@ -28,7 +30,7 @@ class FirstAccessPageState extends State<FirstAccessPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Alterar Senha'),
+        title: Text(widget.title),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -74,7 +76,7 @@ class FirstAccessPageState extends State<FirstAccessPage> {
           ),
         ),
         Text(
-          '- Pelo menos 12 caracteres',
+          '- Pelo menos 8 caracteres',
           style: TextStyle(color: _isLengthValid ? Colors.green : Colors.red),
         ),
         Text(
@@ -107,7 +109,7 @@ class FirstAccessPageState extends State<FirstAccessPage> {
     String password = _passwordController.text;
     String confirmPassword = _confirmPasswordController.text;
 
-    _isLengthValid = password.length >= 12;
+    _isLengthValid = password.length >= 8;
     _hasSpecialChar = RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password);
     _hasUppercaseChar = password.contains(RegExp(r'[A-Z]'));
     _hasLowercaseChar = password.contains(RegExp(r'[a-z]'));
@@ -139,6 +141,7 @@ class FirstAccessPageState extends State<FirstAccessPage> {
             .doc(user.uid)
             .update({
           'PrimeiroAcesso': false,
+          'RedefinirSenha': false,
         });
 
         // Senha atualizada com sucesso
