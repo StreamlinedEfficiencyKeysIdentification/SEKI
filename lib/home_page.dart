@@ -141,7 +141,7 @@ class HomePage extends StatelessWidget {
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                Navigator.pushNamed(context, '/register');
+                                Navigator.pushNamed(context, '/group');
                               },
                               style: ElevatedButton.styleFrom(
                                 shape: const CircleBorder(),
@@ -295,7 +295,7 @@ class HomePage extends StatelessWidget {
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                Navigator.pushNamed(context, '/group');
+                                Navigator.pushNamed(context, '/hardware');
                               },
                               style: ElevatedButton.styleFrom(
                                 shape: const CircleBorder(),
