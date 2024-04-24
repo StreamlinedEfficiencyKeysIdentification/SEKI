@@ -48,57 +48,467 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => _logout(context),
-          ),
-        ],
+        backgroundColor: const Color(0xff035fab),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            FutureBuilder<String?>(
-              future: _getUserName(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  return const Text('Erro ao carregar o nome do usuário.');
-                } else {
-                  String? userName = snapshot.data;
-                  return Text(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          FutureBuilder<String?>(
+            future: _getUserName(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else if (snapshot.hasError) {
+                return const Center(
+                  child: Text('Erro ao carregar o nome do usuário.'),
+                );
+              } else {
+                String? userName = snapshot.data;
+                return Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Text(
                     userName != null
                         ? 'Bem-vindo,\n$userName!'
                         : 'Usuário desconhecido.',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 24),
-                  );
-                }
-              },
+                    style: const TextStyle(fontSize: 24, color: Colors.white),
+                  ),
+                );
+              }
+            },
+          ),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              children: [
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    // Adicione ação aqui
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    backgroundColor: const Color.fromRGBO(255, 255, 255, 0.4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: const BorderSide(color: Colors.white),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Empresas',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color.fromARGB(255, 255, 255, 255),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                // Ação para editar
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
+                              ),
+                              child: const Icon(
+                                Icons.edit,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                // Ação para visualizar
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
+                              ),
+                              child: const Icon(
+                                Icons.visibility,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/register');
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
+                              ),
+                              child: const Icon(
+                                Icons.add,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    // Adicione ação aqui
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    backgroundColor: const Color.fromRGBO(255, 255, 255, 0.4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: const BorderSide(color: Colors.white),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Usuário',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color.fromARGB(255, 255, 255, 255),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                // Ação para editar
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
+                              ),
+                              child: const Icon(
+                                Icons.edit,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                // Ação para visualizar
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
+                              ),
+                              child: const Icon(
+                                Icons.visibility,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/register');
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
+                              ),
+                              child: const Icon(
+                                Icons.add,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    // Adicione ação aqui
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    backgroundColor: const Color.fromRGBO(255, 255, 255, 0.4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: const BorderSide(color: Colors.white),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Máquina',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color.fromARGB(255, 255, 255, 255),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                // Ação para editar
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
+                              ),
+                              child: const Icon(
+                                Icons.edit,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                // Ação para visualizar
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
+                              ),
+                              child: const Icon(
+                                Icons.visibility,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/group');
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
+                              ),
+                              child: const Icon(
+                                Icons.add,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    // Adicione ação aqui
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    backgroundColor: const Color.fromRGBO(255, 255, 255, 0.4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: const BorderSide(color: Colors.white),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Chamado',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color.fromARGB(255, 255, 255, 255),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                // Ação para editar
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
+                              ),
+                              child: const Icon(
+                                Icons.edit,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                // Ação para visualizar
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
+                              ),
+                              child: const Icon(
+                                Icons.visibility,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/register');
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
+                              ),
+                              child: const Icon(
+                                Icons.add,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    // Adicione ação aqui
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    backgroundColor: const Color.fromRGBO(255, 255, 255, 0.4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: const BorderSide(color: Colors.white),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Cadastrar QRcode',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color.fromARGB(255, 255, 255, 255),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                // Ação para editar
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
+                              ),
+                              child: const Icon(
+                                Icons.edit,
+                                color: Color(0xff035fab),
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                // Ação para visualizar
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
+                              ),
+                              child: const Icon(
+                                Icons.visibility,
+                                color: Color(0xff035fab),
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/register');
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
+                              ),
+                              child: const Icon(
+                                Icons.add,
+                                color: Color(0xff035fab),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 20), // Espaçamento entre o texto e o botão
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/register');
-              },
-              child: const Text('Registrar Novo Usuário'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/group');
-              },
-              child: const Text('Registrar Nova Empresa'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/hardware');
-              },
-              child: const Text('Registrar Novo Equipamento'),
-            ),
-          ],
+          ),
+        ],
+      ),
+      backgroundColor: const Color(0xff035fab),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Ação do botão de contador
+        },
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        child: const Icon(
+          Icons.qr_code,
+          color: Color(0xff035fab),
+        ),
+      ),
+      bottomNavigationBar: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20.0),
+          topRight: Radius.circular(20.0),
+        ),
+        child: BottomAppBar(
+          color: Colors.white,
+          elevation: 50,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.logout, color: Color(0xff035fab)),
+                onPressed: () => _logout(context),
+              ),
+              IconButton(
+                onPressed: () {
+                  // Adicione ação para o segundo ícone do menu footer
+                },
+                icon: const Icon(Icons.home, color: Color(0xff035fab)),
+              ),
+              IconButton(
+                onPressed: () {
+                  // Adicione ação para o terceiro ícone do menu footer
+                },
+                icon: const Icon(Icons.people_alt, color: Color(0xff035fab)),
+              ),
+            ],
+          ),
         ),
       ),
     );
