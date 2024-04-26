@@ -10,6 +10,7 @@ import 'register_page.dart';
 import 'home_page.dart';
 import 'alterar_senha.dart';
 import 'checagem_page.dart';
+import 'setor_page.dart';
 
 late final FirebaseApp app;
 late final FirebaseAuth auth;
@@ -48,6 +49,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomePage(),
         '/hardware': (context) => HardwarePage(),
         '/group': (context) => const GroupPage(),
+        '/setor': (context) => const SetorPage(),
       },
     );
   }
