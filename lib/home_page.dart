@@ -94,6 +94,12 @@ class HomePage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
+                Navigator.pushNamed(context, '/setor');
+              },
+              child: const Text('Registrar Novo Setor'),
+            ),
+            ElevatedButton(
+              onPressed: () {
                 Navigator.pushNamed(context, '/hardware');
               },
               child: const Text('Registrar Novo Equipamento'),
