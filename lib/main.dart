@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
         '/alterar_senha': (context) => FirstAccessPage(
             title: ModalRoute.of(context)!.settings.arguments as String),
         '/home': (context) => const HomePage(),
-        '/hardware': (context) => HardwarePage(),
+        '/hardware': (context) => const HardwarePage(),
         '/group': (context) => const GroupPage(),
         '/setor': (context) => const SetorPage(),
       },
