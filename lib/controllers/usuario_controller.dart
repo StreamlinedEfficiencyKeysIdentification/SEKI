@@ -19,9 +19,10 @@ class UsuarioController {
           uid: usuarioLogado,
           nivel: userSnapshot['IDnivel'] as String? ?? '',
           empresa: userSnapshot['IDempresa'] as String? ?? '',
+          nome: userSnapshot['Nome'] as String? ?? '',
         );
       }
     }
-    return Usuario(uid: '', nivel: '', empresa: '');
+    return Usuario(uid: '', nivel: '', empresa: '', nome: '');
   }
 }

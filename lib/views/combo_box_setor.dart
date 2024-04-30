@@ -24,7 +24,7 @@ class ComboBoxSetorState extends State<ComboBoxSetor> {
       future: UsuarioController.getUsuarioLogado(),
       builder: (context, snapshot) {
         Usuario usuario =
-            snapshot.data ?? Usuario(uid: '', nivel: '', empresa: '');
+            snapshot.data ?? Usuario(uid: '', nivel: '', empresa: '', nome: '');
 
         Query setorQuery = FirebaseFirestore.instance.collection('Setor');
         if (usuario.nivel == '2') {
