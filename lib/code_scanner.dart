@@ -34,25 +34,27 @@ class _ScanCodePageState extends State<ScanCodePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor:
-            Colors.transparent, // Define a cor transparente para a AppBar
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ),
       body: Stack(
         alignment: Alignment.center,
         children: <Widget>[
           _buildQrView(context),
           Positioned(
+            top: MediaQuery.of(context).padding.top,
+            left: 10,
+            child: IconButton(
+              icon: const Icon(
+                Icons.arrow_back,
+                size: 30,
+                color: Colors.blue,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
+          Positioned(
             bottom: 10,
-            child: buildResult(),
+            child: barcode != null ? buildResult() : Container(),
           ),
           Positioned(
             top: MediaQuery.of(context).padding.top,
@@ -81,7 +83,8 @@ class _ScanCodePageState extends State<ScanCodePage> {
               builder: (context, snapshot) {
                 if (snapshot.data != null) {
                   return Icon(
-                    color: Colors.black,
+                    color:
+                        snapshot.data! ? Colors.lightBlueAccent : Colors.blue,
                     snapshot.data! ? Icons.flash_on : Icons.flash_off,
                   );
                 } else {
@@ -100,7 +103,7 @@ class _ScanCodePageState extends State<ScanCodePage> {
               builder: (context, snapshot) {
                 if (snapshot.data != null) {
                   return const Icon(
-                    color: Colors.black,
+                    color: Colors.blue,
                     Icons.flip_camera_ios,
                   );
                 } else {
@@ -127,7 +130,9 @@ class _ScanCodePageState extends State<ScanCodePage> {
       ),
       child: Text(
         barcode != null ? 'Barcode: ${barcode!.code}' : 'Scan a code',
-        style: const TextStyle(color: Colors.black),
+        style: const TextStyle(
+          color: Colors.blue,
+        ),
         maxLines: 3,
       ),
     );
