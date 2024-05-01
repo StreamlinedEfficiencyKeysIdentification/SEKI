@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'code_scanner.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'goup_page.dart';
@@ -50,6 +51,7 @@ class MyApp extends StatelessWidget {
         '/hardware': (context) => const HardwarePage(),
         '/group': (context) => const GroupPage(),
         '/setor': (context) => const SetorPage(),
+        '/scan': (context) => const ScanCodePage(),
       },
     );
   }
