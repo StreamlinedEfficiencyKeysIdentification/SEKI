@@ -1,5 +1,5 @@
 name: testeseki
-description: "A new Flutter project."
+description: 'A new Flutter project.'
 publish_to: 'none'
 version: 0.1.0
 
@@ -17,6 +17,7 @@ dependencies:
   logger: ^2.2.0
   mailer: ^6.1.0
   shared_preferences: ^2.2.2
+  qr_flutter: ^4.1.0
 
 dev_dependencies:
   flutter_test:
