@@ -1,7 +1,12 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, avoid_print
 
+import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'controllers/equipamento_controller.dart';
+import 'controllers/usuario_controller.dart';
+import 'models/usuario_model.dart';
+import 'view_code.dart';
 import 'views/autocomplete_usuario.dart';
 import 'views/combo_box_empresa.dart';
 import 'views/combo_box_setor.dart';
@@ -28,15 +33,34 @@ class HardwarePageState extends State<HardwarePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cadastrar Hardware'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushNamed(context, '/');
+          },
+        ),
       ),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextFormField(
-                controller: _qrcodeController,
-                decoration: const InputDecoration(labelText: 'Qrcode'),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _qrcodeController,
+                      decoration: const InputDecoration(labelText: 'QRcode'),
+                      enabled: false, // Desabilita a edição do campo
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.refresh),
+                    onPressed: () {
+                      _generateQRCodeHash();
+                    },
+                  ),
+                ],
               ),
               TextFormField(
                 controller: _marcaController,
@@ -131,6 +155,73 @@ class HardwarePageState extends State<HardwarePage> {
     );
   }
 
+  void _generateQRCodeHash() async {
+    // Buscar a empresa do usuário logado
+    Usuario usuario = await UsuarioController.getUsuarioLogado();
+
+    // Identificar a empresa matriz à qual o usuário pertence
+    String matriz = '';
+    DocumentSnapshot empresaSnapshot = await FirebaseFirestore.instance
+        .collection('Empresa')
+        .doc(usuario.empresa)
+        .get();
+
+    matriz = empresaSnapshot['EmpresaPai'].toString();
+
+    DocumentSnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('QRcode').doc(matriz).get();
+
+    List<String> hashesExistentes = [];
+
+    String novoHash = '';
+    bool hashExistente = true;
+    int tentativas = 0;
+    int maxTentativas = 1000000;
+
+    while (hashExistente && tentativas < maxTentativas) {
+      novoHash = _gerarHashUnico();
+
+      if (querySnapshot.exists) {
+        Map<String, dynamic>? dados =
+            querySnapshot.data() as Map<String, dynamic>?;
+        if (dados != null &&
+            !dados.containsKey(novoHash) &&
+            !hashesExistentes.contains(novoHash)) {
+          hashExistente = false;
+        }
+      } else {
+        hashExistente = false;
+      }
+
+      hashesExistentes.add(novoHash);
+
+      tentativas++;
+    }
+
+    if (tentativas == maxTentativas) {
+      print(
+          'Não foi possível gerar um hash único após $maxTentativas tentativas.');
+    } else {
+      setState(() {
+        _qrcodeController.text = novoHash;
+      });
+    }
+  }
+
+  String _gerarHashUnico() {
+    final Random random = Random();
+
+    String hash = '';
+
+    for (int i = 0; i < 6; i++) {
+      int randomNumber = random.nextInt(10);
+
+      hash += randomNumber.toString();
+    }
+
+    return hash;
+  }
+
   void cadastrarEquipamento() async {
     if (_qrcodeController.text.isEmpty ||
         _marcaController.text.isEmpty ||
@@ -162,9 +253,12 @@ class HardwarePageState extends State<HardwarePage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Usuário obrigatório'),
+            title: const Text(
+              'Usuário obrigatório',
+            ),
             content: const Text(
-                'Por favor, selecione um usuário ou desative a opção de inserir usuário.'),
+              'Por favor, selecione um usuário ou desative a opção de inserir usuário.',
+            ),
             actions: [
               TextButton(
                 onPressed: () {
@@ -178,34 +272,64 @@ class HardwarePageState extends State<HardwarePage> {
       );
       return;
     }
-    await EquipamentoController.cadastrarEquipamento(
-      _qrcodeController.text,
-      _empresaSelecionada,
-      _setorSelecionado,
-      _usuarioSelecionado,
-      _switchValue,
-      _marcaController.text,
-      _modeloController.text,
-    );
+    bool waiting = await EquipamentoController.cadastrarEquipamento(
+        context,
+        _qrcodeController.text,
+        _empresaSelecionada,
+        _setorSelecionado,
+        _usuarioSelecionado,
+        _switchValue,
+        _marcaController.text,
+        _modeloController.text);
 
-    _qrcodeController.clear();
-    _marcaController.clear();
-    _modeloController.clear();
-    _empresaSelecionada = '';
-    _setorSelecionado = '';
-    _usuarioSelecionado = '';
-    _switchValue = false;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Usuário registrado com sucesso!'),
-        backgroundColor: Colors.green,
-      ),
-    );
-
-    Navigator.of(context).pushReplacement(MaterialPageRoute(
-      builder: (BuildContext context) => const HardwarePage(),
-    ));
+    if (waiting) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Cadastrado com sucesso!'),
+            content: const Text('Deseja salvar o QR Code?'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: ((context) {
+                        return QRImage(_qrcodeController);
+                      }),
+                    ),
+                  );
+                },
+                child: const Text('Sim'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/hardware');
+                },
+                child: const Text('Cancelar'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Erro'),
+          content: const Text('Falha ao cadastrar o equipamento.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }
 
