@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../controllers/usuario_controller.dart';
+import '../models/equipamento_model.dart';
 import '../models/usuario_model.dart';
 
 class EquipamentoController {
@@ -91,5 +92,119 @@ class EquipamentoController {
     }
 
     return proximoId;
+  }
+
+  static Future<Equipamento> getEquipamento(String qrcode) async {
+    try {
+      String usuario = '';
+      // Buscar o equipamento com o IDqrcode na coleção Equipamento
+      QuerySnapshot equipSnapshot = await FirebaseFirestore.instance
+          .collection('Equipamento')
+          .where('IDqrcode', isEqualTo: qrcode)
+          .get();
+
+      if (equipSnapshot.docs.isNotEmpty) {
+        // Extrair o ID do documento do equipamento
+        String equipId = equipSnapshot.docs.first.id;
+
+        Map<String, dynamic> equipData =
+            equipSnapshot.docs.first.data() as Map<String, dynamic>;
+
+        String empresaId = equipData['IDempresa'];
+        String setorId = equipData['IDsetor'];
+        String usuarioId = equipData['IDusuario'];
+        String criadorId = equipData['QuemCriou'];
+        String statusId = equipData['Status'];
+
+        // Buscar os detalhes do equipamento na coleção DetalheEquipamento usando o ID do equipamento
+        DocumentSnapshot detailSnapshot = await FirebaseFirestore.instance
+            .collection('DetalheEquipamento')
+            .doc(equipId)
+            .get();
+
+        DocumentSnapshot empresaSnapshot = await FirebaseFirestore.instance
+            .collection('Empresa')
+            .doc(empresaId)
+            .get();
+
+        DocumentSnapshot setorSnapshot = await FirebaseFirestore.instance
+            .collection('Setor')
+            .doc(setorId)
+            .get();
+
+        if (usuarioId != '') {
+          DocumentSnapshot usuarioSnapshot = await FirebaseFirestore.instance
+              .collection('Usuarios')
+              .doc(usuarioId)
+              .get();
+
+          if (usuarioSnapshot.exists) {
+            Map<String, dynamic> usuarioData =
+                usuarioSnapshot.data() as Map<String, dynamic>;
+
+            usuario = usuarioData['Nome'];
+          }
+        }
+
+        DocumentSnapshot criadorSnapshot = await FirebaseFirestore.instance
+            .collection('Usuarios')
+            .doc(criadorId)
+            .get();
+
+        if (detailSnapshot.exists) {
+          // Extrair os dados do detalhe do equipamento
+          Map<String, dynamic> detailData =
+              detailSnapshot.data() as Map<String, dynamic>;
+          Map<String, dynamic> empresaData =
+              empresaSnapshot.data() as Map<String, dynamic>;
+          Map<String, dynamic> setorData =
+              setorSnapshot.data() as Map<String, dynamic>;
+          Map<String, dynamic> criadorData =
+              criadorSnapshot.data() as Map<String, dynamic>;
+
+          String marca = detailData['Marca'];
+          String modelo = detailData['Modelo'];
+          String qrcode = equipData['IDqrcode'];
+          String empresa = empresaData['RazaoSocial'];
+          String setor = setorData['Descricao'];
+          String criador = criadorData['Nome'];
+
+          return Equipamento(
+            id: equipId,
+            marca: marca as String? ?? '',
+            modelo: modelo as String? ?? '',
+            qrcode: qrcode as String? ?? '',
+            empresa: empresa as String? ?? '',
+            setor: setor as String? ?? '',
+            usuario: usuario as String? ?? '',
+            criador: criador as String? ?? '',
+            status: statusId as String? ?? '',
+          );
+        }
+      }
+      return Equipamento(
+        id: '',
+        marca: '',
+        modelo: '',
+        qrcode: '',
+        empresa: '',
+        setor: '',
+        usuario: '',
+        criador: '',
+        status: '',
+      );
+    } catch (e) {
+      return Equipamento(
+        id: '',
+        marca: '',
+        modelo: '',
+        qrcode: '',
+        empresa: '',
+        setor: '',
+        usuario: '',
+        criador: '',
+        status: '',
+      );
+    }
   }
 }
