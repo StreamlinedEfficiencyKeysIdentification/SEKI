@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'controllers/equipamento_controller.dart';
 import 'controllers/usuario_controller.dart';
 import 'models/usuario_model.dart';
-import 'view_code.dart';
+import 'barcode/view_code.dart';
 import 'views/autocomplete_usuario.dart';
 import 'views/combo_box_empresa.dart';
 import 'views/combo_box_setor.dart';
