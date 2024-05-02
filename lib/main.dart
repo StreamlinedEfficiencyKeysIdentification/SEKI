@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'code_scanner.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'goup_page.dart';
@@ -11,14 +10,14 @@ import 'register_page.dart';
 import 'home_page.dart';
 import 'alterar_senha.dart';
 import 'checagem_page.dart';
+import 'barcode/scan_code.dart';
 import 'setor_page.dart';
 
 late final FirebaseApp app;
 late final FirebaseAuth auth;
 
 Future<void> main() async {
-  WidgetsFlutterBinding
-      .ensureInitialized(); //serve pra iniciar somente depois que as configurações flutter forem iniciadas
+  WidgetsFlutterBinding.ensureInitialized();
 
   app = await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
