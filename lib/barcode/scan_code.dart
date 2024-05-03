@@ -14,7 +14,7 @@ class ScanCodePage extends StatefulWidget {
 
 class _ScanCodePageState extends State<ScanCodePage> {
   final MobileScannerController cameraController = MobileScannerController(
-    torchEnabled: true,
+    torchEnabled: false,
     useNewCameraSelector: true,
     detectionSpeed: DetectionSpeed.normal,
   );
