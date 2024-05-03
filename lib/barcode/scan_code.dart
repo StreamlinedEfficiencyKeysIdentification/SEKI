@@ -52,7 +52,7 @@ class _ScanCodePageState extends State<ScanCodePage> {
                 color: Colors.blue,
               ),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.pushNamed(context, '/');
               },
             ),
           ),
@@ -79,7 +79,7 @@ class _ScanCodePageState extends State<ScanCodePage> {
         ),
       );
 
-      cameraController.stop();
+      cameraController.dispose();
     }
   }
 
