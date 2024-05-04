@@ -16,8 +16,20 @@ class AutocompleteUsuarioExample extends StatelessWidget {
     return FutureBuilder<Usuario>(
       future: UsuarioController.getUsuarioLogado(),
       builder: (context, snapshot) {
-        Usuario usuario =
-            snapshot.data ?? Usuario(uid: '', nivel: '', empresa: '', nome: '');
+        Usuario usuario = snapshot.data ??
+            Usuario(
+              uid: '',
+              nivel: '',
+              empresa: '',
+              nome: '',
+              usuario: '',
+              email: '',
+              status: '',
+              dataCriacao: '',
+              dataAcesso: '',
+              primeiroAcesso: false,
+              redefinirSenha: false,
+            );
 
         return FutureBuilder<QuerySnapshot>(
           future: _getUsuariosQuery(usuario),
