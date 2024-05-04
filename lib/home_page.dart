@@ -48,16 +48,28 @@ class HomePage extends StatelessWidget {
                   return const Text('Erro ao carregar o nome do usuário.');
                 } else {
                   Usuario usuario = snapshot.data ??
-                      Usuario(uid: '', nivel: '', empresa: '', nome: '');
+                      Usuario(
+                        uid: '',
+                        nivel: '',
+                        empresa: '',
+                        nome: '',
+                        usuario: '',
+                        email: '',
+                        status: '',
+                        dataCriacao: '',
+                        dataAcesso: '',
+                        primeiroAcesso: false,
+                        redefinirSenha: false,
+                      );
 
                   int nivelUsuario = int.tryParse(usuario.nivel) ?? 0;
-                  String nome = usuario.nome;
+                  String user = usuario.usuario;
 
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Bem-vindo,\n$nome!',
+                        'Bem-vindo,\n$user!',
                         textAlign: TextAlign.center,
                         style: const TextStyle(fontSize: 24),
                       ),
