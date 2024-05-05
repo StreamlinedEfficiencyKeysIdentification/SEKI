@@ -10,7 +10,7 @@ import 'views/activites/register_page.dart';
 import 'views/activites/home_page.dart';
 import 'views/activites/alterar_senha.dart';
 import 'views/activites/checagem_page.dart';
-import 'barcode/scan_code.dart';
+import 'views/activites/scan_code.dart';
 import 'views/activites/setor_page.dart';
 
 late final FirebaseApp app;
