@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:testeseki/barcode/found_code.dart';
@@ -17,6 +15,7 @@ class _ScanCodePageState extends State<ScanCodePage> {
     torchEnabled: false,
     useNewCameraSelector: true,
     detectionSpeed: DetectionSpeed.normal,
+    detectionTimeoutMs: 1000,
   );
   bool _screenOpened = false;
 
@@ -24,8 +23,6 @@ class _ScanCodePageState extends State<ScanCodePage> {
   void initState() {
     super.initState();
     _screenWasClosed();
-
-    unawaited(cameraController.start());
   }
 
   @override
@@ -52,6 +49,7 @@ class _ScanCodePageState extends State<ScanCodePage> {
                 color: Colors.blue,
               ),
               onPressed: () {
+                cameraController.dispose();
                 Navigator.pushNamed(context, '/');
               },
             ),
