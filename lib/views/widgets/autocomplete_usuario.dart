@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:testeseki/models/usuario_model.dart';
-import '../controllers/usuario_controller.dart';
+import '../../controllers/usuario_controller.dart';
 
 class AutocompleteUsuarioExample extends StatelessWidget {
   final void Function(String) onUsuarioSelected;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../controllers/usuario_controller.dart';
-import '../models/usuario_model.dart';
+import '../../controllers/usuario_controller.dart';
+import '../../models/usuario_model.dart';
 
 class ComboBoxEmpresa extends StatefulWidget {
   final void Function(String) onEmpresaSelected;
@@ -42,10 +42,7 @@ class ComboBoxEmpresaState extends State<ComboBoxEmpresa> {
         if (usuario.nivel == '2') {
           empresasQuery = empresasQuery
               .where('EmpresaPai', isEqualTo: usuario.empresa)
-              .where(FieldPath.documentId, isNotEqualTo: usuario.empresa);
-        } else if (usuario.nivel == '3') {
-          empresasQuery = empresasQuery.where(FieldPath.documentId,
-              isEqualTo: usuario.empresa);
+              .where(FieldPath.documentId, isEqualTo: usuario.empresa);
         }
 
         return StreamBuilder<QuerySnapshot>(

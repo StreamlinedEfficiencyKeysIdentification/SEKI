@@ -3,13 +3,13 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'controllers/equipamento_controller.dart';
-import 'controllers/usuario_controller.dart';
-import 'models/usuario_model.dart';
-import 'barcode/view_code.dart';
-import 'views/autocomplete_usuario.dart';
-import 'views/combo_box_empresa.dart';
-import 'views/combo_box_setor.dart';
+import '../../controllers/equipamento_controller.dart';
+import '../../controllers/usuario_controller.dart';
+import '../../models/usuario_model.dart';
+import '../../barcode/view_code.dart';
+import '../widgets/autocomplete_usuario.dart';
+import '../widgets/combo_box_empresa.dart';
+import '../widgets/combo_box_setor.dart';
 
 class HardwarePage extends StatefulWidget {
   const HardwarePage({super.key});

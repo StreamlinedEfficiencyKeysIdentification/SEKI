@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../controllers/usuario_controller.dart';
-import 'models/usuario_model.dart';
+import '../../../controllers/usuario_controller.dart';
+import '../../models/usuario_model.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

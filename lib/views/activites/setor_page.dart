@@ -3,7 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import 'views/combo_box_empresa_setor.dart';
+import '../widgets/combo_box_empresa_setor.dart';
 
 class SetorPage extends StatefulWidget {
   const SetorPage({super.key});

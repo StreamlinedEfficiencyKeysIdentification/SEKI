@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../controllers/usuario_controller.dart';
-import '../models/usuario_model.dart';
+import '../../controllers/usuario_controller.dart';
+import '../../models/usuario_model.dart';
 
 class ComboBoxNivelAcesso extends StatefulWidget {
   final void Function(String) onNivelSelected;
