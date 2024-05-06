@@ -3,10 +3,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import '../widgets/combo_box_empresa_setor.dart';
+import '../../models/empresa_model.dart';
 
 class SetorPage extends StatefulWidget {
-  const SetorPage({super.key});
+  final Empresa empresa;
+
+  const SetorPage({
+    super.key,
+    required this.empresa,
+  });
 
   @override
   SetorPageState createState() => SetorPageState();
@@ -17,15 +22,17 @@ class SetorPageState extends State<SetorPage> {
   int listLength = 1;
   late List<bool> _selected;
   bool _selectAll = false;
-  late List<TextEditingController> _controllers;
-  String _empresaSelecionada = '';
+  late List<TextEditingController> _controllers = [];
   bool _saving = false;
+  late List<String> _existingSetores = [];
 
   @override
   void initState() {
     super.initState();
     initializeSelection();
     _initializeControllers();
+    _loadExistingSetores();
+    _getExistingSetores();
   }
 
   void initializeSelection() {
@@ -47,15 +54,68 @@ class SetorPageState extends State<SetorPage> {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Função para salvar os dados no Firestore
-  Future<void> _saveDataToFirestore(
-      String empresa, List<String> setores) async {
+  Future<void> _getExistingSetores() async {
+    final QuerySnapshot<Map<String, dynamic>> setoresSnapshot =
+        await FirebaseFirestore.instance
+            .collection('Setor')
+            .where('IDempresa', isEqualTo: widget.empresa.id)
+            .get();
+
+    setState(() {
+      _existingSetores = setoresSnapshot.docs
+          .map((doc) => doc['Descricao'] as String)
+          .toList();
+    });
+  }
+
+  // Carregar setores existentes da empresa do Firestore
+  Future<void> _loadExistingSetores() async {
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+        .collection('Setor')
+        .where('IDempresa', isEqualTo: widget.empresa.id)
+        .get();
+
+    // Extrair os setores da consulta
+    _existingSetores =
+        querySnapshot.docs.map((doc) => doc['Descricao'] as String).toList();
+
+    // Se houver setores existentes, atualize os controladores
+    if (_existingSetores.isNotEmpty) {
+      setState(() {
+        _controllers = _existingSetores
+            .map((setor) => TextEditingController(text: setor))
+            .toList();
+        listLength = _existingSetores.length;
+        _selected = List<bool>.generate(listLength, (_) => false);
+      });
+    }
+  }
+
+  // Restaurar os controladores para os valores originais
+  // Restaurar os controladores para os valores originais
+  void _restoreControllers() {
+    // Limpar os controladores existentes
+    _controllers.clear();
+
+    // Se houver setores existentes, recuperá-los da coleção separada
+    if (_existingSetores.isNotEmpty) {
+      _controllers = _existingSetores
+          .map((setor) => TextEditingController(text: setor))
+          .toList();
+    }
+
+    // Atualizar o comprimento da lista e as seleções
+    listLength = _controllers.length;
+    _selected = List<bool>.generate(listLength, (_) => false);
+  }
+
+  Future<void> _saveDataToFirestore(List<String> setores) async {
     setState(() {
       _saving = true;
     });
 
     try {
-      if (empresa.isEmpty || setores.isEmpty) {
+      if (widget.empresa.id.isEmpty || setores.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Campos vazios. Nenhum dado foi salvo.'),
@@ -68,46 +128,80 @@ class SetorPageState extends State<SetorPage> {
         return;
       }
 
-      // Obter o ID do último documento na coleção 'Setor'
-      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
-          .collection('Setor')
-          .orderBy(FieldPath.documentId, descending: true)
-          .limit(1)
-          .get();
+      // Obter os setores existentes da empresa atual
+      final QuerySnapshot<Map<String, dynamic>> existingSetoresSnapshot =
+          await FirebaseFirestore.instance
+              .collection('Setor')
+              .where('IDempresa', isEqualTo: widget.empresa.id)
+              .get();
 
-      // Verificar se há documentos na coleção
-      int ultimoID = 0;
-      if (querySnapshot.docs.isNotEmpty) {
-        ultimoID = int.parse(querySnapshot.docs.first.id);
+      final List<String> existingSetores = existingSetoresSnapshot.docs
+          .map((doc) => doc['Descricao'].toString())
+          .toList();
+
+      // Salvar novos setores
+      for (final setor in setores) {
+        if (!existingSetores.contains(setor)) {
+          await FirebaseFirestore.instance.collection('Setor').add({
+            'IDempresa': widget.empresa.id,
+            'Descricao': setor,
+          });
+        }
       }
 
-      // Incrementar o ID para o próximo documento
-      int proximoID = ultimoID + 1;
+      // Atualizar setores existentes
+      for (final setor in existingSetores) {
+        if (!setores.contains(setor)) {
+          final QuerySnapshot<Map<String, dynamic>> setorSnapshot =
+              await FirebaseFirestore.instance
+                  .collection('Setor')
+                  .where('IDempresa', isEqualTo: widget.empresa.id)
+                  .where('Descricao', isEqualTo: setor)
+                  .get();
 
-      // Salvar cada setor em um documento separado
-      for (String setorValor in setores) {
-        await _firestore.collection('Setor').doc(proximoID.toString()).set({
-          'IDempresa': empresa,
-          'Descricao': setorValor,
-        });
-
-        proximoID++;
+          final docId = setorSnapshot.docs.first.id;
+          await FirebaseFirestore.instance
+              .collection('Setor')
+              .doc(docId)
+              .update({'Descricao': setor});
+        }
       }
 
-      // Buscar a RazaoSocial da empresa com base no ID
-      DocumentSnapshot empresaSnapshot =
-          await _firestore.collection('Empresa').doc(empresa).get();
-      String razaoSocial = empresaSnapshot['RazaoSocial'];
+      // Excluir setores removidos
+      for (final setor in existingSetores) {
+        if (!setores.contains(setor)) {
+          final QuerySnapshot<Map<String, dynamic>> setorSnapshot =
+              await FirebaseFirestore.instance
+                  .collection('Setor')
+                  .where('IDempresa', isEqualTo: widget.empresa.id)
+                  .where('Descricao', isEqualTo: setor)
+                  .get();
+
+          final docId = setorSnapshot.docs.first.id;
+          await FirebaseFirestore.instance
+              .collection('Setor')
+              .doc(docId)
+              .delete();
+        }
+      }
+
+      // Atualizar a lista de setores na tela
+      setState(() {
+        _existingSetores = setores;
+      });
+
+      // Exibir uma mensagem de sucesso ou atualizar a interface do usuário, se necessário
+      setState(() {
+        _saving = false;
+      });
+
+      String razaoSocial = widget.empresa.razaoSocial;
 
       String mensagem =
           'Você adicionou os seguintes setores na empresa $razaoSocial:\n\n';
       for (int i = 0; i < setores.length; i++) {
         mensagem += '- ${setores[i]}\n';
       }
-
-      setState(() {
-        _saving = false;
-      });
 
       showDialog(
         context: context,
@@ -155,17 +249,6 @@ class SetorPageState extends State<SetorPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: ComboBoxEmpresa(
-              onEmpresaSelected: (empresa) {
-                setState(() {
-                  _empresaSelecionada =
-                      empresa; // Atualizar o estado do campo 'IDempresa'
-                });
-              },
-            ),
-          ),
           const SizedBox(height: 10),
           SizedBox(
             height: 50,
@@ -242,12 +325,11 @@ class SetorPageState extends State<SetorPage> {
             onPressed: _saving
                 ? null
                 : () {
-                    String empresa = _empresaSelecionada;
                     List<String> setores = _controllers
                         .map((controller) => controller.text)
                         .where((value) => value.isNotEmpty)
                         .toList();
-                    _saveDataToFirestore(empresa, setores);
+                    _saveDataToFirestore(setores);
                   },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
@@ -272,6 +354,28 @@ class SetorPageState extends State<SetorPage> {
                     ),
                   ),
           ),
+          if (!_saving && _existingSetores.isNotEmpty)
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _restoreControllers();
+                });
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text(
+                'Cancelar',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
           const SizedBox(height: 50),
         ],
       ),
