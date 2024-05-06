@@ -35,97 +35,165 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            FutureBuilder<Usuario>(
-              future: UsuarioController.getUsuarioLogado(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  return const Text('Erro ao carregar o nome do usuário.');
-                } else {
-                  Usuario usuario = snapshot.data ??
-                      Usuario(
-                        uid: '',
-                        nivel: '',
-                        empresa: '',
-                        nome: '',
-                        usuario: '',
-                        email: '',
-                        status: '',
-                        dataCriacao: '',
-                        dataAcesso: '',
-                        primeiroAcesso: false,
-                        redefinirSenha: false,
-                      );
+      body: Stack(
+        children: [
+          Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FutureBuilder<Usuario>(
+                    future: UsuarioController.getUsuarioLogado(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return const Text(
+                            'Erro ao carregar o nome do usuário.');
+                      } else {
+                        Usuario usuario = snapshot.data ??
+                            Usuario(
+                              uid: '',
+                              nivel: '',
+                              empresa: '',
+                              nome: '',
+                              usuario: '',
+                              email: '',
+                              status: '',
+                              criador: '',
+                              dataCriacao: '',
+                              dataAcesso: '',
+                              primeiroAcesso: false,
+                              redefinirSenha: false,
+                            );
 
-                  int nivelUsuario = int.tryParse(usuario.nivel) ?? 0;
-                  String user = usuario.usuario;
+                        int nivelUsuario = int.tryParse(usuario.nivel) ?? 0;
+                        String user = usuario.usuario;
 
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Bem-vindo,\n$user!',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 24),
-                      ),
-                      const SizedBox(height: 20),
-                      Visibility(
-                        visible: nivelUsuario <= 4,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/scan');
-                          },
-                          child: const Text('Ler QR Code'),
-                        ),
-                      ),
-                      Visibility(
-                        visible: nivelUsuario <= 2,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/setor');
-                          },
-                          child: const Text('Registrar Novo Setor'),
-                        ),
-                      ),
-                      Visibility(
-                        visible: nivelUsuario <= 2,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/group');
-                          },
-                          child: const Text('Registrar Nova Empresa'),
-                        ),
-                      ),
-                      Visibility(
-                        visible: nivelUsuario <= 3,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/register');
-                          },
-                          child: const Text('Registrar Novo Usuário'),
-                        ),
-                      ),
-                      Visibility(
-                        visible: nivelUsuario <= 3,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/hardware');
-                          },
-                          child: const Text('Registrar Novo Equipamento'),
-                        ),
-                      ),
-                    ],
-                  );
-                }
-              },
+                        return Stack(
+                          children: [
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Bem-vindo,\n$user!',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(fontSize: 24),
+                                ),
+                                const SizedBox(height: 20),
+                                Visibility(
+                                  visible: nivelUsuario <= 2,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Text('Empresa'),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.pushNamed(
+                                              context, '/view_empresas');
+                                        },
+                                        child: const Icon(
+                                          Icons.remove_red_eye_outlined,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.pushNamed(
+                                              context, '/group');
+                                        },
+                                        child: const Icon(
+                                          Icons.add,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Visibility(
+                                  visible: nivelUsuario <= 3,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Text('Usuários'),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          // Adicione a lógica para o botão de adicionar aqui
+                                        },
+                                        child: const Icon(
+                                          Icons.remove_red_eye_outlined,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.pushNamed(
+                                              context, '/register');
+                                        },
+                                        child: const Icon(
+                                          Icons.add,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Visibility(
+                                  visible: nivelUsuario <= 3,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Text('Equipamento'),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          // Adicione a lógica para o botão de adicionar aqui
+                                        },
+                                        child: const Icon(
+                                            Icons.remove_red_eye_outlined),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.pushNamed(
+                                              context, '/hardware');
+                                        },
+                                        child: const Icon(
+                                          Icons.add,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
+          ),
+          Positioned(
+            bottom: 10,
+            right: 10,
+            child: Visibility(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/scan');
+                },
+                style: ElevatedButton.styleFrom(
+                  shape: const CircleBorder(),
+                  padding: const EdgeInsets.all(20),
+                  backgroundColor: Colors.lightBlueAccent,
+                ),
+                child: const Icon(
+                  Icons.qr_code_scanner_outlined,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
