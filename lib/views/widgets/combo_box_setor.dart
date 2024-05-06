@@ -32,6 +32,7 @@ class ComboBoxSetorState extends State<ComboBoxSetor> {
               usuario: '',
               email: '',
               status: '',
+              criador: '',
               dataCriacao: '',
               dataAcesso: '',
               primeiroAcesso: false,

@@ -25,6 +25,7 @@ class AutocompleteUsuarioExample extends StatelessWidget {
               usuario: '',
               email: '',
               status: '',
+              criador: '',
               dataCriacao: '',
               dataAcesso: '',
               primeiroAcesso: false,

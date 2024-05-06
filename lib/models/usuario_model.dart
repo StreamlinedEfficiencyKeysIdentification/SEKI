@@ -6,6 +6,7 @@ class Usuario {
   final String usuario;
   final String email;
   final String status;
+  final String criador;
   final String dataCriacao;
   final String dataAcesso;
   final bool primeiroAcesso;
@@ -19,6 +20,7 @@ class Usuario {
     required this.usuario,
     required this.email,
     required this.status,
+    required this.criador,
     required this.dataCriacao,
     required this.dataAcesso,
     required this.primeiroAcesso,

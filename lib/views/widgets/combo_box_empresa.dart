@@ -32,6 +32,7 @@ class ComboBoxEmpresaState extends State<ComboBoxEmpresa> {
               usuario: '',
               email: '',
               status: '',
+              criador: '',
               dataCriacao: '',
               dataAcesso: '',
               primeiroAcesso: false,
