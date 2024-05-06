@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../controllers/usuario_controller.dart';
-import 'models/usuario_model.dart';
+import '../../../controllers/usuario_controller.dart';
+import '../../models/usuario_model.dart';
 
 class GroupPage extends StatefulWidget {
   const GroupPage({super.key});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../controllers/usuario_controller.dart';
-import '../models/usuario_model.dart';
+import '../../controllers/usuario_controller.dart';
+import '../../models/usuario_model.dart';
 
 class ComboBoxEmpresa extends StatefulWidget {
   final void Function(String) onEmpresaSelected;
@@ -23,8 +23,21 @@ class ComboBoxEmpresaState extends State<ComboBoxEmpresa> {
     return FutureBuilder<Usuario>(
       future: UsuarioController.getUsuarioLogado(),
       builder: (context, snapshot) {
-        Usuario usuario =
-            snapshot.data ?? Usuario(uid: '', nivel: '', empresa: '');
+        Usuario usuario = snapshot.data ??
+            Usuario(
+              uid: '',
+              nivel: '',
+              empresa: '',
+              nome: '',
+              usuario: '',
+              email: '',
+              status: '',
+              criador: '',
+              dataCriacao: '',
+              dataAcesso: '',
+              primeiroAcesso: false,
+              redefinirSenha: false,
+            );
 
         Query empresasQuery = FirebaseFirestore.instance.collection('Empresa');
         if (usuario.nivel == '2') {

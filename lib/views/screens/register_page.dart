@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
-import '../controllers/usuario_controller.dart';
-import 'models/usuario_model.dart';
-import 'utils/password_generator.dart';
-import 'views/combo_box_empresa.dart';
-import 'views/combo_box_nivel_acesso.dart';
+import '../../../controllers/usuario_controller.dart';
+import '../../models/usuario_model.dart';
+import '../../utils/password_generator.dart';
+import '../widgets/combo_box_empresa.dart';
+import '../widgets/combo_box_nivel_acesso.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -23,6 +23,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String _nivelSelecionado = '';
   bool _switchValue = false;
 
+  final TextEditingController _usuarioController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nomeController = TextEditingController();
 
@@ -37,6 +38,10 @@ class _RegisterPageState extends State<RegisterPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('Register Page'),
+            TextFormField(
+              controller: _usuarioController,
+              decoration: const InputDecoration(labelText: 'Usuario'),
+            ),
             TextFormField(
               controller: _emailController,
               decoration: const InputDecoration(labelText: 'Email'),
@@ -83,10 +88,12 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             ElevatedButton(
               onPressed: () {
+                String user = _usuarioController.text.trim();
                 String email = _emailController.text.trim();
                 String nome = _nomeController.text.trim();
 
-                if (email.isEmpty ||
+                if (user.isEmpty ||
+                    email.isEmpty ||
                     nome.isEmpty ||
                     _empresaSelecionada.isEmpty ||
                     _nivelSelecionado.isEmpty) {
@@ -140,6 +147,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void _register(BuildContext context, String empresaSelecionadaId,
       String nivelSelecionado) async {
+    String user = _usuarioController.text.trim();
     String email = _emailController.text.trim();
     String password = generateRandomPassword();
     String nome = _nomeController.text.trim();
@@ -159,22 +167,18 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     try {
-      // Registrar usuário no Firebase Authentication
       UserCredential userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      // Obter o UID do usuário registrado
       String uid = userCredential.user!.uid;
 
-      // Agora você pode usar o UID para associar documentos no Firestore
-      // Por exemplo, você pode criar um documento na coleção 'users' com o UID como identificador
       await FirebaseFirestore.instance.collection('Usuarios').doc(uid).set({
+        'Usuario': user,
         'Email': email,
-        'IDempresa':
-            empresaSelecionadaId, // Armazenar a empresa selecionada como IDempresa
+        'IDempresa': empresaSelecionadaId,
         'IDnivel': nivelSelecionado,
         'Nome': nome,
         'Status': status,
@@ -186,7 +190,8 @@ class _RegisterPageState extends State<RegisterPage> {
           .doc(uid)
           .set({
         'PrimeiroAcesso': true,
-        'QuemCriou': usuario.uid, // Armazenar o UID do usuário que criou
+        'QuemCriou': usuario.uid,
+        'DataCriacao': FieldValue.serverTimestamp(),
         // Outros campos...
       });
 
@@ -198,7 +203,6 @@ class _RegisterPageState extends State<RegisterPage> {
         message: message,
       );
 
-      // Mostra a mensagem de erro na tela
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Usuário registrado com sucesso!'),
@@ -206,10 +210,9 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       );
     } catch (e) {
-      // Trate os erros de autenticação
       String errorMessage = '';
 
-      // Mensagens de erro específicas podem ser tratadas aqui
+      // Mensagens de erros específicos
       if (e is FirebaseAuthException) {
         switch (e.code) {
           case 'invalid-email':
@@ -218,7 +221,6 @@ class _RegisterPageState extends State<RegisterPage> {
           case 'email-already-in-use':
             errorMessage = 'O e-mail já está sendo usado por outra conta.';
             break;
-          // Adicione mais casos conforme necessário para outros erros
           default:
             errorMessage = 'Erro ao registrar usuário (E-mail).';
         }
@@ -226,7 +228,6 @@ class _RegisterPageState extends State<RegisterPage> {
         errorMessage = 'Erro ao fazer login.';
       }
 
-      // Mostra a mensagem de erro na tela
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(errorMessage),
