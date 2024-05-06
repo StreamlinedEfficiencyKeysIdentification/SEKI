@@ -11,7 +11,7 @@ import 'views/activites/home_page.dart';
 import 'views/activites/alterar_senha.dart';
 import 'views/activites/checagem_page.dart';
 import 'views/activites/scan_code.dart';
-import 'views/activites/setor_page.dart';
+import 'views/activites/visualizar_empresas.dart';
 
 late final FirebaseApp app;
 late final FirebaseAuth auth;
@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomePage(),
         '/hardware': (context) => const HardwarePage(),
         '/group': (context) => const GroupPage(),
-        '/setor': (context) => const SetorPage(),
+        '/view_empresas': (context) => const VisualizarEmpresas(),
         '/scan': (context) => const ScanCodePage(),
       },
     );
