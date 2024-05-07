@@ -5,7 +5,7 @@ import 'home_page.dart';
 import 'login_page.dart';
 
 class ChecagemPage extends StatefulWidget {
-  const ChecagemPage({Key? key}) : super(key: key);
+  const ChecagemPage({super.key});
 
   @override
   State<ChecagemPage> createState() => ChecagemPageState();
@@ -27,7 +27,7 @@ class ChecagemPageState extends State<ChecagemPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => HomePage(),
+            builder: (context) => const HomePage(),
           ),
         );
       }
@@ -36,7 +36,7 @@ class ChecagemPageState extends State<ChecagemPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Center(
         child: CircularProgressIndicator(),
       ),
