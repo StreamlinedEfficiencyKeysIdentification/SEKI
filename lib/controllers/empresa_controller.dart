@@ -5,6 +5,20 @@ import '../models/usuario_model.dart';
 import 'usuario_controller.dart';
 
 class EmpresaController {
+  static Future<Empresa> getEmpresa(String id) async {
+    final empresaSnapshot =
+        await FirebaseFirestore.instance.collection('Empresa').doc(id).get();
+
+    return Empresa(
+      id: empresaSnapshot.id,
+      cnpj: empresaSnapshot['CNPJ'],
+      matriz: empresaSnapshot['EmpresaPai'],
+      razaoSocial: empresaSnapshot['RazaoSocial'],
+      criador: empresaSnapshot['QuemCriou'],
+      status: empresaSnapshot['Status'],
+    );
+  }
+
   static Future<List<Empresa>> getEmpresas() async {
     Usuario usuario = await UsuarioController.getUsuarioLogado();
 
