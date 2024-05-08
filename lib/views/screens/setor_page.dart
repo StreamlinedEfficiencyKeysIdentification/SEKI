@@ -32,7 +32,6 @@ class SetorPageState extends State<SetorPage> {
     initializeSelection();
     _initializeControllers();
     _loadExistingSetores();
-    _getExistingSetores();
   }
 
   void initializeSelection() {
@@ -53,20 +52,6 @@ class SetorPageState extends State<SetorPage> {
   }
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  Future<void> _getExistingSetores() async {
-    final QuerySnapshot<Map<String, dynamic>> setoresSnapshot =
-        await FirebaseFirestore.instance
-            .collection('Setor')
-            .where('IDempresa', isEqualTo: widget.empresa.id)
-            .get();
-
-    setState(() {
-      _existingSetores = setoresSnapshot.docs
-          .map((doc) => doc['Descricao'] as String)
-          .toList();
-    });
-  }
 
   // Carregar setores existentes da empresa do Firestore
   Future<void> _loadExistingSetores() async {
@@ -92,7 +77,6 @@ class SetorPageState extends State<SetorPage> {
   }
 
   // Restaurar os controladores para os valores originais
-  // Restaurar os controladores para os valores originais
   void _restoreControllers() {
     // Limpar os controladores existentes
     _controllers.clear();
@@ -109,6 +93,28 @@ class SetorPageState extends State<SetorPage> {
     _selected = List<bool>.generate(listLength, (_) => false);
   }
 
+  bool _compareSetores(
+      List<String> currentSetores, List<String> originalSetores) {
+    // Se o número de setores for diferente, houve alterações
+    if (currentSetores.length != originalSetores.length) {
+      return true;
+    }
+
+    // Ordenar as listas para garantir uma comparação precisa
+    currentSetores.sort();
+    originalSetores.sort();
+
+    // Comparar os setores um por um
+    for (int i = 0; i < currentSetores.length; i++) {
+      if (currentSetores[i] != originalSetores[i]) {
+        return true;
+      }
+    }
+
+    // Se nenhum setor foi diferente, não houve alterações
+    return false;
+  }
+
   Future<void> _saveDataToFirestore(List<String> setores) async {
     setState(() {
       _saving = true;
@@ -119,6 +125,21 @@ class SetorPageState extends State<SetorPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Campos vazios. Nenhum dado foi salvo.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        setState(() {
+          _saving = false;
+        });
+        return;
+      }
+
+      bool hasChanges = _compareSetores(setores, _existingSetores);
+
+      if (!hasChanges) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Não houve alterações. Nenhum dado foi salvo.'),
             backgroundColor: Colors.red,
           ),
         );
