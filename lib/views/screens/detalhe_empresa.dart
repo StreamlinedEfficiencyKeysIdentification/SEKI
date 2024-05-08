@@ -1,13 +1,19 @@
+// ignore_for_file: use_build_context_synchronously, avoid_print
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import '../../controllers/empresa_controller.dart';
 import '../../models/empresa_model.dart';
 import 'setor_page.dart';
 
 class DetalhesEmpresaPage extends StatefulWidget {
-  final Empresa empresa;
+  final String empresaID;
+  final bool setorVisibility;
 
   const DetalhesEmpresaPage({
     super.key,
-    required this.empresa,
+    required this.empresaID,
+    required this.setorVisibility,
   });
 
   @override
@@ -15,23 +21,87 @@ class DetalhesEmpresaPage extends StatefulWidget {
 }
 
 class DetalhesEmpresaPageState extends State<DetalhesEmpresaPage> {
-  // Variáveis para armazenar o estado dos campos editáveis
-  late String _razaoSocial;
-  late String _cnpj;
-  late String _matriz;
-  late String _criador;
-  late String _status;
+  late Empresa _empresa = Empresa(
+    id: '',
+    cnpj: '',
+    matriz: '',
+    razaoSocial: '',
+    criador: '',
+    status: '',
+  );
+  late String _razaoSocial = '';
+  late String _cnpj = '';
+  late String _matriz = '';
+  late String _criador = '';
+  bool _status = true;
 
   @override
   void initState() {
     super.initState();
-    // Inicialize os campos editáveis com os valores da empresa
-    _razaoSocial = widget.empresa.razaoSocial;
-    _cnpj = widget.empresa.cnpj;
-    _matriz = widget.empresa.matriz;
-    _criador = widget.empresa.criador;
-    _status = widget.empresa.status;
+    _fetchEmpresa();
   }
+
+  void _fetchEmpresa() async {
+    try {
+      // Use o método estático da classe EmpresaController para buscar a empresa
+      Empresa empresa = await EmpresaController.getEmpresa(widget.empresaID);
+      setState(() {
+        _empresa = empresa;
+        initializeFields();
+
+        fetchMatriz();
+        fetchCriador();
+      });
+    } catch (e) {
+      // Trate qualquer erro que possa ocorrer durante a busca da empresa
+      print('Erro ao buscar empresa: $e');
+    }
+  }
+
+  void initializeFields() {
+    _razaoSocial = _empresa.razaoSocial;
+    _cnpj = _empresa.cnpj;
+    _status = _empresa.status == 'Ativo';
+
+    razaoSocialController.text = _razaoSocial;
+    cnpjController.text = _cnpj;
+  }
+
+  void fetchMatriz() async {
+    DocumentSnapshot empresaSnapshot = await FirebaseFirestore.instance
+        .collection('Empresa')
+        .doc(_empresa.matriz)
+        .get();
+    if (empresaSnapshot.exists) {
+      setState(() {
+        _matriz = empresaSnapshot['RazaoSocial'];
+      });
+    }
+  }
+
+  void fetchCriador() async {
+    DocumentSnapshot usuarioSnapshot = await FirebaseFirestore.instance
+        .collection('Usuarios')
+        .doc(_empresa.criador)
+        .get();
+    if (usuarioSnapshot.exists) {
+      setState(() {
+        _criador = usuarioSnapshot['Usuario'];
+      });
+    }
+  }
+
+  final TextEditingController razaoSocialController = TextEditingController();
+  final TextEditingController cnpjController = TextEditingController();
+  final MaterialStateProperty<Icon?> thumbIcon =
+      MaterialStateProperty.resolveWith<Icon?>(
+    (Set<MaterialState> states) {
+      if (states.contains(MaterialState.selected)) {
+        return const Icon(Icons.check);
+      }
+      return const Icon(Icons.close);
+    },
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -44,12 +114,12 @@ class DetalhesEmpresaPageState extends State<DetalhesEmpresaPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Campo 'Razão Social' da empresa
-            Text(
-              'Razão Social: $_razaoSocial',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+            SizedBox(
+              child: _buildEditableField(
+                'Razão Social',
+                _razaoSocial,
+                razaoSocialController,
+                (value) => setState(() => _razaoSocial = value),
               ),
             ),
             const SizedBox(height: 16.0), // Espaçamento
@@ -58,38 +128,94 @@ class DetalhesEmpresaPageState extends State<DetalhesEmpresaPage> {
             _buildEditableField(
               'CNPJ',
               _cnpj,
+              cnpjController,
               (value) => setState(() => _cnpj = value),
             ),
-            _buildEditableField(
-              'Matriz',
-              _matriz,
-              (value) => setState(() => _matriz = value),
+            Text(
+              'Matriz: $_matriz',
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            _buildEditableField(
-              'Criador',
-              _criador,
-              (value) => setState(() => _criador = value),
+            Text(
+              'Criador: $_criador',
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            _buildEditableField(
-              'Status',
-              _status,
-              (value) => setState(() => _status = value),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Navegue para a página de setores quando o usuário quiser editar os setores
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SetorPage(empresa: widget.empresa),
-                  ),
-                );
+            Switch(
+              thumbIcon: thumbIcon,
+              value: _status,
+              onChanged: (value) {
+                setState(() {
+                  _status = !_status;
+                });
               },
-              child: const Text('Editar Setores'),
             ),
+            Row(
+              children: [
+                if (widget.setorVisibility)
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_isDataChanged()) {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Descartar Alterações?'),
+                              content: const Text(
+                                  'Tem certeza que deseja descartar as alterações e sair?'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    // Resetar os campos para os valores originais
+                                    setState(() {
+                                      // Resetar os campos para os valores originais
+                                      initializeFields();
+                                    });
+                                    Navigator.pop(
+                                        context); // Fechar o AlertDialog
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            SetorPage(empresa: _empresa),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text('Sim'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(
+                                        context); // Fechar o AlertDialog
+                                  },
+                                  child: const Text('Não'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SetorPage(empresa: _empresa),
+                          ),
+                        );
+                      }
+                    },
+                    child: const Text('Editar Setores'),
+                  ),
 
-            // Botão Salvar (visível apenas se houver alterações)
-            if (_isDataChanged()) _buildSaveButton(),
+                // Botão Salvar (visível apenas se houver alterações)
+                if (_isDataChanged()) _buildSaveButton(),
+                if (_isDataChanged()) _buildCancelButton(),
+              ],
+            ),
           ],
         ),
       ),
@@ -97,10 +223,10 @@ class DetalhesEmpresaPageState extends State<DetalhesEmpresaPage> {
   }
 
   // Constrói um campo de texto editável
-  Widget _buildEditableField(
-      String label, String value, ValueChanged<String> onChanged) {
+  Widget _buildEditableField(String label, String value,
+      TextEditingController controller, ValueChanged<String> onChanged) {
     return TextFormField(
-      initialValue: value,
+      controller: controller,
       decoration: InputDecoration(labelText: label),
       onChanged: onChanged,
     );
@@ -108,21 +234,61 @@ class DetalhesEmpresaPageState extends State<DetalhesEmpresaPage> {
 
   // Verifica se houve alterações nos dados
   bool _isDataChanged() {
-    return _razaoSocial != widget.empresa.razaoSocial ||
-        _cnpj != widget.empresa.cnpj ||
-        _matriz != widget.empresa.matriz ||
-        _criador != widget.empresa.criador ||
-        _status != widget.empresa.status;
+    String razaoSocial = razaoSocialController.text.trim();
+    String cnpj = cnpjController.text.trim();
+    return razaoSocial != _empresa.razaoSocial ||
+        cnpj != _empresa.cnpj ||
+        _status != (_empresa.status == 'Ativo');
   }
 
   // Constrói o botão "Salvar"
   Widget _buildSaveButton() {
+    String status = _status ? 'Ativo' : 'Inativo';
     return ElevatedButton(
-      onPressed: () {
-        // Implemente a lógica para salvar as alterações no banco de dados
-        // Você pode chamar uma função no controlador para atualizar os dados
+      onPressed: () async {
+        try {
+          // Atualizar os dados no banco de dados
+          await FirebaseFirestore.instance
+              .collection('Empresa')
+              .doc(_empresa.id)
+              .update({
+            'CNPJ': _cnpj,
+            'Status': status,
+          });
+
+          _fetchEmpresa();
+          // Mostrar uma mensagem de sucesso
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('As informações foram salvas com sucesso.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } catch (e) {
+          print('Erro ao salvar dados: $e');
+        }
       },
       child: const Text('Salvar'),
     );
+  }
+
+  Widget _buildCancelButton() {
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          // Resetar os campos para os valores originais
+          initializeFields();
+        });
+      },
+      child: const Text('Cancelar'),
+    );
+  }
+
+  @override
+  void dispose() {
+    // Limpe os controladores quando a página for descartada
+    razaoSocialController.dispose();
+    cnpjController.dispose();
+    super.dispose();
   }
 }
