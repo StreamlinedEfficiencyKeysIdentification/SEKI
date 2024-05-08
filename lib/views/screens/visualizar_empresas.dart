@@ -84,7 +84,8 @@ class _VisualizarEmpresasState extends State<VisualizarEmpresas> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DetalhesEmpresaPage(empresa: matriz),
+                  builder: (context) => DetalhesEmpresaPage(
+                      empresaID: matriz.id, setorVisibility: true),
                 ),
               );
             },
@@ -118,8 +119,8 @@ class _VisualizarEmpresasState extends State<VisualizarEmpresas> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                DetalhesEmpresaPage(empresa: filial),
+                            builder: (context) => DetalhesEmpresaPage(
+                                empresaID: filial.id, setorVisibility: false),
                           ),
                         );
                       },
@@ -130,8 +131,8 @@ class _VisualizarEmpresasState extends State<VisualizarEmpresas> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          DetalhesEmpresaPage(empresa: filial),
+                      builder: (context) => DetalhesEmpresaPage(
+                          empresaID: filial.id, setorVisibility: false),
                     ),
                   );
                 },
