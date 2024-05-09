@@ -285,6 +285,7 @@ class HardwarePageState extends State<HardwarePage> {
     if (waiting) {
       showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text('Cadastrado com sucesso!'),
@@ -295,9 +296,12 @@ class HardwarePageState extends State<HardwarePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: ((context) {
-                        return QRImage(_qrcodeController);
-                      }),
+                      builder: (context) {
+                        return QRImage(
+                          _qrcodeController.text,
+                          sourceRoute: '/hardware',
+                        );
+                      },
                     ),
                   );
                 },
