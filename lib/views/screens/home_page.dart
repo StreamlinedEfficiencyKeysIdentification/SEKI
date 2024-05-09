@@ -145,7 +145,8 @@ class HomePage extends StatelessWidget {
                                       const Text('Equipamento'),
                                       ElevatedButton(
                                         onPressed: () {
-                                          // Adicione a lógica para o botão de adicionar aqui
+                                          Navigator.pushNamed(
+                                              context, '/view_equipamentos');
                                         },
                                         child: const Icon(
                                             Icons.remove_red_eye_outlined),
