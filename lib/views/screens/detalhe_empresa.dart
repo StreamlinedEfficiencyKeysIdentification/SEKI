@@ -108,6 +108,46 @@ class DetalhesEmpresaPageState extends State<DetalhesEmpresaPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalhes da Empresa'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (_isDataChanged()) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Descartar Alterações?'),
+                    content: const Text(
+                        'Tem certeza que deseja descartar as alterações e sair?'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          // Resetar os campos para os valores originais
+                          setState(() {
+                            // Resetar os campos para os valores originais
+                            initializeFields();
+                          });
+                          Navigator.pop(context); // Fechar o AlertDialog
+                          Navigator.pushNamed(context, '/view_empresas');
+                        },
+                        child: const Text('Sim'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context); // Fechar o AlertDialog
+                        },
+                        child: const Text('Não'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            } else {
+              Navigator.pushNamed(context, '/view_empresas');
+            }
+          },
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
