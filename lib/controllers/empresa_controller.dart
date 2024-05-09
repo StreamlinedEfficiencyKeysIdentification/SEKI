@@ -44,8 +44,8 @@ class EmpresaController {
     } else if (nivelInt == 2) {
       final empresasSnapshot =
           await FirebaseFirestore.instance.collection('Empresa').get();
-      final List<Empresa> empresas = [];
 
+      final List<Empresa> empresas = [];
       for (var doc in empresasSnapshot.docs) {
         final empresa = Empresa(
           id: doc.id,
@@ -56,6 +56,33 @@ class EmpresaController {
           status: doc['Status'],
         );
         if (empresa.matriz == usuario.empresa) {
+          empresas.add(empresa);
+        }
+      }
+
+      return empresas;
+    } else if (nivelInt == 3) {
+      final empresasSnapshot =
+          await FirebaseFirestore.instance.collection('Empresa').get();
+
+      final DocumentSnapshot empresaUserSnapshot = await FirebaseFirestore
+          .instance
+          .collection('Empresa')
+          .doc(usuario.empresa)
+          .get();
+
+      final List<Empresa> empresas = [];
+      for (var doc in empresasSnapshot.docs) {
+        final empresa = Empresa(
+          id: doc.id,
+          cnpj: doc['CNPJ'],
+          matriz: doc['EmpresaPai'],
+          razaoSocial: doc['RazaoSocial'],
+          criador: doc['QuemCriou'],
+          status: doc['Status'],
+        );
+        if (empresa.id == empresaUserSnapshot['EmpresaPai'] ||
+            empresa.id == usuario.empresa) {
           empresas.add(empresa);
         }
       }
