@@ -26,6 +26,12 @@ class _VisualizarEmpresasState extends State<VisualizarEmpresas> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Visualizar Empresas'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushNamed(context, '/home');
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -93,11 +99,16 @@ class _VisualizarEmpresasState extends State<VisualizarEmpresas> {
         ],
       ),
       trailing: !showExpansionArrow
-          ? const SizedBox()
-          : Icon(
-              selectedMap[matriz.id] ?? false
-                  ? Icons.keyboard_arrow_up
-                  : Icons.keyboard_arrow_down,
+          ? const SizedBox(
+              width: 30,
+            )
+          : SizedBox(
+              width: 30,
+              child: Icon(
+                selectedMap[matriz.id] ?? false
+                    ? Icons.keyboard_arrow_up
+                    : Icons.keyboard_arrow_down,
+              ),
             ),
       onExpansionChanged: (value) {
         setState(() {
