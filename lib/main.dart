@@ -12,6 +12,7 @@ import 'views/screens/alterar_senha.dart';
 import 'views/screens/checagem_page.dart';
 import 'views/screens/scan_code.dart';
 import 'views/screens/visualizar_empresas.dart';
+import 'views/screens/visualizar_equipamentos.dart';
 import 'views/screens/visualizar_usuario.dart';
 
 late final FirebaseApp app;
@@ -50,6 +51,7 @@ class MyApp extends StatelessWidget {
             title: ModalRoute.of(context)!.settings.arguments as String),
         '/home': (context) => const HomePage(),
         '/hardware': (context) => const HardwarePage(),
+        '/view_equipamentos': (context) => const VisualizarEquipamentos(),
         '/group': (context) => const GroupPage(),
         '/view_empresas': (context) => const VisualizarEmpresas(),
         '/scan': (context) => const ScanCodePage(),
