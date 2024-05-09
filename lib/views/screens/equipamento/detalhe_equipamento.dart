@@ -2,12 +2,12 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../../barcode/view_code.dart';
-import '../../controllers/equipamento_controller.dart';
-import '../../models/equipamento_model.dart';
-import '../widgets/autocomplete_usuario.dart';
-import '../widgets/combo_box_empresa.dart';
-import '../widgets/combo_box_setor.dart';
+import '../barcode/view_code.dart';
+import '../../../controllers/equipamento_controller.dart';
+import '../../../models/equipamento_model.dart';
+import '../../widgets/autocomplete_usuario.dart';
+import '../../widgets/combo_box_empresa.dart';
+import '../../widgets/combo_box_setor.dart';
 
 class DetalhesEquipamentoPage extends StatefulWidget {
   final String equipamento;

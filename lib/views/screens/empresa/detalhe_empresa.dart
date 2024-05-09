@@ -2,97 +2,79 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../../controllers/usuario_controller.dart';
-import '../../models/usuario_model.dart';
-import '../widgets/combo_box_empresa.dart';
-import '../widgets/combo_box_nivel_acesso.dart';
+import '../../../controllers/empresa_controller.dart';
+import '../../../models/empresa_model.dart';
+import 'setor_page.dart';
 
-class DetalhesUsuarioPage extends StatefulWidget {
-  final String usuario;
+class DetalhesEmpresaPage extends StatefulWidget {
+  final String empresaID;
+  final bool setorVisibility;
 
-  const DetalhesUsuarioPage({super.key, required this.usuario});
+  const DetalhesEmpresaPage({
+    super.key,
+    required this.empresaID,
+    required this.setorVisibility,
+  });
 
   @override
-  DetalhesUsuarioPageState createState() => DetalhesUsuarioPageState();
+  DetalhesEmpresaPageState createState() => DetalhesEmpresaPageState();
 }
 
-class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
-  late Usuario _usuario = Usuario(
-    uid: '',
-    nivel: '',
-    empresa: '',
-    nome: '',
-    usuario: '',
-    email: '',
-    status: '',
+class DetalhesEmpresaPageState extends State<DetalhesEmpresaPage> {
+  late Empresa _empresa = Empresa(
+    id: '',
+    cnpj: '',
+    matriz: '',
+    razaoSocial: '',
     criador: '',
-    dataCriacao: '',
-    dataAcesso: '',
-    primeiroAcesso: false,
-    redefinirSenha: false,
+    status: '',
   );
-  // Variáveis para armazenar o estado dos campos editáveis
-  late String _nome = '';
-  late String _email = '';
-  late String _empresa = '';
-  late String _nivel = '';
-  bool _status = true;
-  late String _dataAcesso = '';
-  late String _dataCriacao = '';
-  bool _primeiroAcesso = false;
-  bool _redefinirSenha = false;
+  late String _razaoSocial = '';
+  late String _cnpj = '';
+  late String _matriz = '';
   late String _criador = '';
-  String _empresaSelecionada = '';
-  String _nivelSelecionado = '';
+  bool _status = true;
 
   @override
   void initState() {
     super.initState();
-    // Inicialize os campos editáveis com os valores do usuário
-    _fetchUsuario();
+    _fetchEmpresa();
   }
 
-  void _fetchUsuario() async {
+  void _fetchEmpresa() async {
     try {
       // Use o método estático da classe EmpresaController para buscar a empresa
-      Usuario usuario = await UsuarioController.getUsuario(widget.usuario);
+      Empresa empresa = await EmpresaController.getEmpresa(widget.empresaID);
       setState(() {
-        _usuario = usuario;
-
+        _empresa = empresa;
         initializeFields();
-        fetchCriador();
+
         fetchMatriz();
-        fetchNivel();
+        fetchCriador();
       });
     } catch (e) {
       // Trate qualquer erro que possa ocorrer durante a busca da empresa
-      print('Erro ao buscar usuario: $e');
+      print('Erro ao buscar empresa: $e');
     }
   }
 
   void initializeFields() {
-    _nome = _usuario.nome;
-    _status = _usuario.status == 'Ativo';
-    _email = _usuario.email;
-    _dataAcesso = _usuario.dataAcesso;
-    _dataCriacao = _usuario.dataCriacao;
-    _primeiroAcesso = _usuario.primeiroAcesso;
-    _redefinirSenha = _usuario.redefinirSenha;
+    _razaoSocial = _empresa.razaoSocial;
+    _cnpj = _empresa.cnpj;
+    _status = _empresa.status == 'Ativo';
 
-    _empresaSelecionada = _usuario.empresa;
-    _nivelSelecionado = _usuario.nivel;
-
-    nomeController.text = _nome;
+    razaoSocialController.text = _razaoSocial;
+    cnpjController.text = _cnpj;
   }
 
   void fetchMatriz() async {
     DocumentSnapshot empresaSnapshot = await FirebaseFirestore.instance
         .collection('Empresa')
-        .doc(_usuario.empresa)
+        .doc(_empresa.matriz)
         .get();
     if (empresaSnapshot.exists) {
       setState(() {
-        _empresa = empresaSnapshot['RazaoSocial'];
+        _matriz = empresaSnapshot['RazaoSocial'];
       });
     }
   }
@@ -100,7 +82,7 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
   void fetchCriador() async {
     DocumentSnapshot usuarioSnapshot = await FirebaseFirestore.instance
         .collection('Usuarios')
-        .doc(_usuario.criador)
+        .doc(_empresa.criador)
         .get();
     if (usuarioSnapshot.exists) {
       setState(() {
@@ -109,19 +91,8 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
     }
   }
 
-  void fetchNivel() async {
-    DocumentSnapshot nivelSnapshot = await FirebaseFirestore.instance
-        .collection('Nivel')
-        .doc(_usuario.nivel)
-        .get();
-    if (nivelSnapshot.exists) {
-      setState(() {
-        _nivel = nivelSnapshot['Descricao'];
-      });
-    }
-  }
-
-  final TextEditingController nomeController = TextEditingController();
+  final TextEditingController razaoSocialController = TextEditingController();
+  final TextEditingController cnpjController = TextEditingController();
   final MaterialStateProperty<Icon?> thumbIcon =
       MaterialStateProperty.resolveWith<Icon?>(
     (Set<MaterialState> states) {
@@ -136,7 +107,7 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detalhes do Usuário'),
+        title: const Text('Detalhes da Empresa'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -158,7 +129,7 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
                             initializeFields();
                           });
                           Navigator.pop(context); // Fechar o AlertDialog
-                          Navigator.pushNamed(context, '/view_usuarios');
+                          Navigator.pushNamed(context, '/view_empresas');
                         },
                         child: const Text('Sim'),
                       ),
@@ -173,7 +144,7 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
                 },
               );
             } else {
-              Navigator.pushNamed(context, '/view_usuarios');
+              Navigator.pushNamed(context, '/view_empresas');
             }
           },
         ),
@@ -183,50 +154,37 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Campo 'usuario' do usuário
-            Text('Usuário: ${_usuario.usuario}'),
-            const SizedBox(height: 16.0),
-
-            Text(
-              'E-mail: $_email',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+            SizedBox(
+              child: _buildEditableField(
+                'Razão Social',
+                _razaoSocial,
+                razaoSocialController,
+                (value) => setState(() => _razaoSocial = value),
               ),
             ),
+            const SizedBox(height: 16.0), // Espaçamento
+
             // Campos editáveis
             _buildEditableField(
-              'Nome',
-              _nome,
-              nomeController,
-              (value) => setState(() => _nome = value),
+              'CNPJ',
+              _cnpj,
+              cnpjController,
+              (value) => setState(() => _cnpj = value),
             ),
             Text(
-              'Empresa: $_empresa',
+              'Matriz: $_matriz',
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            ComboBoxEmpresa(
-              onEmpresaSelected: (empresa) {
-                setState(() {
-                  _empresaSelecionada = empresa;
-                });
-              },
-            ),
             Text(
-              'Nivel: $_nivel',
+              'Criador: $_criador',
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            ComboBoxNivelAcesso(onNivelSelected: (nivel) {
-              setState(() {
-                _nivelSelecionado = nivel;
-              });
-            }),
             Switch(
               thumbIcon: thumbIcon,
               value: _status,
@@ -236,47 +194,63 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
                 });
               },
             ),
-            Switch(
-              thumbIcon: thumbIcon,
-              value: _primeiroAcesso,
-              onChanged: (value) {
-                setState(() {
-                  _primeiroAcesso = !_primeiroAcesso;
-                });
-              },
-            ),
-            Switch(
-              thumbIcon: thumbIcon,
-              value: _redefinirSenha,
-              onChanged: (value) {
-                setState(() {
-                  _redefinirSenha = !_redefinirSenha;
-                });
-              },
-            ),
-            Text(
-              'Criador: $_criador',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              'Criado em: $_dataCriacao',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              'Ultimo acesso em: $_dataAcesso',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
             Row(
               children: [
+                if (widget.setorVisibility)
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_isDataChanged()) {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Descartar Alterações?'),
+                              content: const Text(
+                                  'Tem certeza que deseja descartar as alterações e sair?'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    // Resetar os campos para os valores originais
+                                    setState(() {
+                                      // Resetar os campos para os valores originais
+                                      initializeFields();
+                                    });
+                                    Navigator.pop(
+                                        context); // Fechar o AlertDialog
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            SetorPage(empresa: _empresa),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text('Sim'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(
+                                        context); // Fechar o AlertDialog
+                                  },
+                                  child: const Text('Não'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SetorPage(empresa: _empresa),
+                          ),
+                        );
+                      }
+                    },
+                    child: const Text('Editar Setores'),
+                  ),
+
                 // Botão Salvar (visível apenas se houver alterações)
                 if (_isDataChanged()) _buildSaveButton(),
                 if (_isDataChanged()) _buildCancelButton(),
@@ -300,13 +274,11 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
 
   // Verifica se houve alterações nos dados
   bool _isDataChanged() {
-    String nome = nomeController.text.trim();
-    return nome != _usuario.nome ||
-        _status != (_usuario.status == 'Ativo') ||
-        _primeiroAcesso != _usuario.primeiroAcesso ||
-        _redefinirSenha != _usuario.redefinirSenha ||
-        _empresaSelecionada != _usuario.empresa ||
-        _nivelSelecionado != _usuario.nivel;
+    String razaoSocial = razaoSocialController.text.trim();
+    String cnpj = cnpjController.text.trim();
+    return razaoSocial != _empresa.razaoSocial ||
+        cnpj != _empresa.cnpj ||
+        _status != (_empresa.status == 'Ativo');
   }
 
   // Constrói o botão "Salvar"
@@ -317,25 +289,14 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
         try {
           // Atualizar os dados no banco de dados
           await FirebaseFirestore.instance
-              .collection('Usuarios')
-              .doc(_usuario.uid)
+              .collection('Empresa')
+              .doc(_empresa.id)
               .update({
-            'Nome': _nome,
+            'CNPJ': _cnpj,
             'Status': status,
-            'IDempresa': _empresaSelecionada,
-            'IDnivel': _nivelSelecionado,
           });
 
-          _fetchUsuario();
-
-          await FirebaseFirestore.instance
-              .collection('DetalheUsuario')
-              .doc(_usuario.uid)
-              .update({
-            'PrimeiroAcesso': _primeiroAcesso,
-            'RedefinirSenha': _redefinirSenha,
-          });
-
+          _fetchEmpresa();
           // Mostrar uma mensagem de sucesso
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -366,7 +327,8 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
   @override
   void dispose() {
     // Limpe os controladores quando a página for descartada
-    nomeController.dispose();
+    razaoSocialController.dispose();
+    cnpjController.dispose();
     super.dispose();
   }
 }

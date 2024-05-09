@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
-import '../../controllers/empresa_controller.dart';
-import '../../controllers/usuario_controller.dart';
-import '../../models/empresa_model.dart';
-import '../../models/usuario_model.dart';
-import 'detalhe_usuario.dart';
+import '../../../controllers/empresa_controller.dart';
+import '../../../controllers/equipamento_controller.dart';
+import '../../../controllers/usuario_controller.dart';
+import '../../../models/empresa_model.dart';
+import '../../../models/equipamento_model.dart';
+import '../../../models/usuario_model.dart';
+import 'detalhe_equipamento.dart';
 
-class VisualizarUsuarios extends StatefulWidget {
-  const VisualizarUsuarios({super.key});
+class VisualizarEquipamentos extends StatefulWidget {
+  const VisualizarEquipamentos({super.key});
 
   @override
-  State<VisualizarUsuarios> createState() => _VisualizarUsuariosState();
+  State<VisualizarEquipamentos> createState() => _VisualizarEquipamentosState();
 }
 
-class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
+class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
   late Future<List<Empresa>> _empresasFuture;
-  late Future<List<Usuario>> _usuariosFuture;
+  late Future<List<Equipamento>> _equipamentosFuture;
   late Future<Usuario> _usuario;
 
   Map<String, bool> selectedMap = {};
@@ -23,7 +25,7 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
   void initState() {
     super.initState();
     _empresasFuture = EmpresaController.getEmpresas();
-    _usuariosFuture = UsuarioController.getUsuarios();
+    _equipamentosFuture = EquipamentoController.getEquipamentos();
     _usuario = UsuarioController.getUsuarioLogado();
   }
 
@@ -31,7 +33,7 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Visualizar Usuarios'),
+          title: const Text('Visualizar Equipamentos'),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
@@ -49,15 +51,15 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
               return Center(child: Text('Erro: ${snapshot.error}'));
             } else {
               final empresas = snapshot.data!;
-              return FutureBuilder<List<Usuario>>(
-                future: _usuariosFuture,
+              return FutureBuilder<List<Equipamento>>(
+                future: _equipamentosFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Erro: ${snapshot.error}'));
                   } else {
-                    final usuarios = snapshot.data!;
+                    final equipamentos = snapshot.data!;
 
                     return FutureBuilder<Usuario>(
                         future: _usuario,
@@ -79,7 +81,7 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
                                 if (empresa.matriz == empresa.id) {
                                   // É uma empresa matriz
                                   return _buildMatrizTile(
-                                      empresa, empresas, usuarios, usuario);
+                                      empresa, empresas, equipamentos, usuario);
                                 } else {
                                   // É uma empresa filial (será tratada nas empresas matriz)
                                   return null;
@@ -99,13 +101,10 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
   }
 
   Widget _buildMatrizTile(Empresa matriz, List<Empresa> todasEmpresas,
-      List<Usuario> usuarios, Usuario usuario) {
+      List<Equipamento> equipamentos, Usuario usuario) {
     final filiais = todasEmpresas
         .where((e) => e.matriz == matriz.id && e.id != matriz.id)
         .toList();
-
-    final usuariosMatriz =
-        usuarios.where((usuario) => usuario.empresa == matriz.id).toList();
 
     final showExpansionArrow = filiais.isNotEmpty;
 
@@ -129,40 +128,16 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
         });
       },
       children: [
-        if (usuario.nivel != '3')
-          ...usuariosMatriz.map((usuario) => ListTile(
-                title: Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        child: Text('${usuario.nome} \n ${usuario.usuario}'),
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.remove_red_eye),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DetalhesUsuarioPage(
-                              usuario: usuario.uid,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              )),
-        ...filiais.map((filial) => _buildFilialTile(filial, usuarios)),
+        ...filiais.map((filial) => _buildFilialTile(filial, equipamentos)),
       ],
     );
   }
 
-  Widget _buildFilialTile(Empresa filial, List<Usuario> usuarios) {
-    final usersInFilial =
-        usuarios.where((usuario) => usuario.empresa == filial.id).toList();
-    final showExpansionArrow = usersInFilial.isNotEmpty;
+  Widget _buildFilialTile(Empresa filial, List<Equipamento> equipamentos) {
+    final equipsInFilial = equipamentos
+        .where((equipamento) => equipamento.empresa == filial.id)
+        .toList();
+    final showExpansionArrow = equipsInFilial.isNotEmpty;
 
     if (!selectedMap.containsKey(filial.id)) {
       // Se não existir, adiciona o ID da filial ao mapa com o valor inicial como false
@@ -184,31 +159,34 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
         });
       },
       children: [
-        ...usersInFilial.map((usuario) => ListTile(
-              title: Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      child: Text('${usuario.nome} \n ${usuario.usuario}'),
-                    ),
+        ...equipsInFilial.map(
+          (equipamento) => ListTile(
+            title: Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    child:
+                        Text('${equipamento.qrcode} \n ${equipamento.empresa}'),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.remove_red_eye),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetalhesUsuarioPage(
-                            usuario: usuario.uid,
-                          ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.remove_red_eye),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetalhesEquipamentoPage(
+                          equipamento: equipamento.id,
                         ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-              // Adicione mais detalhes do usuário conforme necessário
-            )),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+            // Adicione mais detalhes do usuário conforme necessário
+          ),
+        ),
       ],
     );
   }

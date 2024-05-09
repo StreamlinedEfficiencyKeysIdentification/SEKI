@@ -3,7 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import '../../models/empresa_model.dart';
+import '../../../models/empresa_model.dart';
 
 class SetorPage extends StatefulWidget {
   final Empresa empresa;

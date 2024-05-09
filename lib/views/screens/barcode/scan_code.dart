@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:testeseki/barcode/found_code.dart';
-import 'package:testeseki/barcode/scanner_overlay.dart';
+import 'package:testeseki/views/screens/barcode/found_code.dart';
+import 'package:testeseki/views/screens/barcode/scanner_overlay.dart';
 
 class ScanCodePage extends StatefulWidget {
   const ScanCodePage({super.key});

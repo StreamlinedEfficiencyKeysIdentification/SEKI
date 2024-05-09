@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
-import '../../controllers/empresa_controller.dart';
-import '../../controllers/equipamento_controller.dart';
-import '../../controllers/usuario_controller.dart';
-import '../../models/empresa_model.dart';
-import '../../models/equipamento_model.dart';
-import '../../models/usuario_model.dart';
-import 'detalhe_equipamento.dart';
+import '../../../controllers/empresa_controller.dart';
+import '../../../controllers/usuario_controller.dart';
+import '../../../models/empresa_model.dart';
+import '../../../models/usuario_model.dart';
+import 'detalhe_usuario.dart';
 
-class VisualizarEquipamentos extends StatefulWidget {
-  const VisualizarEquipamentos({super.key});
+class VisualizarUsuarios extends StatefulWidget {
+  const VisualizarUsuarios({super.key});
 
   @override
-  State<VisualizarEquipamentos> createState() => _VisualizarEquipamentosState();
+  State<VisualizarUsuarios> createState() => _VisualizarUsuariosState();
 }
 
-class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
+class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
   late Future<List<Empresa>> _empresasFuture;
-  late Future<List<Equipamento>> _equipamentosFuture;
+  late Future<List<Usuario>> _usuariosFuture;
   late Future<Usuario> _usuario;
 
   Map<String, bool> selectedMap = {};
@@ -25,7 +23,7 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
   void initState() {
     super.initState();
     _empresasFuture = EmpresaController.getEmpresas();
-    _equipamentosFuture = EquipamentoController.getEquipamentos();
+    _usuariosFuture = UsuarioController.getUsuarios();
     _usuario = UsuarioController.getUsuarioLogado();
   }
 
@@ -33,7 +31,7 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Visualizar Equipamentos'),
+          title: const Text('Visualizar Usuarios'),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
@@ -51,15 +49,15 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
               return Center(child: Text('Erro: ${snapshot.error}'));
             } else {
               final empresas = snapshot.data!;
-              return FutureBuilder<List<Equipamento>>(
-                future: _equipamentosFuture,
+              return FutureBuilder<List<Usuario>>(
+                future: _usuariosFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Erro: ${snapshot.error}'));
                   } else {
-                    final equipamentos = snapshot.data!;
+                    final usuarios = snapshot.data!;
 
                     return FutureBuilder<Usuario>(
                         future: _usuario,
@@ -81,7 +79,7 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
                                 if (empresa.matriz == empresa.id) {
                                   // É uma empresa matriz
                                   return _buildMatrizTile(
-                                      empresa, empresas, equipamentos, usuario);
+                                      empresa, empresas, usuarios, usuario);
                                 } else {
                                   // É uma empresa filial (será tratada nas empresas matriz)
                                   return null;
@@ -101,10 +99,13 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
   }
 
   Widget _buildMatrizTile(Empresa matriz, List<Empresa> todasEmpresas,
-      List<Equipamento> equipamentos, Usuario usuario) {
+      List<Usuario> usuarios, Usuario usuario) {
     final filiais = todasEmpresas
         .where((e) => e.matriz == matriz.id && e.id != matriz.id)
         .toList();
+
+    final usuariosMatriz =
+        usuarios.where((usuario) => usuario.empresa == matriz.id).toList();
 
     final showExpansionArrow = filiais.isNotEmpty;
 
@@ -128,16 +129,40 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
         });
       },
       children: [
-        ...filiais.map((filial) => _buildFilialTile(filial, equipamentos)),
+        if (usuario.nivel != '3')
+          ...usuariosMatriz.map((usuario) => ListTile(
+                title: Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        child: Text('${usuario.nome} \n ${usuario.usuario}'),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.remove_red_eye),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DetalhesUsuarioPage(
+                              usuario: usuario.uid,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              )),
+        ...filiais.map((filial) => _buildFilialTile(filial, usuarios)),
       ],
     );
   }
 
-  Widget _buildFilialTile(Empresa filial, List<Equipamento> equipamentos) {
-    final equipsInFilial = equipamentos
-        .where((equipamento) => equipamento.empresa == filial.id)
-        .toList();
-    final showExpansionArrow = equipsInFilial.isNotEmpty;
+  Widget _buildFilialTile(Empresa filial, List<Usuario> usuarios) {
+    final usersInFilial =
+        usuarios.where((usuario) => usuario.empresa == filial.id).toList();
+    final showExpansionArrow = usersInFilial.isNotEmpty;
 
     if (!selectedMap.containsKey(filial.id)) {
       // Se não existir, adiciona o ID da filial ao mapa com o valor inicial como false
@@ -159,34 +184,31 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
         });
       },
       children: [
-        ...equipsInFilial.map(
-          (equipamento) => ListTile(
-            title: Row(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    child:
-                        Text('${equipamento.qrcode} \n ${equipamento.empresa}'),
+        ...usersInFilial.map((usuario) => ListTile(
+              title: Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      child: Text('${usuario.nome} \n ${usuario.usuario}'),
+                    ),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.remove_red_eye),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DetalhesEquipamentoPage(
-                          equipamento: equipamento.id,
+                  IconButton(
+                    icon: const Icon(Icons.remove_red_eye),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetalhesUsuarioPage(
+                            usuario: usuario.uid,
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-            // Adicione mais detalhes do usuário conforme necessário
-          ),
-        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              // Adicione mais detalhes do usuário conforme necessário
+            )),
       ],
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../controllers/empresa_controller.dart';
-import '../../models/empresa_model.dart';
+import '../../../controllers/empresa_controller.dart';
+import '../../../models/empresa_model.dart';
 import 'detalhe_empresa.dart';
 
 class VisualizarEmpresas extends StatefulWidget {
