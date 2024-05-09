@@ -117,7 +117,8 @@ class HomePage extends StatelessWidget {
                                       const Text('Usuários'),
                                       ElevatedButton(
                                         onPressed: () {
-                                          // Adicione a lógica para o botão de adicionar aqui
+                                          Navigator.pushNamed(
+                                              context, '/view_usuarios');
                                         },
                                         child: const Icon(
                                           Icons.remove_red_eye_outlined,
