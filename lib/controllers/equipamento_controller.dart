@@ -207,4 +207,64 @@ class EquipamentoController {
       );
     }
   }
+
+  static Future<Equipamento> getEquip(String id) async {
+    final DocumentSnapshot equipSnapshot = await FirebaseFirestore.instance
+        .collection('Equipamento')
+        .doc(id)
+        .get();
+
+    final DocumentSnapshot detailSnapshot = await FirebaseFirestore.instance
+        .collection('DetalheEquipamento')
+        .doc(id)
+        .get();
+
+    if (equipSnapshot.exists && detailSnapshot.exists) {
+      return Equipamento(
+        id: id,
+        marca: detailSnapshot['Marca'] as String? ?? '',
+        modelo: detailSnapshot['Modelo'] as String? ?? '',
+        qrcode: equipSnapshot['IDqrcode'] as String? ?? '',
+        empresa: equipSnapshot['IDempresa'] as String? ?? '',
+        setor: equipSnapshot['IDsetor'] as String? ?? '',
+        usuario: equipSnapshot['IDusuario'] as String? ?? '',
+        criador: equipSnapshot['QuemCriou'] as String? ?? '',
+        status: equipSnapshot['Status'] as String? ?? '',
+      );
+    }
+
+    return Equipamento(
+      id: '',
+      marca: '',
+      modelo: '',
+      qrcode: '',
+      empresa: '',
+      setor: '',
+      usuario: '',
+      criador: '',
+      status: '',
+    );
+  }
+
+  static Future<List<Equipamento>> getEquipamentos() async {
+    final equipSnapshot =
+        await FirebaseFirestore.instance.collection('Equipamento').get();
+    final List<Equipamento> equipamentos = [];
+
+    for (var doc in equipSnapshot.docs) {
+      final equipamento = Equipamento(
+        id: doc.id,
+        marca: '',
+        modelo: '',
+        qrcode: doc['IDqrcode'] as String? ?? '',
+        empresa: doc['IDempresa'] as String? ?? '',
+        setor: '',
+        usuario: doc['IDusuario'] as String? ?? '',
+        criador: '',
+        status: '',
+      );
+      equipamentos.add(equipamento);
+    }
+    return equipamentos;
+  }
 }
