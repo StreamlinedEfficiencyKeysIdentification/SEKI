@@ -12,6 +12,7 @@ import 'views/screens/alterar_senha.dart';
 import 'views/screens/checagem_page.dart';
 import 'views/screens/scan_code.dart';
 import 'views/screens/visualizar_empresas.dart';
+import 'views/screens/visualizar_usuario.dart';
 
 late final FirebaseApp app;
 late final FirebaseAuth auth;
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginPage(),
         '/reset_password': (context) => const ResetPasswordPage(),
         '/register': (context) => const RegisterPage(),
+        '/view_usuarios': (context) => const VisualizarUsuarios(),
         '/alterar_senha': (context) => FirstAccessPage(
             title: ModalRoute.of(context)!.settings.arguments as String),
         '/home': (context) => const HomePage(),
