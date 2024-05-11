@@ -5,9 +5,11 @@ import '../../models/usuario_model.dart';
 
 class ComboBoxEmpresa extends StatefulWidget {
   final void Function(String) onEmpresaSelected;
+  final String empresa;
 
   const ComboBoxEmpresa({
     required this.onEmpresaSelected,
+    required this.empresa,
     super.key,
   });
 
@@ -63,7 +65,9 @@ class ComboBoxEmpresaState extends State<ComboBoxEmpresa> {
                   };
                 }).toList() ??
                 [];
-
+            if (widget.empresa.isNotEmpty) {
+              _empresaSelecionada = widget.empresa;
+            }
             return DropdownButton<String>(
               hint: const Text('Selecione uma empresa'),
               value:

@@ -5,9 +5,11 @@ import '../../models/usuario_model.dart';
 
 class ComboBoxSetor extends StatefulWidget {
   final void Function(String) onSetorSelected;
+  final String setor;
 
   const ComboBoxSetor({
     required this.onSetorSelected,
+    required this.setor,
     super.key,
   });
 
@@ -59,6 +61,10 @@ class ComboBoxSetorState extends State<ComboBoxSetor> {
                   };
                 }).toList() ??
                 [];
+
+            if (widget.setor.isNotEmpty) {
+              _setorSelecionada = widget.setor;
+            }
 
             return DropdownButton<String>(
               hint: const Text('Selecione um setor'),
