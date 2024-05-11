@@ -5,9 +5,11 @@ import '../../controllers/usuario_controller.dart';
 
 class AutocompleteUsuarioExample extends StatelessWidget {
   final void Function(String) onUsuarioSelected;
+  final String user;
 
   const AutocompleteUsuarioExample({
     required this.onUsuarioSelected,
+    required this.user,
     super.key,
   });
 
@@ -42,6 +44,11 @@ class AutocompleteUsuarioExample extends StatelessWidget {
                     .map((doc) => doc['Nome'] as String)
                     .toList() ??
                 []; // Obter os nomes das empresas
+            late String userInitial = '';
+
+            if (user.isNotEmpty) {
+              userInitial = user;
+            }
 
             return SingleChildScrollView(
               child: Padding(
@@ -50,6 +57,7 @@ class AutocompleteUsuarioExample extends StatelessWidget {
                 ),
                 child: SizedBox(
                   child: Autocomplete<String>(
+                    initialValue: TextEditingValue(text: userInitial),
                     optionsBuilder: (TextEditingValue textEditingValue) {
                       if (textEditingValue.text.isEmpty) {
                         return const Iterable<String>.empty();
@@ -73,6 +81,18 @@ class AutocompleteUsuarioExample extends StatelessWidget {
                         // Chamar a função onUsuarioSelected passando o UID do usuário
                         onUsuarioSelected(usuarioUid);
                       }
+                    },
+                    fieldViewBuilder:
+                        (context, controller, focusNode, onEditingComplete) {
+                      return TextField(
+                        decoration: const InputDecoration(
+                          hintText:
+                              'Digite o nome do usuário', // Adicione o texto de dica aqui
+                        ),
+                        controller: controller,
+                        focusNode: focusNode,
+                        onEditingComplete: onEditingComplete,
+                      );
                     },
                   ),
                 ),
