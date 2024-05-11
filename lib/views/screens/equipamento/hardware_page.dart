@@ -71,6 +71,7 @@ class HardwarePageState extends State<HardwarePage> {
                 decoration: const InputDecoration(labelText: 'Modelo'),
               ),
               ComboBoxEmpresa(
+                empresa: _empresaSelecionada,
                 onEmpresaSelected: (empresa) {
                   setState(() {
                     _empresaSelecionada = empresa;
@@ -78,6 +79,7 @@ class HardwarePageState extends State<HardwarePage> {
                 },
               ),
               ComboBoxSetor(
+                setor: _setorSelecionado,
                 onSetorSelected: (setor) {
                   setState(() {
                     _setorSelecionado = setor;
@@ -113,6 +115,7 @@ class HardwarePageState extends State<HardwarePage> {
                     height: 50,
                     child: usuarioValue
                         ? AutocompleteUsuarioExample(
+                            user: _usuarioSelecionado,
                             onUsuarioSelected: (usuario) {
                               setState(() {
                                 _usuarioSelecionado = usuario;

@@ -34,8 +34,6 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
   late String _marca = '';
   late String _modelo = '';
   late String _qrcode = '';
-  late String _empresa = '';
-  late String _setor = '';
   late String _usuario = '';
   late String _criador = '';
   bool _status = true;
@@ -62,8 +60,6 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
         initializeFields();
         fetchCriador();
         fetchUsuario();
-        fetchMatriz();
-        fetchSetor();
       });
     } catch (e) {
       // Trate qualquer erro que possa ocorrer durante a busca da empresa
@@ -83,30 +79,6 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
 
     marcaController.text = _marca;
     modeloController.text = _modelo;
-  }
-
-  void fetchMatriz() async {
-    DocumentSnapshot empresaSnapshot = await FirebaseFirestore.instance
-        .collection('Empresa')
-        .doc(_equipamento.empresa)
-        .get();
-    if (empresaSnapshot.exists) {
-      setState(() {
-        _empresa = empresaSnapshot['RazaoSocial'];
-      });
-    }
-  }
-
-  void fetchSetor() async {
-    DocumentSnapshot setorSnapshot = await FirebaseFirestore.instance
-        .collection('Setor')
-        .doc(_equipamento.setor)
-        .get();
-    if (setorSnapshot.exists) {
-      setState(() {
-        _setor = setorSnapshot['Descricao'];
-      });
-    }
   }
 
   void fetchCriador() async {
@@ -198,7 +170,7 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
           children: [
             Row(
               children: [
-                Text('Usuário: $_qrcode'),
+                Text('QRcode: $_qrcode'),
                 const SizedBox(height: 16.0),
                 IconButton(
                   icon: const Icon(Icons.qr_code),
@@ -257,50 +229,24 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
               modeloController,
               (value) => setState(() => _modelo = value),
             ),
-            Text(
-              'Empresa: $_empresa',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
             ComboBoxEmpresa(
+              empresa: _empresaSelecionada,
               onEmpresaSelected: (empresa) {
                 setState(() {
                   _empresaSelecionada = empresa;
                 });
               },
             ),
-            Text(
-              'Setor: $_setor',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
             ComboBoxSetor(
+              setor: _setorSelecionado,
               onSetorSelected: (empresa) {
                 setState(() {
                   _setorSelecionado = empresa;
                 });
               },
             ),
-            if (_usuario.isNotEmpty)
-              Text(
-                'Pertence á: $_usuario',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            if (_usuario.isNotEmpty)
-              AutocompleteUsuarioExample(
-                onUsuarioSelected: (usuario) {
-                  setState(() {
-                    _usuarioSelecionado = usuario;
-                  });
-                },
-              ),
+            //Chamar novamente esse componente para atualizar o nome do usuário
+            if (_usuario.isNotEmpty) buildAutocompleteUsuarioExample(),
             Switch(
               thumbIcon: thumbIcon,
               value: _status,
@@ -327,6 +273,17 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildAutocompleteUsuarioExample() {
+    return AutocompleteUsuarioExample(
+      user: _usuario,
+      onUsuarioSelected: (usuario) {
+        setState(() {
+          _usuarioSelecionado = usuario;
+        });
+      },
     );
   }
 
@@ -400,6 +357,7 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
         setState(() {
           // Resetar os campos para os valores originais
           initializeFields();
+          buildAutocompleteUsuarioExample();
         });
       },
       child: const Text('Cancelar'),

@@ -34,8 +34,6 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
   // Variáveis para armazenar o estado dos campos editáveis
   late String _nome = '';
   late String _email = '';
-  late String _empresa = '';
-  late String _nivel = '';
   bool _status = true;
   late String _dataAcesso = '';
   late String _dataCriacao = '';
@@ -61,8 +59,6 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
 
         initializeFields();
         fetchCriador();
-        fetchMatriz();
-        fetchNivel();
       });
     } catch (e) {
       // Trate qualquer erro que possa ocorrer durante a busca da empresa
@@ -85,18 +81,6 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
     nomeController.text = _nome;
   }
 
-  void fetchMatriz() async {
-    DocumentSnapshot empresaSnapshot = await FirebaseFirestore.instance
-        .collection('Empresa')
-        .doc(_usuario.empresa)
-        .get();
-    if (empresaSnapshot.exists) {
-      setState(() {
-        _empresa = empresaSnapshot['RazaoSocial'];
-      });
-    }
-  }
-
   void fetchCriador() async {
     DocumentSnapshot usuarioSnapshot = await FirebaseFirestore.instance
         .collection('Usuarios')
@@ -105,18 +89,6 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
     if (usuarioSnapshot.exists) {
       setState(() {
         _criador = usuarioSnapshot['Usuario'];
-      });
-    }
-  }
-
-  void fetchNivel() async {
-    DocumentSnapshot nivelSnapshot = await FirebaseFirestore.instance
-        .collection('Nivel')
-        .doc(_usuario.nivel)
-        .get();
-    if (nivelSnapshot.exists) {
-      setState(() {
-        _nivel = nivelSnapshot['Descricao'];
       });
     }
   }
@@ -201,32 +173,21 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
               nomeController,
               (value) => setState(() => _nome = value),
             ),
-            Text(
-              'Empresa: $_empresa',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
             ComboBoxEmpresa(
+              empresa: _empresaSelecionada,
               onEmpresaSelected: (empresa) {
                 setState(() {
                   _empresaSelecionada = empresa;
                 });
               },
             ),
-            Text(
-              'Nivel: $_nivel',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            ComboBoxNivelAcesso(onNivelSelected: (nivel) {
-              setState(() {
-                _nivelSelecionado = nivel;
-              });
-            }),
+            ComboBoxNivelAcesso(
+                nivel: _nivelSelecionado,
+                onNivelSelected: (nivel) {
+                  setState(() {
+                    _nivelSelecionado = nivel;
+                  });
+                }),
             Switch(
               thumbIcon: thumbIcon,
               value: _status,

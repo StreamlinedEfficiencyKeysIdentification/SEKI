@@ -100,6 +100,7 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
 
   Widget _buildMatrizTile(Empresa matriz, List<Empresa> todasEmpresas,
       List<Usuario> usuarios, Usuario usuario) {
+    int nivel = int.parse(usuario.nivel);
     final filiais = todasEmpresas
         .where((e) => e.matriz == matriz.id && e.id != matriz.id)
         .toList();
@@ -129,7 +130,7 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
         });
       },
       children: [
-        if (usuario.nivel != '3')
+        if (nivel <= 1)
           ...usuariosMatriz.map((usuario) => ListTile(
                 title: Row(
                   children: [
