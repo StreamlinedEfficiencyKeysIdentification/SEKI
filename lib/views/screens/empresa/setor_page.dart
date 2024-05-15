@@ -112,6 +112,19 @@ class SetorPageState extends State<SetorPage> {
 
   // Restaurar os controladores para os valores originais
   void _restoreControllers() {
+    if (!_checkForChanges(true)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'Não houve alterações dentro dos campos. Nenhum dado foi salvo.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      setState(() {
+        _saving = false;
+      });
+      return;
+    }
     if (_existingSetores.isEmpty) return;
     // Limpar os controladores existentes
     _controllers.clear();
@@ -135,6 +148,28 @@ class SetorPageState extends State<SetorPage> {
     _selected = List<bool>.generate(listLength, (_) => false);
   }
 
+  bool _checkForChanges(bool checkForEmpty) {
+    if (checkForEmpty) {
+      if (_controllers.length != _existingSetores.length) {
+        return true;
+      }
+    }
+
+    for (int i = 0; i < _controllers.length; i++) {
+      String currentText = _controllers[i].getText();
+      String originalText =
+          _existingSetores.isNotEmpty && i < _existingSetores.length
+              ? _existingSetores[i].descricao
+              : '';
+
+      if (currentText != originalText) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   Future<void> _saveDataToFirestore(List<SetorModel> setores) async {
     setState(() {
       _saving = true;
@@ -145,6 +180,21 @@ class SetorPageState extends State<SetorPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Campos vazios. Nenhum dado foi salvo.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        setState(() {
+          _saving = false;
+        });
+        return;
+      }
+
+      // Verifica se houve mudanças
+      if (!_checkForChanges(false)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Não houve alterações dentro dos campos. Nenhum dado foi salvo.'),
             backgroundColor: Colors.red,
           ),
         );
@@ -198,7 +248,7 @@ class SetorPageState extends State<SetorPage> {
       String razaoSocial = widget.empresa.razaoSocial;
 
       String mensagem =
-          'Você adicionou os seguintes setores na empresa $razaoSocial:\n\n';
+          'Existe os seguintes setores na empresa $razaoSocial:\n\n';
       for (int i = 0; i < setoresParaSalvar.length; i++) {
         mensagem += '- ${setoresParaSalvar[i].descricao}\n';
       }
@@ -208,7 +258,7 @@ class SetorPageState extends State<SetorPage> {
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text('Criação de Setores'),
+          title: const Text('Setores'),
           content: Text(mensagem),
           actions: [
             TextButton(
@@ -316,7 +366,40 @@ class SetorPageState extends State<SetorPage> {
                   initializeSelection();
                 },
               )
-            : null,
+            : IconButton(
+                onPressed: () {
+                  if (_checkForChanges(true)) {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Descartar Alterações?'),
+                          content: const Text(
+                              'Tem certeza que deseja descartar as alterações e sair?'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context); // Fechar o AlertDialog
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Sim'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context); // Fechar o AlertDialog
+                              },
+                              child: const Text('Não'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else {
+                    Navigator.of(context).pop();
+                  }
+                },
+                icon: const Icon(Icons.arrow_back)),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
