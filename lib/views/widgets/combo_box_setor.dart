@@ -6,8 +6,10 @@ import '../../models/usuario_model.dart';
 class ComboBoxSetor extends StatefulWidget {
   final void Function(String) onSetorSelected;
   final String setor;
+  final bool encontrado;
 
   const ComboBoxSetor({
+    required this.encontrado,
     required this.onSetorSelected,
     required this.setor,
     super.key,
@@ -19,6 +21,7 @@ class ComboBoxSetor extends StatefulWidget {
 
 class ComboBoxSetorState extends State<ComboBoxSetor> {
   String _setorSelecionada = '';
+  bool _setorEncontrado = false;
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +50,13 @@ class ComboBoxSetorState extends State<ComboBoxSetor> {
               setorQuery.where('IDempresa', isEqualTo: usuario.empresa);
         }
 
+        if (widget.encontrado == false && _setorSelecionada.isEmpty) {
+          _setorEncontrado = false;
+        } else {
+          _setorSelecionada = widget.setor;
+          _setorEncontrado = true;
+        }
+
         return StreamBuilder<QuerySnapshot>(
           stream: setorQuery.snapshots(),
           builder: (context, snapshot) {
@@ -62,28 +72,35 @@ class ComboBoxSetorState extends State<ComboBoxSetor> {
                 }).toList() ??
                 [];
 
-            if (widget.setor.isNotEmpty) {
-              _setorSelecionada = widget.setor;
-            }
-
-            return DropdownButton<String>(
-              hint: const Text('Selecione um setor'),
-              value: _setorSelecionada.isNotEmpty ? _setorSelecionada : null,
-              onChanged: (String? newValue) {
-                if (newValue != null) {
-                  setState(() {
-                    _setorSelecionada = newValue;
-                  });
-                  widget.onSetorSelected(newValue);
-                }
-              },
-              items: setor
-                  .map<DropdownMenuItem<String>>((Map<String, dynamic> setor) {
-                return DropdownMenuItem<String>(
-                  value: setor['ID'] as String,
-                  child: Text(setor['Descricao'] as String),
-                );
-              }).toList(),
+            return SizedBox(
+              child: Column(
+                children: [
+                  DropdownButton<String>(
+                    hint: const Text('Selecione um setor'),
+                    value:
+                        _setorSelecionada.isNotEmpty ? _setorSelecionada : null,
+                    onChanged: (String? newValue) {
+                      if (newValue != null) {
+                        setState(() {
+                          _setorSelecionada = newValue;
+                        });
+                        widget.onSetorSelected(newValue);
+                      }
+                    },
+                    items: setor.map<DropdownMenuItem<String>>(
+                        (Map<String, dynamic> setor) {
+                      return DropdownMenuItem<String>(
+                        value: setor['ID'] as String,
+                        child: Text(setor['Descricao'] as String),
+                      );
+                    }).toList(),
+                  ),
+                  if (!_setorEncontrado)
+                    const Text(
+                      'Setor não encontrado. Por favor, escolha um setor existente.',
+                    ),
+                ],
+              ),
             );
           },
         );
