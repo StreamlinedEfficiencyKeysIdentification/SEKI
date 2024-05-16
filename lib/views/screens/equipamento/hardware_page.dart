@@ -3,13 +3,13 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../../controllers/equipamento_controller.dart';
-import '../../controllers/usuario_controller.dart';
-import '../../models/usuario_model.dart';
-import '../../barcode/view_code.dart';
-import '../widgets/autocomplete_usuario.dart';
-import '../widgets/combo_box_empresa.dart';
-import '../widgets/combo_box_setor.dart';
+import '../../../controllers/equipamento_controller.dart';
+import '../../../controllers/usuario_controller.dart';
+import '../../../models/usuario_model.dart';
+import '../barcode/view_code.dart';
+import '../../widgets/autocomplete_usuario.dart';
+import '../../widgets/combo_box_empresa.dart';
+import '../../widgets/combo_box_setor.dart';
 
 class HardwarePage extends StatefulWidget {
   const HardwarePage({super.key});
@@ -19,6 +19,8 @@ class HardwarePage extends StatefulWidget {
 }
 
 class HardwarePageState extends State<HardwarePage> {
+  final GlobalKey<AutocompleteUsuarioExampleState> _autocompleteKey =
+      GlobalKey();
   final TextEditingController _qrcodeController = TextEditingController();
   final TextEditingController _marcaController = TextEditingController();
   final TextEditingController _modeloController = TextEditingController();
@@ -71,6 +73,7 @@ class HardwarePageState extends State<HardwarePage> {
                 decoration: const InputDecoration(labelText: 'Modelo'),
               ),
               ComboBoxEmpresa(
+                empresa: _empresaSelecionada,
                 onEmpresaSelected: (empresa) {
                   setState(() {
                     _empresaSelecionada = empresa;
@@ -78,6 +81,8 @@ class HardwarePageState extends State<HardwarePage> {
                 },
               ),
               ComboBoxSetor(
+                encontrado: true,
+                setor: _setorSelecionado,
                 onSetorSelected: (setor) {
                   setState(() {
                     _setorSelecionado = setor;
@@ -113,6 +118,8 @@ class HardwarePageState extends State<HardwarePage> {
                     height: 50,
                     child: usuarioValue
                         ? AutocompleteUsuarioExample(
+                            user: _usuarioSelecionado,
+                            key: _autocompleteKey,
                             onUsuarioSelected: (usuario) {
                               setState(() {
                                 _usuarioSelecionado = usuario;
@@ -285,6 +292,7 @@ class HardwarePageState extends State<HardwarePage> {
     if (waiting) {
       showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text('Cadastrado com sucesso!'),
@@ -295,9 +303,12 @@ class HardwarePageState extends State<HardwarePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: ((context) {
-                        return QRImage(_qrcodeController);
-                      }),
+                      builder: (context) {
+                        return QRImage(
+                          _qrcodeController.text,
+                          sourceRoute: '/hardware',
+                        );
+                      },
                     ),
                   );
                 },

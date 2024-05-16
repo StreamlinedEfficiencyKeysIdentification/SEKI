@@ -6,11 +6,13 @@ import 'package:flutter/rendering.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class QRImage extends StatefulWidget {
-  final TextEditingController qrcodeController;
+  final String qrcodeController;
+  final String? sourceRoute; // Adicionando o parâmetro para a rota de origem
 
   const QRImage(
     this.qrcodeController, {
     super.key,
+    this.sourceRoute, // Atualizando o construtor para aceitar o parâmetro
   });
 
   @override
@@ -23,7 +25,7 @@ class QRImageState extends State<QRImage> {
   @override
   void initState() {
     super.initState();
-    text = widget.qrcodeController.text;
+    text = widget.qrcodeController;
   }
 
   final GlobalKey globalKey = GlobalKey();
@@ -112,7 +114,12 @@ class QRImageState extends State<QRImage> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/hardware');
+                    // Voltar para a rota de origem
+                    if (widget.sourceRoute != null) {
+                      Navigator.pushNamed(context, widget.sourceRoute!);
+                    } else {
+                      Navigator.pop(context);
+                    }
                   },
                   child: const Text('Sair'),
                 ),

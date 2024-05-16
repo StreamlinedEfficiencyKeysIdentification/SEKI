@@ -3,7 +3,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import '../../models/empresa_model.dart';
+import '../../../models/empresa_model.dart';
+
+class SetorModel {
+  final String id;
+  final String descricao;
+
+  SetorModel({required this.id, required this.descricao});
+}
+
+class SetorEditingController {
+  final String id;
+  final TextEditingController controller;
+
+  SetorEditingController({required this.id, required this.controller});
+
+  String getText() {
+    return controller.text;
+  }
+}
 
 class SetorPage extends StatefulWidget {
   final Empresa empresa;
@@ -22,27 +40,35 @@ class SetorPageState extends State<SetorPage> {
   int listLength = 1;
   late List<bool> _selected;
   bool _selectAll = false;
-  late List<TextEditingController> _controllers = [];
+  late List<SetorEditingController> _controllers = [];
   bool _saving = false;
-  late List<String> _existingSetores = [];
+  late List<SetorModel> _existingSetores = [];
 
   @override
   void initState() {
     super.initState();
+    initialize();
+  }
+
+  void initialize() {
     initializeSelection();
     _initializeControllers();
     _loadExistingSetores();
-    _getExistingSetores();
   }
 
   void initializeSelection() {
     _selected = List<bool>.generate(listLength, (_) => false);
   }
 
-  void _initializeControllers() {
+  _initializeControllers() {
     _controllers = List.generate(
       listLength,
-      (index) => TextEditingController(),
+      (index) => SetorEditingController(
+        id: _existingSetores.isNotEmpty && index < _existingSetores.length
+            ? _existingSetores[index].id
+            : '', // Definir o ID vazio para novos setores
+        controller: TextEditingController(),
+      ),
     );
   }
 
@@ -54,20 +80,6 @@ class SetorPageState extends State<SetorPage> {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> _getExistingSetores() async {
-    final QuerySnapshot<Map<String, dynamic>> setoresSnapshot =
-        await FirebaseFirestore.instance
-            .collection('Setor')
-            .where('IDempresa', isEqualTo: widget.empresa.id)
-            .get();
-
-    setState(() {
-      _existingSetores = setoresSnapshot.docs
-          .map((doc) => doc['Descricao'] as String)
-          .toList();
-    });
-  }
-
   // Carregar setores existentes da empresa do Firestore
   Future<void> _loadExistingSetores() async {
     QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
@@ -76,15 +88,22 @@ class SetorPageState extends State<SetorPage> {
         .get();
 
     // Extrair os setores da consulta
-    _existingSetores =
-        querySnapshot.docs.map((doc) => doc['Descricao'] as String).toList();
+    _existingSetores = querySnapshot.docs.map((doc) {
+      return SetorModel(
+        id: doc.id,
+        descricao: doc['Descricao'] as String,
+      );
+    }).toList();
 
     // Se houver setores existentes, atualize os controladores
     if (_existingSetores.isNotEmpty) {
       setState(() {
-        _controllers = _existingSetores
-            .map((setor) => TextEditingController(text: setor))
-            .toList();
+        _controllers = _existingSetores.map((setor) {
+          return SetorEditingController(
+            id: setor.id,
+            controller: TextEditingController(text: setor.descricao),
+          );
+        }).toList();
         listLength = _existingSetores.length;
         _selected = List<bool>.generate(listLength, (_) => false);
       });
@@ -92,16 +111,36 @@ class SetorPageState extends State<SetorPage> {
   }
 
   // Restaurar os controladores para os valores originais
-  // Restaurar os controladores para os valores originais
   void _restoreControllers() {
+    if (!_checkForChanges(true)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'Não houve alterações dentro dos campos. Nenhum dado foi salvo.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      setState(() {
+        _saving = false;
+      });
+      return;
+    }
+    if (_existingSetores.isEmpty) return;
     // Limpar os controladores existentes
     _controllers.clear();
 
     // Se houver setores existentes, recuperá-los da coleção separada
     if (_existingSetores.isNotEmpty) {
-      _controllers = _existingSetores
-          .map((setor) => TextEditingController(text: setor))
-          .toList();
+      setState(() {
+        _controllers = _existingSetores.map((setor) {
+          return SetorEditingController(
+            id: setor.id,
+            controller: TextEditingController(text: setor.descricao),
+          );
+        }).toList();
+        listLength = _existingSetores.length;
+        _selected = List<bool>.generate(listLength, (_) => false);
+      });
     }
 
     // Atualizar o comprimento da lista e as seleções
@@ -109,7 +148,29 @@ class SetorPageState extends State<SetorPage> {
     _selected = List<bool>.generate(listLength, (_) => false);
   }
 
-  Future<void> _saveDataToFirestore(List<String> setores) async {
+  bool _checkForChanges(bool checkForEmpty) {
+    if (checkForEmpty) {
+      if (_controllers.length != _existingSetores.length) {
+        return true;
+      }
+    }
+
+    for (int i = 0; i < _controllers.length; i++) {
+      String currentText = _controllers[i].getText();
+      String originalText =
+          _existingSetores.isNotEmpty && i < _existingSetores.length
+              ? _existingSetores[i].descricao
+              : '';
+
+      if (currentText != originalText) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  Future<void> _saveDataToFirestore(List<SetorModel> setores) async {
     setState(() {
       _saving = true;
     });
@@ -128,66 +189,55 @@ class SetorPageState extends State<SetorPage> {
         return;
       }
 
-      // Obter os setores existentes da empresa atual
-      final QuerySnapshot<Map<String, dynamic>> existingSetoresSnapshot =
-          await FirebaseFirestore.instance
-              .collection('Setor')
-              .where('IDempresa', isEqualTo: widget.empresa.id)
-              .get();
+      // Verifica se houve mudanças
+      if (!_checkForChanges(false)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Não houve alterações dentro dos campos. Nenhum dado foi salvo.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        setState(() {
+          _saving = false;
+        });
+        return;
+      }
 
-      final List<String> existingSetores = existingSetoresSnapshot.docs
-          .map((doc) => doc['Descricao'].toString())
-          .toList();
+      // Montar a lista de setores excluindo os campos vazios
+      List<SetorModel> setoresParaSalvar = [];
+      for (int i = 0; i < _controllers.length; i++) {
+        String id = '';
+        if (_existingSetores.isNotEmpty && i < _existingSetores.length) {
+          id = _existingSetores[i].id;
+        }
 
-      // Salvar novos setores
-      for (final setor in setores) {
-        if (!existingSetores.contains(setor)) {
-          await FirebaseFirestore.instance.collection('Setor').add({
+        String descricao = _controllers[i].getText();
+
+        // Verificar se a descrição não está vazia antes de adicionar à lista
+        if (descricao.isNotEmpty) {
+          setoresParaSalvar.add(SetorModel(id: id, descricao: descricao));
+        }
+      }
+
+      // Iterar sobre a lista de setores
+      for (SetorModel setor in setoresParaSalvar) {
+        if (setor.id.isNotEmpty) {
+          // Se o ID do documento estiver presente, atualizar o documento correspondente
+          await _firestore.collection('Setor').doc(setor.id).update({
+            'Descricao': setor.descricao,
+          });
+        } else {
+          // Se o ID do documento não estiver presente, adicionar um novo documento
+          await _firestore.collection('Setor').add({
+            'Descricao': setor.descricao,
             'IDempresa': widget.empresa.id,
-            'Descricao': setor,
           });
         }
       }
-
-      // Atualizar setores existentes
-      for (final setor in existingSetores) {
-        if (!setores.contains(setor)) {
-          final QuerySnapshot<Map<String, dynamic>> setorSnapshot =
-              await FirebaseFirestore.instance
-                  .collection('Setor')
-                  .where('IDempresa', isEqualTo: widget.empresa.id)
-                  .where('Descricao', isEqualTo: setor)
-                  .get();
-
-          final docId = setorSnapshot.docs.first.id;
-          await FirebaseFirestore.instance
-              .collection('Setor')
-              .doc(docId)
-              .update({'Descricao': setor});
-        }
-      }
-
-      // Excluir setores removidos
-      for (final setor in existingSetores) {
-        if (!setores.contains(setor)) {
-          final QuerySnapshot<Map<String, dynamic>> setorSnapshot =
-              await FirebaseFirestore.instance
-                  .collection('Setor')
-                  .where('IDempresa', isEqualTo: widget.empresa.id)
-                  .where('Descricao', isEqualTo: setor)
-                  .get();
-
-          final docId = setorSnapshot.docs.first.id;
-          await FirebaseFirestore.instance
-              .collection('Setor')
-              .doc(docId)
-              .delete();
-        }
-      }
-
       // Atualizar a lista de setores na tela
       setState(() {
-        _existingSetores = setores;
+        _existingSetores = setoresParaSalvar;
       });
 
       // Exibir uma mensagem de sucesso ou atualizar a interface do usuário, se necessário
@@ -198,15 +248,17 @@ class SetorPageState extends State<SetorPage> {
       String razaoSocial = widget.empresa.razaoSocial;
 
       String mensagem =
-          'Você adicionou os seguintes setores na empresa $razaoSocial:\n\n';
-      for (int i = 0; i < setores.length; i++) {
-        mensagem += '- ${setores[i]}\n';
+          'Existe os seguintes setores na empresa $razaoSocial:\n\n';
+      for (int i = 0; i < setoresParaSalvar.length; i++) {
+        mensagem += '- ${setoresParaSalvar[i].descricao}\n';
       }
+
+      initialize();
 
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text('Criação de Setores'),
+          title: const Text('Setores'),
           content: Text(mensagem),
           actions: [
             TextButton(
@@ -229,6 +281,76 @@ class SetorPageState extends State<SetorPage> {
     }
   }
 
+  Future<void> _deleteSelectedSetores() async {
+    List<String> selectedIds = [];
+
+    // Identificar os IDs dos setores selecionados
+    for (int i = 0; i < _selected.length; i++) {
+      if (_selected[i] && _controllers[i].id.isNotEmpty) {
+        selectedIds.add(_controllers[i].id);
+      }
+    }
+
+    if (selectedIds.isEmpty) {
+      return; // Não há setores com IDs selecionados para excluir
+    }
+
+    bool confirmarExclusao = await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmar Exclusão'),
+        content: const Text(
+            'Tem certeza de que deseja excluir os setores selecionados?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Confirmar'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmarExclusao == true) {
+      // Excluir os setores do banco de dados
+      for (String id in selectedIds) {
+        try {
+          await _firestore.collection('Setor').doc(id).delete();
+        } catch (error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Erro ao excluir setor: $error'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+
+      // Remover os setores da lista de setores na tela e os controladores correspondentes
+      setState(() {
+        _existingSetores.removeWhere((setor) => selectedIds.contains(setor.id));
+        _controllers
+            .removeWhere((controller) => selectedIds.contains(controller.id));
+        listLength = _existingSetores.length;
+        _selected = List<bool>.generate(listLength, (_) => false);
+
+        isSelectionMode = false;
+      });
+
+      initialize();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Setores selecionados excluídos com sucesso.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -244,7 +366,40 @@ class SetorPageState extends State<SetorPage> {
                   initializeSelection();
                 },
               )
-            : null,
+            : IconButton(
+                onPressed: () {
+                  if (_checkForChanges(true)) {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Descartar Alterações?'),
+                          content: const Text(
+                              'Tem certeza que deseja descartar as alterações e sair?'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context); // Fechar o AlertDialog
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Sim'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context); // Fechar o AlertDialog
+                              },
+                              child: const Text('Não'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else {
+                    Navigator.of(context).pop();
+                  }
+                },
+                icon: const Icon(Icons.arrow_back)),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -258,17 +413,7 @@ class SetorPageState extends State<SetorPage> {
                 if (isSelectionMode)
                   IconButton(
                     icon: const Icon(Icons.delete),
-                    onPressed: () {
-                      setState(() {
-                        for (int i = _selected.length - 1; i >= 0; i--) {
-                          if (_selected[i]) {
-                            _controllers.removeAt(i); // Remove o controlador
-                            _selected.removeAt(i); // Remove a seleção
-                            listLength = _selected.length;
-                          }
-                        }
-                      });
-                    },
+                    onPressed: _deleteSelectedSetores,
                     iconSize: 32,
                   ),
                 if (isSelectionMode)
@@ -315,7 +460,8 @@ class SetorPageState extends State<SetorPage> {
                 setState(() {
                   listLength++;
                   _selected.add(false);
-                  _controllers.add(TextEditingController());
+                  _controllers.add(SetorEditingController(
+                      id: '', controller: TextEditingController()));
                 });
               },
             ),
@@ -325,11 +471,25 @@ class SetorPageState extends State<SetorPage> {
             onPressed: _saving
                 ? null
                 : () {
-                    List<String> setores = _controllers
-                        .map((controller) => controller.text)
-                        .where((value) => value.isNotEmpty)
-                        .toList();
-                    _saveDataToFirestore(setores);
+                    List<SetorModel> setores = [];
+                    for (int i = 0; i < _controllers.length; i++) {
+                      String id = '';
+                      if (_existingSetores.isNotEmpty &&
+                          i < _existingSetores.length) {
+                        id = _existingSetores[i].id;
+                      }
+                      setores.add(SetorModel(
+                          id: id, descricao: _controllers[i].getText()));
+                    }
+
+                    setState(() {
+                      _saving = true;
+                    });
+                    _saveDataToFirestore(setores).then((_) {
+                      setState(() {
+                        _saving = false;
+                      });
+                    });
                   },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
@@ -354,7 +514,7 @@ class SetorPageState extends State<SetorPage> {
                     ),
                   ),
           ),
-          if (!_saving && _existingSetores.isNotEmpty)
+          if (!_saving)
             ElevatedButton(
               onPressed: () {
                 setState(() {
@@ -395,7 +555,7 @@ class ListBuilder extends StatefulWidget {
 
   final bool isSelectionMode;
   final List<bool> selectedList;
-  final List<TextEditingController> controllers;
+  final List<SetorEditingController> controllers;
   final ValueChanged<bool>? onSelectionChange;
   final VoidCallback? onAddField;
 
@@ -444,7 +604,7 @@ class _ListBuilderState extends State<ListBuilder> {
                 )
               : const SizedBox.shrink(),
           title: TextFormField(
-            controller: widget.controllers[index],
+            controller: widget.controllers[index].controller,
             decoration: InputDecoration(
               labelText: 'Setor ${index + 1}',
             ),

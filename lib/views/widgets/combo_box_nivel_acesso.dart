@@ -5,9 +5,11 @@ import '../../models/usuario_model.dart';
 
 class ComboBoxNivelAcesso extends StatefulWidget {
   final void Function(String) onNivelSelected;
+  final String nivel;
 
   const ComboBoxNivelAcesso({
     required this.onNivelSelected,
+    required this.nivel,
     super.key,
   });
 
@@ -62,6 +64,10 @@ class ComboBoxNivelAcessoState extends State<ComboBoxNivelAcesso> {
                   };
                 }).toList() ??
                 [];
+
+            if (widget.nivel.isNotEmpty) {
+              _nivelSelecionado = widget.nivel;
+            }
 
             return DropdownButton<String>(
               hint: const Text('Selecione um nível de acesso'),

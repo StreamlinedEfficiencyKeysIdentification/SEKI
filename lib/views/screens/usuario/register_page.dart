@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
-import '../../../controllers/usuario_controller.dart';
-import '../../models/usuario_model.dart';
-import '../../utils/password_generator.dart';
-import '../widgets/combo_box_empresa.dart';
-import '../widgets/combo_box_nivel_acesso.dart';
+import '../../../../controllers/usuario_controller.dart';
+import '../../../models/usuario_model.dart';
+import '../../../utils/password_generator.dart';
+import '../../widgets/combo_box_empresa.dart';
+import '../../widgets/combo_box_nivel_acesso.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -51,6 +51,7 @@ class _RegisterPageState extends State<RegisterPage> {
               decoration: const InputDecoration(labelText: 'Nome'),
             ),
             ComboBoxEmpresa(
+              empresa: _empresaSelecionada,
               onEmpresaSelected: (empresa) {
                 setState(() {
                   _empresaSelecionada =
@@ -59,6 +60,7 @@ class _RegisterPageState extends State<RegisterPage> {
               },
             ),
             ComboBoxNivelAcesso(
+              nivel: _nivelSelecionado,
               onNivelSelected: (nivel) {
                 setState(() {
                   _nivelSelecionado =
