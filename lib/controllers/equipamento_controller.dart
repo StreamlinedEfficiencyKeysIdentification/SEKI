@@ -209,6 +209,7 @@ class EquipamentoController {
   }
 
   static Future<Equipamento> getEquip(String id) async {
+    late String setor;
     final DocumentSnapshot equipSnapshot = await FirebaseFirestore.instance
         .collection('Equipamento')
         .doc(id)
@@ -220,13 +221,26 @@ class EquipamentoController {
         .get();
 
     if (equipSnapshot.exists && detailSnapshot.exists) {
+      String setorId = equipSnapshot['IDsetor'];
+      DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+          .instance
+          .collection('Setor')
+          .doc(setorId)
+          .get();
+
+      if (snapshot.exists) {
+        setor = equipSnapshot['IDsetor'];
+      } else {
+        setor = '';
+      }
+
       return Equipamento(
         id: id,
         marca: detailSnapshot['Marca'] as String? ?? '',
         modelo: detailSnapshot['Modelo'] as String? ?? '',
         qrcode: equipSnapshot['IDqrcode'] as String? ?? '',
         empresa: equipSnapshot['IDempresa'] as String? ?? '',
-        setor: equipSnapshot['IDsetor'] as String? ?? '',
+        setor: setor,
         usuario: equipSnapshot['IDusuario'] as String? ?? '',
         criador: equipSnapshot['QuemCriou'] as String? ?? '',
         status: equipSnapshot['Status'] as String? ?? '',
