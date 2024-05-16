@@ -1,17 +1,37 @@
+// ignore_for_file: overridden_fields, annotate_overrides
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:testeseki/models/usuario_model.dart';
 import '../../controllers/usuario_controller.dart';
 
-class AutocompleteUsuarioExample extends StatelessWidget {
+class AutocompleteUsuarioExample extends StatefulWidget {
   final void Function(String) onUsuarioSelected;
   final String user;
+  final Key key;
 
   const AutocompleteUsuarioExample({
     required this.onUsuarioSelected,
     required this.user,
-    super.key,
-  });
+    required this.key,
+  }) : super(key: key);
+
+  @override
+  AutocompleteUsuarioExampleState createState() =>
+      AutocompleteUsuarioExampleState();
+}
+
+class AutocompleteUsuarioExampleState
+    extends State<AutocompleteUsuarioExample> {
+  // Defina uma chave única para o widget
+  GlobalKey<AutocompleteUsuarioExampleState> _key = GlobalKey();
+
+  // Método para reconstruir o widget com a chave atualizada
+  void reconstruirWidget() {
+    setState(() {
+      _key = GlobalKey();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +66,8 @@ class AutocompleteUsuarioExample extends StatelessWidget {
                 []; // Obter os nomes das empresas
             late String userInitial = '';
 
-            if (user.isNotEmpty) {
-              userInitial = user;
+            if (widget.user.isNotEmpty) {
+              userInitial = widget.user;
             }
 
             return SingleChildScrollView(
@@ -56,6 +76,7 @@ class AutocompleteUsuarioExample extends StatelessWidget {
                   bottom: MediaQuery.of(context).viewInsets.bottom,
                 ),
                 child: SizedBox(
+                  key: _key,
                   child: Autocomplete<String>(
                     initialValue: TextEditingValue(text: userInitial),
                     optionsBuilder: (TextEditingValue textEditingValue) {
@@ -79,7 +100,7 @@ class AutocompleteUsuarioExample extends StatelessWidget {
                         // Obter o UID do usuário
                         String usuarioUid = querySnapshot.docs.first.id;
                         // Chamar a função onUsuarioSelected passando o UID do usuário
-                        onUsuarioSelected(usuarioUid);
+                        widget.onUsuarioSelected(usuarioUid);
                       }
                     },
                     fieldViewBuilder:
