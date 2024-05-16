@@ -19,6 +19,8 @@ class HardwarePage extends StatefulWidget {
 }
 
 class HardwarePageState extends State<HardwarePage> {
+  final GlobalKey<AutocompleteUsuarioExampleState> _autocompleteKey =
+      GlobalKey();
   final TextEditingController _qrcodeController = TextEditingController();
   final TextEditingController _marcaController = TextEditingController();
   final TextEditingController _modeloController = TextEditingController();
@@ -79,6 +81,7 @@ class HardwarePageState extends State<HardwarePage> {
                 },
               ),
               ComboBoxSetor(
+                encontrado: true,
                 setor: _setorSelecionado,
                 onSetorSelected: (setor) {
                   setState(() {
@@ -116,6 +119,7 @@ class HardwarePageState extends State<HardwarePage> {
                     child: usuarioValue
                         ? AutocompleteUsuarioExample(
                             user: _usuarioSelecionado,
+                            key: _autocompleteKey,
                             onUsuarioSelected: (usuario) {
                               setState(() {
                                 _usuarioSelecionado = usuario;
