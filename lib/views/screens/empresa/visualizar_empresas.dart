@@ -12,6 +12,7 @@ class VisualizarEmpresas extends StatefulWidget {
 
 class _VisualizarEmpresasState extends State<VisualizarEmpresas> {
   late Future<List<Empresa>> _empresasFuture;
+  late String _statusFiltro = 'Ativo';
 
   Map<String, bool> selectedMap = {};
 
@@ -24,49 +25,98 @@ class _VisualizarEmpresasState extends State<VisualizarEmpresas> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Visualizar Empresas'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pushNamed(context, '/home');
-          },
+        appBar: AppBar(
+          title: const Text('Visualizar Empresas'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pushNamed(context, '/home');
+            },
+          ),
         ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: FutureBuilder<List<Empresa>>(
-          future: _empresasFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Erro: ${snapshot.error}'));
-            } else {
-              final empresas = snapshot.data!;
-              return ListView.builder(
-                itemCount: empresas.length,
-                itemBuilder: (context, index) {
-                  final empresa = empresas[index];
-                  if (empresa.matriz == empresa.id) {
-                    // É uma empresa matriz
-                    return _buildMatrizTile(empresa, empresas);
+        body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _statusFiltro = 'Ativo';
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        _statusFiltro == 'Ativo' ? Colors.blue : null,
+                  ),
+                  child: const Text('Ativo'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _statusFiltro = 'Inativo';
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        _statusFiltro == 'Inativo' ? Colors.blue : null,
+                  ),
+                  child: const Text('Inativo'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _statusFiltro = 'Ambos';
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        _statusFiltro == 'Ambos' ? Colors.blue : null,
+                  ),
+                  child: const Text('Ambos'),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: FutureBuilder<List<Empresa>>(
+                future: _empresasFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Erro: ${snapshot.error}'));
                   } else {
-                    // É uma empresa filial (será tratada nas empresas matriz)
-                    return null;
+                    final empresas = snapshot.data!;
+                    return ListView.builder(
+                      itemCount: empresas.length,
+                      itemBuilder: (context, index) {
+                        final empresa = empresas[index];
+                        if (empresa.matriz == empresa.id) {
+                          // É uma empresa matriz
+                          return _buildMatrizTile(empresa, empresas);
+                        } else {
+                          // É uma empresa filial (será tratada nas empresas matriz)
+                          return null;
+                        }
+                      },
+                    );
                   }
                 },
-              );
-            }
-          },
-        ),
-      ),
-    );
+              ),
+            ),
+          )
+        ]));
   }
 
   Widget _buildMatrizTile(Empresa matriz, List<Empresa> todasEmpresas) {
     final filiais = todasEmpresas
         .where((e) => e.matriz == matriz.id && e.id != matriz.id)
+        .where(
+            (e) => _statusFiltro == 'Ambos' ? true : e.status == _statusFiltro)
         .toList();
 
     final showExpansionArrow = filiais.isNotEmpty;
