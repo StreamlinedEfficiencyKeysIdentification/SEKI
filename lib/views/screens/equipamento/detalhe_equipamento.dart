@@ -19,6 +19,8 @@ class DetalhesEquipamentoPage extends StatefulWidget {
 }
 
 class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
+  final GlobalKey<AutocompleteUsuarioExampleState> _autocompleteKey =
+      GlobalKey();
   late Equipamento _equipamento = Equipamento(
     id: '',
     marca: '',
@@ -41,6 +43,7 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
   String _empresaSelecionada = '';
   String _setorSelecionado = '';
   String _usuarioSelecionado = '';
+  bool _setorEncontrado = true;
 
   @override
   void initState() {
@@ -74,8 +77,13 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
     _status = _equipamento.status == 'Ativo';
 
     _empresaSelecionada = _equipamento.empresa;
-    _setorSelecionado = _equipamento.setor;
     _usuarioSelecionado = _equipamento.usuario;
+    _setorSelecionado = _equipamento.setor;
+    if (_setorSelecionado.isEmpty) {
+      _setorEncontrado = false;
+    } else {
+      _setorEncontrado = true;
+    }
 
     marcaController.text = _marca;
     modeloController.text = _modelo;
@@ -94,6 +102,9 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
   }
 
   void fetchUsuario() async {
+    if (_equipamento.usuario.isEmpty) {
+      return;
+    }
     DocumentSnapshot usuarioSnapshot = await FirebaseFirestore.instance
         .collection('Usuarios')
         .doc(_equipamento.usuario)
@@ -180,7 +191,7 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
                       barrierDismissible: false,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: const Text('Cadastrado com sucesso!'),
+                          title: const Text('Visualização do QR Code'),
                           content: const Text('Deseja salvar o QR Code?'),
                           actions: [
                             TextButton(
@@ -238,6 +249,7 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
               },
             ),
             ComboBoxSetor(
+              encontrado: _setorEncontrado,
               setor: _setorSelecionado,
               onSetorSelected: (empresa) {
                 setState(() {
@@ -246,7 +258,16 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
               },
             ),
             //Chamar novamente esse componente para atualizar o nome do usuário
-            if (_usuario.isNotEmpty) buildAutocompleteUsuarioExample(),
+            if (_usuario.isNotEmpty)
+              AutocompleteUsuarioExample(
+                user: _usuario,
+                key: _autocompleteKey,
+                onUsuarioSelected: (usuario) {
+                  setState(() {
+                    _usuarioSelecionado = usuario;
+                  });
+                },
+              ),
             Switch(
               thumbIcon: thumbIcon,
               value: _status,
@@ -273,17 +294,6 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget buildAutocompleteUsuarioExample() {
-    return AutocompleteUsuarioExample(
-      user: _usuario,
-      onUsuarioSelected: (usuario) {
-        setState(() {
-          _usuarioSelecionado = usuario;
-        });
-      },
     );
   }
 
@@ -356,8 +366,8 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
       onPressed: () {
         setState(() {
           // Resetar os campos para os valores originais
-          initializeFields();
-          buildAutocompleteUsuarioExample();
+          _fetchEquipamento();
+          _autocompleteKey.currentState?.reconstruirWidget();
         });
       },
       child: const Text('Cancelar'),
