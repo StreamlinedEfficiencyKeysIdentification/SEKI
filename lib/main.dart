@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'views/screens/empresa/goup_page.dart';
@@ -18,6 +22,24 @@ import 'views/screens/usuario/visualizar_usuario.dart';
 late final FirebaseApp app;
 late final FirebaseAuth auth;
 
+class ConnectionNotifer extends InheritedNotifier<ValueNotifier<bool>> {
+  const ConnectionNotifer({
+    super.key,
+    required super.notifier,
+    required super.child,
+  });
+
+  static ValueNotifier<bool> of(BuildContext context) {
+    return context
+        .dependOnInheritedWidgetOfExactType<ConnectionNotifer>()!
+        .notifier!;
+  }
+}
+
+final internetConnectionChecker = InternetConnection.createInstance(
+  checkInterval: const Duration(seconds: 1),
+);
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -25,12 +47,44 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   auth = FirebaseAuth.instanceFor(app: app);
-  runApp(const MyApp());
+
+  final hasConnection = await internetConnectionChecker.hasInternetAccess;
+  runApp(
+    ConnectionNotifer(
+      notifier: ValueNotifier(hasConnection),
+      child: const MyApp(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   // ignore: use_super_parameters
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late final StreamSubscription<InternetStatus> listener;
+
+  @override
+  void initState() {
+    super.initState();
+    listener = internetConnectionChecker.onStatusChange.listen(
+      (status) {
+        final notifier = ConnectionNotifer.of(context);
+        notifier.value = status == InternetStatus.connected ? true : false;
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    listener.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
