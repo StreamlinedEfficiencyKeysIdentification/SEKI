@@ -46,54 +46,54 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(''),
-        actions: [
-          
-        ],
-        backgroundColor: Color(0xff035fab),
+        title: const Text(''),
+        actions: [],
+        backgroundColor: const Color(0xff035fab),
       ),
+      
       body: Column(
+        
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           FutureBuilder<String?>(
             future: _getUserName(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
+                return const Center(
                   child: CircularProgressIndicator(),
                 );
               } else if (snapshot.hasError) {
-                return Center(
+                return const Center(
                   child: Text('Erro ao carregar o nome do usuário.'),
                 );
               } else {
                 String? userName = snapshot.data;
                 return Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   child: Text(
                     userName != null
                         ? 'Bem-vindo,\n$userName!'
                         : 'Usuário desconhecido.',
-                    style: TextStyle(fontSize: 24, color: Colors.white),
+                    style: const TextStyle(fontSize: 24, color: Colors.white),
                   ),
                 );
               }
             },
           ),
           Expanded(
-            child: ListView( //lista que ja ajusta o scroll
-              padding: EdgeInsets.symmetric(horizontal: 16),
+            child: ListView(
+              //lista que ja ajusta o scroll
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               children: [
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {
-                  },
+                  onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    backgroundColor: Color.fromRGBO(255, 255, 255, 0.4),
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    backgroundColor: const Color.fromRGBO(255, 255, 255, 0.4),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(color: Colors.white),
+                      side: const BorderSide(color: Colors.white),
                     ),
                   ),
                   child: Padding(
@@ -101,14 +101,14 @@ class HomePage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Empresas',
                           style: TextStyle(
                             fontSize: 16,
                             color: Color.fromARGB(255, 255, 255, 255),
                           ),
                         ),
-                        SizedBox(height: 20),
+                       const SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -117,30 +117,42 @@ class HomePage extends StatelessWidget {
                                 // Ação para editar
                               },
                               style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(),
-                                padding: EdgeInsets.all(30),
+                                shape:const CircleBorder(),
+                                padding:const EdgeInsets.all(30),
                               ),
-                              child: Icon(Icons.edit, color: Color(0xff035fab), size: 35,),
+                              child: const Icon(
+                                Icons.edit,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
                             ),
                             ElevatedButton(
                               onPressed: () {
                                 // Ação para visualizar
                               },
                               style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(),
-                                padding: EdgeInsets.all(30),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
                               ),
-                              child: Icon(Icons.visibility, color: Color(0xff035fab), size: 35,),
+                              child: const Icon(
+                                Icons.visibility,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
                             ),
                             ElevatedButton(
                               onPressed: () {
                                 Navigator.pushNamed(context, '/register');
                               },
                               style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(),
-                                padding: EdgeInsets.all(30),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
                               ),
-                              child: Icon(Icons.add, color:Color(0xff035fab), size: 35,),
+                              child: const Icon(
+                                Icons.add,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
                             ),
                           ],
                         ),
@@ -148,17 +160,17 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
+             const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: () {
                     // Adicione ação aqui
                   },
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    backgroundColor: Color.fromRGBO(255, 255, 255, 0.4),
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    backgroundColor: const Color.fromRGBO(255, 255, 255, 0.4),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(color: Colors.white),
+                      side: const BorderSide(color: Colors.white),
                     ),
                   ),
                   child: Padding(
@@ -166,14 +178,14 @@ class HomePage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Usuário',
                           style: TextStyle(
                             fontSize: 16,
                             color: Color.fromARGB(255, 255, 255, 255),
                           ),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -182,30 +194,42 @@ class HomePage extends StatelessWidget {
                                 // Ação para editar
                               },
                               style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(),
-                                padding: EdgeInsets.all(30),
+                                shape:const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
                               ),
-                              child: Icon(Icons.edit, color: Color(0xff035fab), size: 35,),
+                              child: const Icon(
+                                Icons.edit,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
                             ),
                             ElevatedButton(
                               onPressed: () {
                                 // Ação para visualizar
                               },
                               style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(),
-                                padding: EdgeInsets.all(30),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
                               ),
-                              child: Icon(Icons.visibility, color: Color(0xff035fab), size: 35,),
+                              child: const Icon(
+                                Icons.visibility,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
                             ),
                             ElevatedButton(
                               onPressed: () {
                                 Navigator.pushNamed(context, '/register');
                               },
                               style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(),
-                                padding: EdgeInsets.all(30),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
                               ),
-                              child: Icon(Icons.add, color:Color(0xff035fab), size: 35,),
+                              child: const Icon(
+                                Icons.add,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
                             ),
                           ],
                         ),
@@ -213,17 +237,17 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: () {
                     // Adicione ação aqui
                   },
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    backgroundColor: Color.fromRGBO(255, 255, 255, 0.4),
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    backgroundColor: const Color.fromRGBO(255, 255, 255, 0.4),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(color: Colors.white),
+                      side: const BorderSide(color: Colors.white),
                     ),
                   ),
                   child: Padding(
@@ -231,14 +255,14 @@ class HomePage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Máquina',
                           style: TextStyle(
                             fontSize: 16,
                             color: Color.fromARGB(255, 255, 255, 255),
                           ),
                         ),
-                        SizedBox(height: 20),
+                       const SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -247,30 +271,42 @@ class HomePage extends StatelessWidget {
                                 // Ação para editar
                               },
                               style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(),
-                                padding: EdgeInsets.all(30),
+                                shape: const CircleBorder(),
+                                padding:const EdgeInsets.all(30),
                               ),
-                              child: Icon(Icons.edit, color: Color(0xff035fab), size: 35,),
+                              child: const Icon(
+                                Icons.edit,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
                             ),
                             ElevatedButton(
                               onPressed: () {
                                 // Ação para visualizar
                               },
                               style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(),
-                                padding: EdgeInsets.all(30),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
                               ),
-                              child: Icon(Icons.visibility, color: Color(0xff035fab), size: 35,),
+                              child: const Icon(
+                                Icons.visibility,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
                             ),
                             ElevatedButton(
                               onPressed: () {
                                 Navigator.pushNamed(context, '/group');
                               },
                               style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(),
-                                padding: EdgeInsets.all(30),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
                               ),
-                              child: Icon(Icons.add, color:Color(0xff035fab), size: 35,),
+                              child: const Icon(
+                                Icons.add,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
                             ),
                           ],
                         ),
@@ -278,17 +314,17 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: () {
                     // Adicione ação aqui
                   },
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    backgroundColor: Color.fromRGBO(255, 255, 255, 0.4),
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    backgroundColor: const Color.fromRGBO(255, 255, 255, 0.4),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(color: Colors.white),
+                      side: const BorderSide(color: Colors.white),
                     ),
                   ),
                   child: Padding(
@@ -296,14 +332,14 @@ class HomePage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Chamado',
                           style: TextStyle(
                             fontSize: 16,
                             color: Color.fromARGB(255, 255, 255, 255),
                           ),
                         ),
-                        SizedBox(height: 20),
+                       const SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -312,30 +348,42 @@ class HomePage extends StatelessWidget {
                                 // Ação para editar
                               },
                               style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(),
-                                padding: EdgeInsets.all(30),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
                               ),
-                              child: Icon(Icons.edit, color: Color(0xff035fab), size: 35,),
+                              child: const Icon(
+                                Icons.edit,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
                             ),
                             ElevatedButton(
                               onPressed: () {
                                 // Ação para visualizar
                               },
                               style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(),
-                                padding: EdgeInsets.all(30),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
                               ),
-                              child: Icon(Icons.visibility, color: Color(0xff035fab), size: 35,),
+                              child: const Icon(
+                                Icons.visibility,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
                             ),
                             ElevatedButton(
                               onPressed: () {
                                 Navigator.pushNamed(context, '/register');
                               },
                               style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(),
-                                padding: EdgeInsets.all(30),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
                               ),
-                              child: Icon(Icons.add, color:Color(0xff035fab), size: 35,),
+                              child: const Icon(
+                                Icons.add,
+                                color: Color(0xff035fab),
+                                size: 35,
+                              ),
                             ),
                           ],
                         ),
@@ -343,17 +391,17 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
+               const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: () {
                     // Adicione ação aqui
                   },
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    backgroundColor: Color.fromRGBO(255, 255, 255, 0.4),
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    backgroundColor: const Color.fromRGBO(255, 255, 255, 0.4),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(color: Colors.white),
+                      side: const BorderSide(color: Colors.white),
                     ),
                   ),
                   child: Padding(
@@ -361,14 +409,14 @@ class HomePage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Cadastrar QRcode',
                           style: TextStyle(
                             fontSize: 16,
                             color: Color.fromARGB(255, 255, 255, 255),
                           ),
                         ),
-                        SizedBox(height: 20),
+                       const SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -377,30 +425,39 @@ class HomePage extends StatelessWidget {
                                 // Ação para editar
                               },
                               style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(),
-                                padding: EdgeInsets.all(30),
+                                shape: const CircleBorder(),
+                                padding:const EdgeInsets.all(30),
                               ),
-                              child: Icon(Icons.edit, color: Color(0xff035fab),),
+                              child:const Icon(
+                                Icons.edit,
+                                color: Color(0xff035fab),
+                              ),
                             ),
                             ElevatedButton(
                               onPressed: () {
                                 // Ação para visualizar
                               },
                               style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(),
-                                padding: EdgeInsets.all(30),
+                                shape:const CircleBorder(),
+                                padding:const EdgeInsets.all(30),
                               ),
-                              child: Icon(Icons.visibility, color: Color(0xff035fab),),
+                              child: const Icon(
+                                Icons.visibility,
+                                color: Color(0xff035fab),
+                              ),
                             ),
                             ElevatedButton(
                               onPressed: () {
                                 Navigator.pushNamed(context, '/register');
                               },
                               style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(),
-                                padding: EdgeInsets.all(30),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(30),
                               ),
-                              child: Icon(Icons.add, color:Color(0xff035fab),),
+                              child: const Icon(
+                                Icons.add,
+                                color: Color(0xff035fab),
+                              ),
                             ),
                           ],
                         ),
@@ -413,47 +470,48 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      backgroundColor: Color(0xff035fab),
+      backgroundColor: const Color(0xff035fab),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Ação do botão de contador
         },
-        child: Icon(Icons.qr_code, color: Color(0xff035fab),),
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        child: const Icon(
+          Icons.qr_code,
+          color: Color(0xff035fab),
+        ),
       ),
       bottomNavigationBar: ClipRRect(
-  borderRadius: BorderRadius.only(
-    topLeft: Radius.circular(20.0),
-    topRight: Radius.circular(20.0),
-  ),
-  child: BottomAppBar(
-    color: Colors.white,
-    elevation: 50,
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        IconButton(
-          icon: Icon(Icons.logout, color: Color(0xff035fab)),
-          onPressed: () => _logout(context),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20.0),
+          topRight: Radius.circular(20.0),
         ),
-        IconButton(
-          onPressed: () {
-            // Adicione ação para o segundo ícone do menu footer
-          },
-          icon: Icon(Icons.home, color: Color(0xff035fab)),
+        child: BottomAppBar(
+          color: Colors.white,
+          elevation: 50,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.logout, color: Color(0xff035fab)),
+                onPressed: () => _logout(context),
+              ),
+              IconButton(
+                onPressed: () {
+                  // Adicione ação para o segundo ícone do menu footer
+                },
+                icon:const Icon(Icons.home, color: Color(0xff035fab)),
+              ),
+              IconButton(
+                onPressed: () {
+                  // Adicione ação para o terceiro ícone do menu footer
+                },
+                icon: const Icon(Icons.people_alt, color: Color(0xff035fab)),
+              ),
+            ],
+          ),
         ),
-        IconButton(
-          onPressed: () {
-            // Adicione ação para o terceiro ícone do menu footer
-          },
-          icon: Icon(Icons.people_alt, color: Color(0xff035fab)),
-        ),
-      ],
-   ),
-   ),
-   ),
+      ),
     );
-
-
   }
 }
