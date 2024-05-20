@@ -26,200 +26,362 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: const Text(''),
         backgroundColor: Colors.blue,
         automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => _logout(context),
-          ),
-        ],
       ),
       body: Stack(
         children: [
-          Center(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  FutureBuilder<Usuario>(
-                    future: UsuarioController.getUsuarioLogado(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return const Text(
-                          'Erro ao carregar o nome do usuário.',
-                        );
-                      } else {
-                        Usuario usuario = snapshot.data ??
-                            Usuario(
-                              uid: '',
-                              nivel: '',
-                              empresa: '',
-                              nome: '',
-                              usuario: '',
-                              email: '',
-                              status: '',
-                              criador: '',
-                              dataCriacao: '',
-                              dataAcesso: '',
-                              primeiroAcesso: false,
-                              redefinirSenha: false,
-                            );
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                FutureBuilder<Usuario>(
+                  future: UsuarioController.getUsuarioLogado(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return const Text(
+                        'Erro ao carregar o nome do usuário.',
+                      );
+                    } else {
+                      Usuario usuario = snapshot.data ??
+                          Usuario(
+                            uid: '',
+                            nivel: '',
+                            empresa: '',
+                            nome: '',
+                            usuario: '',
+                            email: '',
+                            status: '',
+                            criador: '',
+                            dataCriacao: '',
+                            dataAcesso: '',
+                            primeiroAcesso: false,
+                            redefinirSenha: false,
+                          );
 
-                        int nivelUsuario = int.tryParse(usuario.nivel) ?? 0;
-                        String user = usuario.usuario;
+                      int nivelUsuario = int.tryParse(usuario.nivel) ?? 0;
+                      String user = usuario.usuario;
 
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            children: [
-                              const SizedBox(height: 20),
-                              Text(
-                                'Bem-vindo,\n$user!',
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Visibility(
-                                visible: nivelUsuario <= 2,
-                                child: Container(
-                                  height: 50,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                        131, 255, 255, 255),
-                                    borderRadius: BorderRadius.circular(
-                                        10), // Adicionando bordas arredondadas
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Bem-vindo,',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    color: Colors.white,
                                   ),
-                                  child: Row(
-                                    children: [
-                                      const Padding(
-                                        padding: EdgeInsets.only(
-                                            left:
-                                                10), // Adicionando espaço à esquerda do texto
-                                        child: Text(
-                                          'Empresa',
-                                          textAlign: TextAlign.left,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.pushNamed(
-                                                    context, '/view_empresas');
-                                              },
-                                              child: const Icon(
-                                                Icons.remove_red_eye_outlined,
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: IconButton(
+                                      icon: const Icon(Icons.notifications),
+                                      color: Colors.blue,
+                                      onPressed: () {
+                                        // => _logout(context),
+                                      }),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  '$user!',
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.white,
+                                      fontFamily: 'RobotoMono'),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 40,
+                            ),
+                            const Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Ações',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Divider(
+                              color: Colors.white,
+                              thickness: 1,
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Column(
+                              children: [
+                                //Container Empresa e seus botoes...
+                                Visibility(
+                                  visible: nivelUsuario <= 3,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: const Color.fromARGB(
+                                          131, 255, 255, 255),
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                          color: Colors.white,
+                                          width:
+                                              1), // Definindo o raio da borda
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        const Padding(
+                                          padding:
+                                              EdgeInsetsDirectional.fromSTEB(
+                                                  20, 5, 20, 0),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Column(
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: [
+                                                  Text(
+                                                    'Empresa',
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
-                                            ),
-                                            const SizedBox(width: 10),
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.pushNamed(
-                                                    context, '/group');
-                                              },
-                                              child: const Icon(
-                                                Icons.add,
+                                              Column(
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: [
+                                                  Icon(
+                                                    Icons.domain,
+                                                    color: Colors.white,
+                                                    size: 35,
+                                                  ),
+                                                ],
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                        Padding(
+                                          padding: const EdgeInsetsDirectional
+                                              .fromSTEB(20, 5, 20, 20),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              ElevatedButton(
+                                                onPressed: () {},
+                                                child: const Icon(
+                                                  Icons.remove_red_eye_outlined,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 10),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.pushNamed(context,
+                                                      '/view_empresas');
+                                                },
+                                                child: const Icon(
+                                                  Icons.add,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 20),
-                              Visibility(
-                                visible: nivelUsuario <= 3,
-                                child: Container(
-                                  height: 50,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                        131, 255, 255, 255),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Text('Usuários'),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          // Adicione a lógica para o botão de adicionar aqui
-                                        },
-                                        child: const Icon(
-                                          Icons.remove_red_eye_outlined,
+                                const SizedBox(height: 20),
+                                //Container Usuário e seus botoes...
+                                Visibility(
+                                  visible: nivelUsuario <= 3,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: const Color.fromARGB(
+                                          131, 255, 255, 255),
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                          color: Colors.white, width: 1),
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        const Padding(
+                                          padding:
+                                              EdgeInsetsDirectional.fromSTEB(
+                                                  20, 5, 20, 0),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Column(
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: [
+                                                  Text(
+                                                    'Usuários',
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Column(
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: [
+                                                  Icon(
+                                                    Icons.people_alt,
+                                                    color: Colors.white,
+                                                    size: 35,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.pushNamed(
-                                              context, '/register');
-                                        },
-                                        child: const Icon(
-                                          Icons.add,
+                                        Padding(
+                                          padding: const EdgeInsetsDirectional
+                                              .fromSTEB(20, 5, 20, 20),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              ElevatedButton(
+                                                onPressed: () {},
+                                                child: const Icon(
+                                                  Icons.remove_red_eye_outlined,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 10),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.pushNamed(
+                                                      context, '/register');
+                                                },
+                                                child: const Icon(
+                                                  Icons.add,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 20),
-                              Visibility(
-                                visible: nivelUsuario <= 3,
-                                child: Container(
-                                  height: 50,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                        131, 255, 255, 255),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Text('Equipamento'),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          // Adicione a lógica para o botão de adicionar aqui
-                                        },
-                                        child: const Icon(
-                                          Icons.remove_red_eye_outlined,
+                                const SizedBox(height: 20),
+                                //container equipamentos e seus botoes...
+                                Visibility(
+                                  visible: nivelUsuario <= 3,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: const Color.fromARGB(
+                                          131, 255, 255, 255),
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                          color: Colors.white, width: 1),
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        const Padding(
+                                          padding:
+                                              EdgeInsetsDirectional.fromSTEB(
+                                                  20, 5, 20, 0),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Column(
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: [
+                                                  Text(
+                                                    'Equipamento',
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Column(
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: [
+                                                  Icon(
+                                                    Icons.computer_sharp,
+                                                    color: Colors.white,
+                                                    size: 35,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.pushNamed(
-                                              context, '/hardware');
-                                        },
-                                        child: const Icon(
-                                          Icons.add,
+                                        Padding(
+                                          padding: const EdgeInsetsDirectional
+                                              .fromSTEB(20, 5, 20, 20),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              ElevatedButton(
+                                                onPressed: () {},
+                                                child: const Icon(
+                                                  Icons.remove_red_eye_outlined,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 10),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.pushNamed(
+                                                      context, '/hardware');
+                                                },
+                                                child: const Icon(
+                                                  Icons.add,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 20),
-                            ],
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                ],
-              ),
+                                const SizedBox(height: 20),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ],
             ),
           ),
           Positioned(
@@ -245,6 +407,35 @@ class HomePage extends StatelessWidget {
         ],
       ),
       backgroundColor: Colors.blue,
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.0),
+            topRight: Radius.circular(20.0),
+          ),
+        ),
+        child: BottomAppBar(
+          color: Colors.transparent,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.logout),
+                onPressed: () => _logout(context),
+              ),
+              IconButton(
+                icon: const Icon(Icons.home),
+                onPressed: () {},
+              ),
+              IconButton(
+                icon: const Icon(Icons.person),
+                onPressed: () {},
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
