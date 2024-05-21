@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import '../../../controllers/empresa_controller.dart';
 import '../../../controllers/equipamento_controller.dart';
 import '../../../controllers/usuario_controller.dart';
+import '../../../main.dart';
 import '../../../models/empresa_model.dart';
 import '../../../models/equipamento_model.dart';
 import '../../../models/usuario_model.dart';
+import '../../widgets/skeleton.dart';
 import 'detalhe_equipamento.dart';
 
 class VisualizarEquipamentos extends StatefulWidget {
@@ -18,6 +20,8 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
   late Future<List<Empresa>> _empresasFuture;
   late Future<List<Equipamento>> _equipamentosFuture;
   late Future<Usuario> _usuario;
+  String _statusFiltro = 'Ativo';
+  String _searchText = "";
 
   Map<String, bool> selectedMap = {};
 
@@ -31,72 +35,173 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
 
   @override
   Widget build(BuildContext context) {
+    final hasConnection = ConnectionNotifer.of(context).value;
+
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Visualizar Equipamentos'),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pushNamed(context, '/home');
-            },
-          )),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: FutureBuilder<List<Empresa>>(
-          future: _empresasFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Erro: ${snapshot.error}'));
-            } else {
-              final empresas = snapshot.data!;
-              return FutureBuilder<List<Equipamento>>(
-                future: _equipamentosFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Erro: ${snapshot.error}'));
-                  } else {
-                    final equipamentos = snapshot.data!;
-
-                    return FutureBuilder<Usuario>(
-                        future: _usuario,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          } else if (snapshot.hasError) {
-                            return Center(
-                                child: Text('Erro: ${snapshot.error}'));
-                          } else {
-                            final usuario = snapshot.data!;
-
-                            return ListView.builder(
-                              itemCount: empresas.length,
-                              itemBuilder: (context, index) {
-                                final empresa = empresas[index];
-                                if (empresa.matriz == empresa.id) {
-                                  // É uma empresa matriz
-                                  return _buildMatrizTile(
-                                      empresa, empresas, equipamentos, usuario);
-                                } else {
-                                  // É uma empresa filial (será tratada nas empresas matriz)
-                                  return null;
-                                }
-                              },
-                            );
-                          }
-                        });
-                  }
+        title: const Text('Visualizar Equipamentos'),
+        leading: hasConnection
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/home');
                 },
-              );
-            }
-          },
-        ),
+              )
+            : Container(),
       ),
+      body: hasConnection
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          decoration: const InputDecoration(
+                            labelText: 'Buscar por Marca, Modelo, QRCode',
+                            labelStyle: TextStyle(fontSize: 12),
+                            prefixIcon: Icon(Icons.search),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _searchText = value.toLowerCase();
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _statusFiltro = 'Ativo';
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              _statusFiltro == 'Ativo' ? Colors.blue : null,
+                        ),
+                        child: const Text('Ativo'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _statusFiltro = 'Inativo';
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              _statusFiltro == 'Inativo' ? Colors.blue : null,
+                        ),
+                        child: const Text('Inativo'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _statusFiltro = 'Ambos';
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              _statusFiltro == 'Ambos' ? Colors.blue : null,
+                        ),
+                        child: const Text('Ambos'),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: FutureBuilder<List<Empresa>>(
+                      future: _empresasFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const SkeletonLoader();
+                        } else if (snapshot.hasError) {
+                          return Center(child: Text('Erro: ${snapshot.error}'));
+                        } else {
+                          final empresas = snapshot.data!;
+                          return FutureBuilder<List<Equipamento>>(
+                            future: _equipamentosFuture,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const SkeletonLoader();
+                              } else if (snapshot.hasError) {
+                                return Center(
+                                    child: Text('Erro: ${snapshot.error}'));
+                              } else {
+                                final equipamentos =
+                                    snapshot.data!.where((equipamento) {
+                                  return (_statusFiltro == 'Ambos' ||
+                                          equipamento.status ==
+                                              _statusFiltro) &&
+                                      (equipamento.marca
+                                              .toLowerCase()
+                                              .contains(_searchText) ||
+                                          equipamento.modelo
+                                              .toLowerCase()
+                                              .contains(_searchText) ||
+                                          equipamento.qrcode
+                                              .toLowerCase()
+                                              .contains(_searchText));
+                                }).toList();
+
+                                return FutureBuilder<Usuario>(
+                                  future: _usuario,
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return const SkeletonLoader();
+                                    } else if (snapshot.hasError) {
+                                      return Center(
+                                          child:
+                                              Text('Erro: ${snapshot.error}'));
+                                    } else {
+                                      final usuario = snapshot.data!;
+                                      return ListView.builder(
+                                        itemCount: empresas.length,
+                                        itemBuilder: (context, index) {
+                                          final empresa = empresas[index];
+                                          if (empresa.matriz == empresa.id) {
+                                            // É uma empresa matriz
+                                            return _buildMatrizTile(
+                                                empresa,
+                                                empresas,
+                                                equipamentos,
+                                                usuario);
+                                          } else {
+                                            // É uma empresa filial (será tratada nas empresas matriz)
+                                            return Container();
+                                          }
+                                        },
+                                      );
+                                    }
+                                  },
+                                );
+                              }
+                            },
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : const Center(
+              child: Text('Sem conexão com a internet.'),
+            ),
     );
   }
 
@@ -105,11 +210,24 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
     final filiais = todasEmpresas
         .where((e) => e.matriz == matriz.id && e.id != matriz.id)
         .toList();
+    final equipamentosMatriz = equipamentos
+        .where((equipamento) => equipamento.empresa == matriz.id)
+        .toList();
 
-    final showExpansionArrow = filiais.isNotEmpty;
+    // Filtrar filiais com base nos equipamentos
+    final filiaisComEquipamentos = filiais.where((filial) {
+      final equipsInFilial = equipamentos
+          .where((equipamento) =>
+              equipamento.empresa == filial.id &&
+              (_statusFiltro == 'Ambos' || equipamento.status == _statusFiltro))
+          .toList();
+      return equipsInFilial.isNotEmpty;
+    }).toList();
+
+    final showExpansionArrow =
+        filiaisComEquipamentos.isNotEmpty || equipamentosMatriz.isNotEmpty;
 
     if (!selectedMap.containsKey(matriz.id)) {
-      // Se não existir, adiciona o ID da matriz ao mapa com o valor inicial como false
       selectedMap[matriz.id] = false;
     }
 
@@ -128,24 +246,57 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
         });
       },
       children: [
-        ...filiais.map((filial) => _buildFilialTile(filial, equipamentos)),
+        ...equipamentosMatriz.map((equipamento) => ListTile(
+              title: Row(
+                children: [
+                  const SizedBox(width: 24),
+                  Expanded(
+                    child: GestureDetector(
+                      child: Text(
+                          '${equipamento.qrcode} \n ${equipamento.empresa}'),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.remove_red_eye),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetalhesEquipamentoPage(
+                            equipamento: equipamento.id,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            )),
+        ...filiaisComEquipamentos
+            .map((filial) => _buildFilialTile(filial, equipamentos)),
       ],
     );
   }
 
   Widget _buildFilialTile(Empresa filial, List<Equipamento> equipamentos) {
     final equipsInFilial = equipamentos
-        .where((equipamento) => equipamento.empresa == filial.id)
+        .where((equipamento) =>
+            equipamento.empresa == filial.id &&
+            (_statusFiltro == 'Ambos' || equipamento.status == _statusFiltro))
         .toList();
     final showExpansionArrow = equipsInFilial.isNotEmpty;
 
     if (!selectedMap.containsKey(filial.id)) {
-      // Se não existir, adiciona o ID da filial ao mapa com o valor inicial como false
       selectedMap[filial.id] = false;
     }
 
     return ExpansionTile(
-      title: Text(filial.razaoSocial),
+      title: Row(
+        children: [
+          const SizedBox(width: 12),
+          Text(filial.razaoSocial),
+        ],
+      ),
       trailing: !showExpansionArrow
           ? const SizedBox()
           : Icon(
@@ -163,10 +314,11 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
           (equipamento) => ListTile(
             title: Row(
               children: [
+                const SizedBox(width: 24),
                 Expanded(
                   child: GestureDetector(
-                    child:
-                        Text('${equipamento.qrcode} \n ${equipamento.empresa}'),
+                    child: Text(
+                        '${equipamento.qrcode} \n ${equipamento.marca} ${equipamento.modelo}'),
                   ),
                 ),
                 IconButton(
@@ -184,7 +336,6 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
                 ),
               ],
             ),
-            // Adicione mais detalhes do usuário conforme necessário
           ),
         ),
       ],
