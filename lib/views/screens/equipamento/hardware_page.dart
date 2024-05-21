@@ -306,6 +306,7 @@ class HardwarePageState extends State<HardwarePage> {
                       builder: (context) {
                         return QRImage(
                           _qrcodeController.text,
+                          _empresaSelecionada,
                           sourceRoute: '/hardware',
                         );
                       },

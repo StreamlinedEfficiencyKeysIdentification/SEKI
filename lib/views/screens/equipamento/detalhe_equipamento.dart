@@ -203,6 +203,7 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
                                     builder: (context) {
                                       return QRImage(
                                         _qrcode,
+                                        _equipamento.empresa,
                                         sourceRoute: ModalRoute.of(context)
                                             ?.settings
                                             .name,
