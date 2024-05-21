@@ -102,12 +102,15 @@ class LoginPage extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(''),
-      ),
-      body: Center(
+ @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text(''),
+    ),
+    body: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 30), 
+      child: Center(
         child: Column(
           children: <Widget>[
             Padding(
@@ -122,32 +125,36 @@ class LoginPage extends StatelessWidget {
             ),
             const SizedBox(height: 40),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(30),
                 color: const Color.fromRGBO(0, 115, 188, 0.2),
               ),
-              child: TextField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  hintText: 'Email',
-                  border: InputBorder.none,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: TextField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(
+                    hintText: 'Email',
+                    border: InputBorder.none,
+                  ),
                 ),
               ),
             ),
             const SizedBox(height: 20),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(30),
                 color: const Color.fromRGBO(0, 115, 188, 0.2),
               ),
-              child: TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  hintText: 'Senha',
-                  border: InputBorder.none,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: TextField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    hintText: 'Senha',
+                    border: InputBorder.none,
+                  ),
                 ),
               ),
             ),
@@ -157,16 +164,30 @@ class LoginPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
+                    TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/reset_password');
+                    },
+                    child: const Text(
+                      'Esqueci a senha',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color:  Color.fromARGB(255, 19, 74, 119),
+                      ),
+                    ),
+                  ),
                   ElevatedButton(
                     onPressed: () => _login(context),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: Color.fromARGB(255, 19, 74, 119),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
                     child: const SizedBox(
-                      width: double.infinity, // Largura total
+                      width: double.infinity, 
+                      height: 35,
                       child: Center(
                         child: Text(
                           'Login',
@@ -179,25 +200,13 @@ class LoginPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/reset_password');
-                    },
-                    child: const Text(
-                      'Esqueci a senha',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
-                    ),
-                  ),
+                
                 ],
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-}
+    ),
+  );
+}}

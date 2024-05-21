@@ -31,3 +31,4 @@ flutter:
   uses-material-design: true
   assets:
     - images/userlogin.png
+    - images/cadeado.png
