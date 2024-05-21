@@ -219,7 +219,11 @@ class HomePageState extends State<HomePage> {
                                                             .center,
                                                     children: [
                                                       ElevatedButton(
-                                                        onPressed: () {},
+                                                        onPressed: () {
+                                                          Navigator.pushNamed(
+                                                              context,
+                                                              '/view_empresas');
+                                                        },
                                                         child: const Icon(
                                                           Icons
                                                               .remove_red_eye_outlined,
@@ -230,7 +234,7 @@ class HomePageState extends State<HomePage> {
                                                         onPressed: () {
                                                           Navigator.pushNamed(
                                                               context,
-                                                              '/view_empresas');
+                                                              '/group');
                                                         },
                                                         child: const Icon(
                                                           Icons.add,
@@ -311,7 +315,11 @@ class HomePageState extends State<HomePage> {
                                                             .center,
                                                     children: [
                                                       ElevatedButton(
-                                                        onPressed: () {},
+                                                        onPressed: () {
+                                                          Navigator.pushNamed(
+                                                              context,
+                                                              '/view_usuarios');
+                                                        },
                                                         child: const Icon(
                                                           Icons
                                                               .remove_red_eye_outlined,
