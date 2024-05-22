@@ -20,7 +20,7 @@ class ResetPasswordPageState extends State<ResetPasswordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recuperar Senha'),
+        title: const Text(''),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -37,8 +37,12 @@ class ResetPasswordPageState extends State<ResetPasswordPage> {
                 width: 100,
                 height: 100,
               ),
+              
             ),
-                        const SizedBox(height: 40),
+            const SizedBox(height: 10),
+const Center(  child: Text('Recuperar Senha', style: TextStyle(fontSize: 16),),
+),
+                        const SizedBox(height: 60),
 
             Container(
               decoration: BoxDecoration(
@@ -56,11 +60,35 @@ class ResetPasswordPageState extends State<ResetPasswordPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
+            
+            const SizedBox(height: 26.0),
+              ElevatedButton(
               onPressed: _isLoading ? null : _resetPassword,
-              child: const Text('Enviar E-mail de Redefinição'),
-            ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 19, 74, 119),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: const SizedBox(
+                      width: double.infinity, 
+                      height: 35,
+                      child: Center(
+                        child: Text(
+                          'Enviar E-mail de Redefinição',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+            // ElevatedButton(
+            //   onPressed: _isLoading ? null : _resetPassword,
+            //   child: const Text('Enviar E-mail de Redefinição'),
+            // ),
             if (_errorMessage.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
