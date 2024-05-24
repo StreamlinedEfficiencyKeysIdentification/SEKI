@@ -202,7 +202,7 @@ class _VisualizarEmpresasState extends State<VisualizarEmpresas> {
         children: [
           Expanded(
             child: GestureDetector(
-              child: Text(matriz.razaoSocial),
+              child: Text('${matriz.razaoSocial} (${filiais.length})'),
             ),
           ),
           IconButton(

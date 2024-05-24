@@ -207,6 +207,7 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
 
   Widget _buildMatrizTile(Empresa matriz, List<Empresa> todasEmpresas,
       List<Equipamento> equipamentos, Usuario usuario) {
+    int nivel = int.parse(usuario.nivel);
     final filiais = todasEmpresas
         .where((e) => e.matriz == matriz.id && e.id != matriz.id)
         .toList();
@@ -231,8 +232,29 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
       selectedMap[matriz.id] = false;
     }
 
+    final totalEquipamentosFiliais = filiaisComEquipamentos.fold<int>(
+        0,
+        (total, filial) =>
+            total +
+            equipamentos
+                .where((equipamento) =>
+                    equipamento.empresa == filial.id &&
+                    (_statusFiltro == 'Ambos' ||
+                        equipamento.status == _statusFiltro))
+                .length);
+
+    // Incluir contagem de usuários da matriz se o nível do usuário for <= 1
+    final totalEquipamentosMatriz = nivel <= 1
+        ? equipamentosMatriz
+            .where((equipamento) => (_statusFiltro == 'Ambos' ||
+                equipamento.status == _statusFiltro))
+            .length
+        : 0;
+
+    final totalUsuarios = totalEquipamentosFiliais + totalEquipamentosMatriz;
+
     return ExpansionTile(
-      title: Text(matriz.razaoSocial),
+      title: Text('${matriz.razaoSocial} ($totalUsuarios)'),
       trailing: !showExpansionArrow
           ? const SizedBox()
           : Icon(
@@ -246,32 +268,33 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
         });
       },
       children: [
-        ...equipamentosMatriz.map((equipamento) => ListTile(
-              title: Row(
-                children: [
-                  const SizedBox(width: 24),
-                  Expanded(
-                    child: GestureDetector(
-                      child: Text(
-                          '${equipamento.qrcode} \n ${equipamento.empresa}'),
+        if (nivel <= 2)
+          ...equipamentosMatriz.map((equipamento) => ListTile(
+                title: Row(
+                  children: [
+                    const SizedBox(width: 24),
+                    Expanded(
+                      child: GestureDetector(
+                        child: Text(
+                            '${equipamento.qrcode} \n ${equipamento.empresa}'),
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.remove_red_eye),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetalhesEquipamentoPage(
-                            equipamento: equipamento.id,
+                    IconButton(
+                      icon: const Icon(Icons.remove_red_eye),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DetalhesEquipamentoPage(
+                              equipamento: equipamento.id,
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            )),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              )),
         ...filiaisComEquipamentos
             .map((filial) => _buildFilialTile(filial, equipamentos)),
       ],
@@ -294,7 +317,7 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
       title: Row(
         children: [
           const SizedBox(width: 12),
-          Text(filial.razaoSocial),
+          Text('${filial.razaoSocial} (${equipsInFilial.length})'),
         ],
       ),
       trailing: !showExpansionArrow

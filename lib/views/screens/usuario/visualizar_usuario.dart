@@ -224,8 +224,30 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
       selectedMap[matriz.id] = false;
     }
 
+    // Contar usuários das filiais associadas à matriz
+    final totalUsuariosFiliais = filiaisComUsuarios.fold<int>(
+        0,
+        (total, filial) =>
+            total +
+            usuarios
+                .where((usuario) =>
+                    usuario.empresa == filial.id &&
+                    (_statusFiltro == 'Ambos' ||
+                        usuario.status == _statusFiltro))
+                .length);
+
+    // Incluir contagem de usuários da matriz se o nível do usuário for <= 1
+    final totalUsuariosMatriz = nivel <= 1
+        ? usuariosMatriz
+            .where((usuario) =>
+                (_statusFiltro == 'Ambos' || usuario.status == _statusFiltro))
+            .length
+        : 0;
+
+    final totalUsuarios = totalUsuariosFiliais + totalUsuariosMatriz;
+
     return ExpansionTile(
-      title: Text(matriz.razaoSocial),
+      title: Text('${matriz.razaoSocial} ($totalUsuarios)'),
       trailing: !showExpansionArrow
           ? const SizedBox()
           : Icon(
@@ -289,7 +311,7 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
       title: Row(
         children: [
           const SizedBox(width: 12),
-          Text(filial.razaoSocial),
+          Text('${filial.razaoSocial} (${usersInFilial.length})'),
         ],
       ),
       trailing: !showExpansionArrow
