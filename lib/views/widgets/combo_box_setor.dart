@@ -75,6 +75,10 @@ class ComboBoxSetorState extends State<ComboBoxSetor> {
             return SizedBox(
               child: Column(
                 children: [
+                  if (!_setorEncontrado)
+                    const Text(
+                      'Setor não encontrado. Por favor, escolha um setor existente.',
+                    ),
                   DropdownButton<String>(
                     hint: const Text('Selecione um setor'),
                     value:
@@ -95,10 +99,6 @@ class ComboBoxSetorState extends State<ComboBoxSetor> {
                       );
                     }).toList(),
                   ),
-                  if (!_setorEncontrado)
-                    const Text(
-                      'Setor não encontrado. Por favor, escolha um setor existente.',
-                    ),
                 ],
               ),
             );

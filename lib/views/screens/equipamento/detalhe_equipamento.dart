@@ -259,16 +259,18 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
               },
             ),
             //Chamar novamente esse componente para atualizar o nome do usuário
-            if (_usuario.isNotEmpty)
-              AutocompleteUsuarioExample(
-                user: _usuario,
-                key: _autocompleteKey,
-                onUsuarioSelected: (usuario) {
-                  setState(() {
-                    _usuarioSelecionado = usuario;
-                  });
-                },
-              ),
+
+            if (_usuarioSelecionado.isEmpty)
+              const Text('Deseja anexar um usuário ao equipamento?'),
+            AutocompleteUsuarioExample(
+              user: _usuario,
+              key: _autocompleteKey,
+              onUsuarioSelected: (usuario) {
+                setState(() {
+                  _usuarioSelecionado = usuario;
+                });
+              },
+            ),
             Switch(
               thumbIcon: thumbIcon,
               value: _status,
