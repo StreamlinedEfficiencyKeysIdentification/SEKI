@@ -192,8 +192,31 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
                 ),
               ],
             )
-          : const Center(
-              child: Text('Sem conexão com a internet.'),
+          : Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/no_internet.png',
+                    color: Colors.red,
+                    height: 100,
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 20, bottom: 10),
+                    child: const Text(
+                      'Sem conexão com a internet.',
+                      style: TextStyle(fontSize: 22),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 20),
+                    child: const Text(
+                      'Verifique sua conexão e tente novamente.',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  )
+                ],
+              ),
             ),
     );
   }
