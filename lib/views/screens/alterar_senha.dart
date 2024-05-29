@@ -37,6 +37,16 @@ class FirstAccessPageState extends State<FirstAccessPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Padding(
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).size.height * 0.1,
+              ),
+              child: Image.asset(
+                'images/redefinir_senha.png',
+                width: 100,
+                height: 100,
+              ),
+            ),
             TextFormField(
               controller: _passwordController,
               decoration: const InputDecoration(labelText: 'Nova Senha'),
