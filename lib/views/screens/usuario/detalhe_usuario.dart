@@ -182,38 +182,58 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
               },
             ),
             ComboBoxNivelAcesso(
-                nivel: _nivelSelecionado,
-                onNivelSelected: (nivel) {
-                  setState(() {
-                    _nivelSelecionado = nivel;
-                  });
-                }),
-            Switch(
-              thumbIcon: thumbIcon,
-              value: _status,
-              onChanged: (value) {
+              nivel: _nivelSelecionado,
+              onNivelSelected: (nivel) {
                 setState(() {
-                  _status = !_status;
+                  _nivelSelecionado = nivel;
                 });
               },
             ),
-            Switch(
-              thumbIcon: thumbIcon,
-              value: _primeiroAcesso,
-              onChanged: (value) {
-                setState(() {
-                  _primeiroAcesso = !_primeiroAcesso;
-                });
-              },
+            Row(
+              children: [
+                Switch(
+                  thumbIcon: thumbIcon,
+                  value: _status,
+                  onChanged: (value) {
+                    setState(() {
+                      _status = !_status;
+                    });
+                  },
+                ),
+                Text(_status ? 'Ativo' : 'Inativo'),
+              ],
             ),
-            Switch(
-              thumbIcon: thumbIcon,
-              value: _redefinirSenha,
-              onChanged: (value) {
-                setState(() {
-                  _redefinirSenha = !_redefinirSenha;
-                });
-              },
+            Row(
+              children: [
+                Switch(
+                  thumbIcon: thumbIcon,
+                  value: _primeiroAcesso,
+                  onChanged: (value) {
+                    setState(() {
+                      _primeiroAcesso = !_primeiroAcesso;
+                    });
+                  },
+                ),
+                Text(_primeiroAcesso
+                    ? 'Primeiro Acesso'
+                    : 'Não é o primeiro acesso'),
+              ],
+            ),
+            Row(
+              children: [
+                Switch(
+                  thumbIcon: thumbIcon,
+                  value: _redefinirSenha,
+                  onChanged: (value) {
+                    setState(() {
+                      _redefinirSenha = !_redefinirSenha;
+                    });
+                  },
+                ),
+                Text(_redefinirSenha
+                    ? 'Redefinir Senha'
+                    : 'Não é necessário redefinir a senha'),
+              ],
             ),
             Text(
               'Criador: $_criador',

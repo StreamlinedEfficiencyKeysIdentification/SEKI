@@ -271,14 +271,19 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
                 });
               },
             ),
-            Switch(
-              thumbIcon: thumbIcon,
-              value: _status,
-              onChanged: (value) {
-                setState(() {
-                  _status = !_status;
-                });
-              },
+            Row(
+              children: [
+                Switch(
+                  thumbIcon: thumbIcon,
+                  value: _status,
+                  onChanged: (value) {
+                    setState(() {
+                      _status = !_status;
+                    });
+                  },
+                ),
+                Text(_status ? 'Ativo' : 'Inativo'),
+              ],
             ),
             Text(
               'Criador: $_criador',
