@@ -31,42 +31,115 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Register'),
+        title: const Text('Adicionar novo usuário'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('Register Page'),
-            TextFormField(
-              controller: _usuarioController,
-              decoration: const InputDecoration(labelText: 'Usuario'),
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).size.height * 0.1,
+              ),
+              child: Image.asset(
+                'images/usuario.png',
+                width: 100,
+                height: 100,
+              ),
             ),
-            TextFormField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
+            const SizedBox(height: 10),
+            const Text(
+              'Usuário',
+              style: TextStyle(fontSize: 16),
             ),
-            TextFormField(
-              controller: _nomeController,
-              decoration: const InputDecoration(labelText: 'Nome'),
+            const SizedBox(height: 20),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                color: const Color.fromRGBO(0, 115, 188, 0.2),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: TextFormField(
+                  controller: _usuarioController,
+                  decoration: const InputDecoration(
+                    hintText: 'Usuário',
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
             ),
-            ComboBoxEmpresa(
-              empresa: _empresaSelecionada,
-              onEmpresaSelected: (empresa) {
-                setState(() {
-                  _empresaSelecionada =
-                      empresa; // Atualizar o estado do campo 'IDempresa'
-                });
-              },
+            const SizedBox(height: 20),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                color: const Color.fromRGBO(0, 115, 188, 0.2),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: TextFormField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(
+                    hintText: 'Email',
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
             ),
-            ComboBoxNivelAcesso(
-              nivel: _nivelSelecionado,
-              onNivelSelected: (nivel) {
-                setState(() {
-                  _nivelSelecionado =
-                      nivel; // Atualizar o estado do campo 'IDempresa'
-                });
-              },
+            const SizedBox(height: 20),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                color: const Color.fromRGBO(0, 115, 188, 0.2),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: TextFormField(
+                  controller: _nomeController,
+                  decoration: const InputDecoration(
+                    hintText: 'Nome',
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                color: const Color.fromRGBO(0, 115, 188, 0.2),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ComboBoxEmpresa(
+                  empresa: _empresaSelecionada,
+                  onEmpresaSelected: (empresa) {
+                    setState(() {
+                      _empresaSelecionada =
+                          empresa; // Atualizar o estado do campo 'IDempresa'
+                    });
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                color: const Color.fromRGBO(0, 115, 188, 0.2),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ComboBoxNivelAcesso(
+                  nivel: _nivelSelecionado,
+                  onNivelSelected: (nivel) {
+                    setState(() {
+                      _nivelSelecionado =
+                          nivel; // Atualizar o estado do campo 'IDempresa'
+                    });
+                  },
+                ),
+              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -110,7 +183,26 @@ class _RegisterPageState extends State<RegisterPage> {
                   _register(context, _empresaSelecionada, _nivelSelecionado);
                 }
               },
-              child: const Text('Register'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 19, 74, 119),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              child: const SizedBox(
+                width: double.infinity,
+                height: 35,
+                child: Center(
+                  child: Text(
+                    'Registrar',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
