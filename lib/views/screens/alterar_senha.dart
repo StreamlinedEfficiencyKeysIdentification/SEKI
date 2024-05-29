@@ -28,37 +28,41 @@ class FirstAccessPageState extends State<FirstAccessPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextFormField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Nova Senha'),
-              obscureText: true,
-              onChanged: (_) => _validatePassword(),
-            ),
-            const SizedBox(height: 8.0),
-            TextFormField(
-              controller: _confirmPasswordController,
-              decoration: const InputDecoration(labelText: 'Confirmar Senha'),
-              obscureText: true,
-              onChanged: (_) => _validatePassword(),
-            ),
-            const SizedBox(height: 8.0),
-            _buildPasswordRequirements(),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed:
-                  _isPasswordValid ? () => _changePassword(context) : null,
-              child: const Text('Alterar Senha'),
-            ),
-          ],
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+          automaticallyImplyLeading: false,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextFormField(
+                controller: _passwordController,
+                decoration: const InputDecoration(labelText: 'Nova Senha'),
+                obscureText: true,
+                onChanged: (_) => _validatePassword(),
+              ),
+              const SizedBox(height: 8.0),
+              TextFormField(
+                controller: _confirmPasswordController,
+                decoration: const InputDecoration(labelText: 'Confirmar Senha'),
+                obscureText: true,
+                onChanged: (_) => _validatePassword(),
+              ),
+              const SizedBox(height: 8.0),
+              _buildPasswordRequirements(),
+              const SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed:
+                    _isPasswordValid ? () => _changePassword(context) : null,
+                child: const Text('Alterar Senha'),
+              ),
+            ],
+          ),
         ),
       ),
     );
