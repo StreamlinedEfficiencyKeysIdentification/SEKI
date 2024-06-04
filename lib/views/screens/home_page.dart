@@ -553,9 +553,9 @@ class HomePageState extends State<HomePage> {
                                                           children: [
                                                             ElevatedButton(
                                                               onPressed: () {
-                                                                // Navigator.pushNamed(
-                                                                //     context,
-                                                                //     '/view_equipamentos');
+                                                                Navigator.pushNamed(
+                                                                    context,
+                                                                    '/chamado');
                                                               },
                                                               child: const Icon(
                                                                 Icons
