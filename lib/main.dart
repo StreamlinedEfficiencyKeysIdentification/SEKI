@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
+import 'views/screens/chamado/chamado.dart';
 import 'views/screens/empresa/goup_page.dart';
 import 'views/screens/equipamento/hardware_page.dart';
 import 'views/screens/login_page.dart';
@@ -108,7 +109,8 @@ class _MyAppState extends State<MyApp> {
         '/view_equipamentos': (context) => const VisualizarEquipamentos(),
         '/group': (context) => const GroupPage(),
         '/view_empresas': (context) => const VisualizarEmpresas(),
-        '/scan': (context) => const ScanCodePage(),
+        '/scan': (context) => const BarcodeScannerWithController(),
+        '/chamado': (context) => const Chamado(),
       },
     );
   }
