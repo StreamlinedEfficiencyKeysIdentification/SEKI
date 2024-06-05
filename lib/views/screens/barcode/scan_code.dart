@@ -8,7 +8,12 @@ import 'package:testeseki/views/screens/barcode/scanner_error_widget.dart';
 import 'package:testeseki/views/screens/barcode/scanner_overlay.dart';
 
 class BarcodeScannerWithController extends StatefulWidget {
-  const BarcodeScannerWithController({super.key});
+  final bool returnImmediately;
+
+  const BarcodeScannerWithController({
+    super.key,
+    required this.returnImmediately,
+  });
 
   @override
   State<BarcodeScannerWithController> createState() =>
@@ -146,7 +151,9 @@ class _BarcodeScannerWithControllerState
               ToggleFlashlightButton(controller: controller),
               StartStopMobileScannerButton(controller: controller),
               SwitchCameraButton(controller: controller),
-              AnalyzeImageFromGalleryButton(controller: controller),
+              AnalyzeImageFromGalleryButton(
+                  controller: controller,
+                  returnImmediately: widget.returnImmediately),
             ],
           ),
           Expanded(child: Center(child: _buildBarcode(_barcode))),
@@ -162,12 +169,16 @@ class _BarcodeScannerWithControllerState
 
       controller.dispose();
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => FoundScreen(value: code),
-        ),
-      );
+      if (widget.returnImmediately) {
+        Navigator.pop(context, code);
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FoundScreen(value: code),
+          ),
+        );
+      }
     }
   }
 
