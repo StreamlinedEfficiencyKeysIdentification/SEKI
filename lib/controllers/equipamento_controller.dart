@@ -266,17 +266,23 @@ class EquipamentoController {
     final List<Equipamento> equipamentos = [];
 
     for (var doc in equipSnapshot.docs) {
+      final detalheDoc = await FirebaseFirestore.instance
+          .collection('DetalheEquipamento')
+          .doc(doc.id)
+          .get();
+
       final equipamento = Equipamento(
         id: doc.id,
-        marca: '',
-        modelo: '',
+        marca: detalheDoc.exists ? detalheDoc['Marca'] as String? ?? '' : '',
+        modelo: detalheDoc.exists ? detalheDoc['Modelo'] as String? ?? '' : '',
         qrcode: doc['IDqrcode'] as String? ?? '',
         empresa: doc['IDempresa'] as String? ?? '',
         setor: '',
         usuario: doc['IDusuario'] as String? ?? '',
         criador: '',
-        status: '',
+        status: doc['Status'] as String? ?? '',
       );
+
       equipamentos.add(equipamento);
     }
     return equipamentos;

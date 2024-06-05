@@ -1,28 +1,87 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:testeseki/views/screens/barcode/found_code.dart';
+import 'package:testeseki/views/screens/barcode/scanner_button_widgets.dart';
+import 'package:testeseki/views/screens/barcode/scanner_error_widget.dart';
 import 'package:testeseki/views/screens/barcode/scanner_overlay.dart';
 
-class ScanCodePage extends StatefulWidget {
-  const ScanCodePage({super.key});
+class BarcodeScannerWithController extends StatefulWidget {
+  const BarcodeScannerWithController({super.key});
 
   @override
-  State<ScanCodePage> createState() => _ScanCodePageState();
+  State<BarcodeScannerWithController> createState() =>
+      _BarcodeScannerWithControllerState();
 }
 
-class _ScanCodePageState extends State<ScanCodePage> {
-  final MobileScannerController cameraController = MobileScannerController(
-    torchEnabled: false,
+class _BarcodeScannerWithControllerState
+    extends State<BarcodeScannerWithController> with WidgetsBindingObserver {
+  final MobileScannerController controller = MobileScannerController(
+    autoStart: false,
+    torchEnabled: true,
     useNewCameraSelector: true,
     detectionSpeed: DetectionSpeed.normal,
     detectionTimeoutMs: 1000,
   );
-  bool _screenOpened = false;
+
+  Barcode? _barcode;
+  StreamSubscription<Object?>? _subscription;
+
+  Widget _buildBarcode(Barcode? value) {
+    if (value == null) {
+      return const Text(
+        'Scan something!',
+        overflow: TextOverflow.fade,
+        style: TextStyle(color: Colors.white),
+      );
+    }
+
+    return Text(
+      value.displayValue ?? 'No display value.',
+      overflow: TextOverflow.fade,
+      style: const TextStyle(color: Colors.white),
+    );
+  }
+
+  void _handleBarcode(BarcodeCapture barcodes) {
+    if (mounted) {
+      setState(() {
+        _barcode = barcodes.barcodes.firstOrNull;
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    _screenWasClosed();
+    WidgetsBinding.instance.addObserver(this);
+
+    _subscription = controller.barcodes.listen(_handleBarcode);
+
+    unawaited(controller.start());
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (!controller.value.isInitialized) {
+      return;
+    }
+
+    switch (state) {
+      case AppLifecycleState.detached:
+      case AppLifecycleState.hidden:
+      case AppLifecycleState.paused:
+        return;
+      case AppLifecycleState.resumed:
+        _subscription = controller.barcodes.listen(_handleBarcode);
+
+        unawaited(controller.start());
+      case AppLifecycleState.inactive:
+        unawaited(_subscription?.cancel());
+        _subscription = null;
+        unawaited(controller.stop());
+    }
   }
 
   @override
@@ -30,11 +89,13 @@ class _ScanCodePageState extends State<ScanCodePage> {
     return Scaffold(
       backgroundColor: Colors.black.withOpacity(0.5),
       body: Stack(
-        alignment: Alignment.center,
-        children: <Widget>[
+        children: [
           MobileScanner(
-            controller: cameraController,
+            controller: controller,
             onDetect: _foundBarcode,
+            errorBuilder: (context, error, child) {
+              return ScannerErrorWidget(error: error);
+            },
           ),
           QRScannerOverlay(
             overlayColour: Colors.black.withOpacity(0.5),
@@ -49,40 +110,23 @@ class _ScanCodePageState extends State<ScanCodePage> {
                 color: Colors.blue,
               ),
               onPressed: () {
-                cameraController.dispose();
+                controller.dispose();
                 Navigator.pushNamed(context, '/');
               },
             ),
           ),
-          Positioned(
-            top: MediaQuery.of(context).padding.top,
-            child: buildControlButtons(),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              alignment: Alignment.bottomCenter,
+              height: 100,
+              color: Colors.black.withOpacity(0.4),
+              child: buildControlButtons(),
+            ),
           ),
         ],
       ),
     );
-  }
-
-  void _foundBarcode(BarcodeCapture capture) {
-    if (!_screenOpened && capture.barcodes.isNotEmpty) {
-      final Barcode barcode = capture.barcodes.first;
-      final String code = barcode.rawValue ?? "___";
-      _screenOpened = true;
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) =>
-              FoundScreen(value: code, screenClose: _screenWasClosed),
-        ),
-      );
-
-      cameraController.dispose();
-    }
-  }
-
-  void _screenWasClosed() {
-    _screenOpened = false;
   }
 
   Widget buildControlButtons() {
@@ -92,61 +136,47 @@ class _ScanCodePageState extends State<ScanCodePage> {
         borderRadius: BorderRadius.circular(8),
         color: Colors.white24,
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          IconButton(
-            icon: ValueListenableBuilder(
-              valueListenable: cameraController.torchState,
-              builder: (context, state, child) {
-                if (state == TorchState.on) {
-                  return const Icon(
-                    color: Colors.lightBlueAccent,
-                    Icons.flash_on,
-                  );
-                } else {
-                  return const Icon(
-                    color: Colors.blue,
-                    Icons.flash_off,
-                  );
-                }
-              },
-            ),
-            onPressed: () {
-              cameraController.toggleTorch();
-            },
+      child: Column(
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ToggleFlashlightButton(controller: controller),
+              StartStopMobileScannerButton(controller: controller),
+              SwitchCameraButton(controller: controller),
+              AnalyzeImageFromGalleryButton(controller: controller),
+            ],
           ),
-          IconButton(
-            icon: ValueListenableBuilder(
-              valueListenable: cameraController.cameraFacingState,
-              builder: (context, state, child) {
-                if (state == CameraFacing.back) {
-                  return const Icon(
-                    color: Colors.blue,
-                    Icons.camera_rear,
-                  );
-                } else {
-                  return const Icon(
-                    color: Colors.lightBlueAccent,
-                    Icons.camera_front,
-                  );
-                }
-              },
-            ),
-            onPressed: () {
-              cameraController.switchCamera();
-            },
-          ),
+          Expanded(child: Center(child: _buildBarcode(_barcode))),
         ],
       ),
     );
   }
 
+  void _foundBarcode(BarcodeCapture capture) {
+    if (capture.barcodes.isNotEmpty) {
+      final Barcode barcode = capture.barcodes.first;
+      final String code = barcode.rawValue ?? "___";
+
+      controller.dispose();
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FoundScreen(value: code),
+        ),
+      );
+    }
+  }
+
   @override
-  void dispose() {
+  Future<void> dispose() async {
+    WidgetsBinding.instance.removeObserver(this);
+    unawaited(_subscription?.cancel());
+    _subscription = null;
     super.dispose();
-    cameraController.dispose();
+    await controller.dispose();
   }
 }

@@ -4,11 +4,9 @@ import 'package:testeseki/models/equipamento_model.dart';
 
 class FoundScreen extends StatefulWidget {
   final String value;
-  final Function() screenClose;
   const FoundScreen({
     super.key,
     required this.value,
-    required this.screenClose,
   });
 
   @override
@@ -107,7 +105,6 @@ class _FoundScreenState extends State<FoundScreen> {
                           children: [
                             ElevatedButton(
                               onPressed: () {
-                                widget.screenClose();
                                 Navigator.pushNamed(context, '/scan');
                               },
                               child: const Text(
@@ -116,8 +113,7 @@ class _FoundScreenState extends State<FoundScreen> {
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                widget.screenClose();
-                                Navigator.pushNamed(context, '/');
+                                Navigator.pushNamed(context, '/chamado');
                               },
                               child: const Text(
                                 'Abrir Chamado',
@@ -127,7 +123,6 @@ class _FoundScreenState extends State<FoundScreen> {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            widget.screenClose();
                             Navigator.pushNamed(context, '/');
                           },
                           child: const Text(

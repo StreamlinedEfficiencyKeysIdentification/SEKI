@@ -203,6 +203,7 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
                                     builder: (context) {
                                       return QRImage(
                                         _qrcode,
+                                        _equipamento.empresa,
                                         sourceRoute: ModalRoute.of(context)
                                             ?.settings
                                             .name,
@@ -258,24 +259,31 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
               },
             ),
             //Chamar novamente esse componente para atualizar o nome do usuário
-            if (_usuario.isNotEmpty)
-              AutocompleteUsuarioExample(
-                user: _usuario,
-                key: _autocompleteKey,
-                onUsuarioSelected: (usuario) {
-                  setState(() {
-                    _usuarioSelecionado = usuario;
-                  });
-                },
-              ),
-            Switch(
-              thumbIcon: thumbIcon,
-              value: _status,
-              onChanged: (value) {
+
+            if (_usuarioSelecionado.isEmpty)
+              const Text('Deseja anexar um usuário ao equipamento?'),
+            AutocompleteUsuarioExample(
+              user: _usuario,
+              key: _autocompleteKey,
+              onUsuarioSelected: (usuario) {
                 setState(() {
-                  _status = !_status;
+                  _usuarioSelecionado = usuario;
                 });
               },
+            ),
+            Row(
+              children: [
+                Switch(
+                  thumbIcon: thumbIcon,
+                  value: _status,
+                  onChanged: (value) {
+                    setState(() {
+                      _status = !_status;
+                    });
+                  },
+                ),
+                Text(_status ? 'Ativo' : 'Inativo'),
+              ],
             ),
             Text(
               'Criador: $_criador',
