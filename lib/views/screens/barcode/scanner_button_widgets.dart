@@ -4,9 +4,11 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:testeseki/views/screens/barcode/found_code.dart';
 
 class AnalyzeImageFromGalleryButton extends StatelessWidget {
-  const AnalyzeImageFromGalleryButton({required this.controller, super.key});
+  const AnalyzeImageFromGalleryButton(
+      {required this.controller, required this.returnImmediately, super.key});
 
   final MobileScannerController controller;
+  final bool returnImmediately;
 
   @override
   Widget build(BuildContext context) {
@@ -45,12 +47,16 @@ class AnalyzeImageFromGalleryButton extends StatelessWidget {
 
           ScaffoldMessenger.of(context).showSnackBar(snackbar);
         } else {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => FoundScreen(value: barcodeValue),
-            ),
-          );
+          if (returnImmediately) {
+            Navigator.pop(context, barcodeValue);
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => FoundScreen(value: barcodeValue),
+              ),
+            );
+          }
 
           controller.dispose();
         }
