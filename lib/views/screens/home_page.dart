@@ -555,7 +555,7 @@ class HomePageState extends State<HomePage> {
                                                               onPressed: () {
                                                                 Navigator.pushNamed(
                                                                     context,
-                                                                    '/chamado');
+                                                                    '/view_chamado');
                                                               },
                                                               child: const Icon(
                                                                 Icons
@@ -566,9 +566,9 @@ class HomePageState extends State<HomePage> {
                                                                 width: 10),
                                                             ElevatedButton(
                                                               onPressed: () {
-                                                                // Navigator.pushNamed(
-                                                                //     context,
-                                                                //     '/hardware');
+                                                                Navigator.pushNamed(
+                                                                    context,
+                                                                    '/chamado');
                                                               },
                                                               child: const Icon(
                                                                 Icons.add,
