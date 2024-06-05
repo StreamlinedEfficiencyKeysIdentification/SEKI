@@ -109,8 +109,12 @@ class _MyAppState extends State<MyApp> {
         '/view_equipamentos': (context) => const VisualizarEquipamentos(),
         '/group': (context) => const GroupPage(),
         '/view_empresas': (context) => const VisualizarEmpresas(),
-        '/scan': (context) => const BarcodeScannerWithController(),
-        '/chamado': (context) => const Chamado(),
+        '/scan': (context) => const BarcodeScannerWithController(
+              returnImmediately: false,
+            ),
+        '/chamado': (context) => const Chamado(
+              qrcode: '',
+            ),
       },
     );
   }
