@@ -116,7 +116,7 @@ class _BarcodeScannerWithControllerState
               ),
               onPressed: () {
                 controller.dispose();
-                Navigator.pushNamed(context, '/');
+                Navigator.pop(context);
               },
             ),
           ),
