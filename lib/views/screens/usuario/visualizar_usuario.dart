@@ -8,7 +8,7 @@ import '../../widgets/skeleton.dart';
 import 'detalhe_usuario.dart';
 
 class VisualizarUsuarios extends StatefulWidget {
-  const VisualizarUsuarios({super.key});
+  const VisualizarUsuarios({Key? key});
 
   @override
   State<VisualizarUsuarios> createState() => _VisualizarUsuariosState();
@@ -53,22 +53,36 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Row(
+                  child: Column(
                     children: [
-                      Expanded(
-                        child: TextField(
-                          decoration: const InputDecoration(
-                            labelText: 'Buscar por Nome ou Email',
-                            labelStyle: TextStyle(
-                                fontSize: 12), // Ajuste o tamanho da fonte aqui
-                            prefixIcon: Icon(Icons.search),
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              _searchText = value.toLowerCase();
-                            });
-                          },
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20, bottom: 10),
+                        child: Icon(
+                          Icons.person, // Ícone de usuário
+                          color: const Color(0xFF0073BC),
+                          size: 140, // Tamanho do ícone
                         ),
+                      ),
+                      TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Buscar por Nome ou Email',
+                          hintStyle: const TextStyle(fontSize: 14),
+                          filled: true,
+                          fillColor: const Color(0xFF0073BC).withOpacity(0.3),
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 10),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50),
+                            borderSide: BorderSide.none,
+                          ),
+                          suffixIcon: const Icon(Icons.search,
+                              color: Colors.black), // Ícone à direita
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _searchText = value.toLowerCase();
+                          });
+                        },
                       ),
                     ],
                   ),
@@ -201,19 +215,15 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
                     color: Colors.red,
                     height: 100,
                   ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 20, bottom: 10),
-                    child: const Text(
-                      'Sem conexão com a internet.',
-                      style: TextStyle(fontSize: 22),
-                    ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Sem conexão com a internet.',
+                    style: TextStyle(fontSize: 22),
                   ),
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 20),
-                    child: const Text(
-                      'Verifique sua conexão e tente novamente.',
-                      style: TextStyle(fontSize: 16),
-                    ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Verifique sua conexão e tente novamente.',
+                    style: TextStyle(fontSize: 16),
                   )
                 ],
               ),
@@ -230,7 +240,6 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
     final usuariosMatriz =
         usuarios.where((usuario) => usuario.empresa == matriz.id).toList();
 
-    // Filtrar filiais com base nos usuários
     final filiaisComUsuarios = filiais.where((filial) {
       final usersInFilial = usuarios
           .where((usuario) =>
@@ -247,7 +256,6 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
       selectedMap[matriz.id] = false;
     }
 
-    // Contar usuários das filiais associadas à matriz
     final totalUsuariosFiliais = filiaisComUsuarios.fold<int>(
         0,
         (total, filial) =>
@@ -259,7 +267,6 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
                         usuario.status == _statusFiltro))
                 .length);
 
-    // Incluir contagem de usuários da matriz se o nível do usuário for <= 1
     final totalUsuariosMatriz = nivel <= 1
         ? usuariosMatriz
             .where((usuario) =>
@@ -269,52 +276,62 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
 
     final totalUsuarios = totalUsuariosFiliais + totalUsuariosMatriz;
 
-    return ExpansionTile(
-      title: Text('${matriz.razaoSocial} ($totalUsuarios)'),
-      trailing: !showExpansionArrow
-          ? const SizedBox()
-          : Icon(
-              selectedMap[matriz.id] ?? false
-                  ? Icons.keyboard_arrow_up
-                  : Icons.keyboard_arrow_down,
-            ),
-      onExpansionChanged: (value) {
-        setState(() {
-          selectedMap[matriz.id] = value;
-        });
-      },
-      children: [
-        if (nivel <= 1)
-          ...usuariosMatriz.map(
-            (usuario) => ListTile(
-              title: Row(
-                children: [
-                  const SizedBox(width: 24),
-                  Expanded(
-                    child: GestureDetector(
-                      child: Text('${usuario.nome} \n ${usuario.usuario}'),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.remove_red_eye),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetalhesUsuarioPage(
-                            usuario: usuario.uid,
-                          ),
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey, width: 1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ExpansionTile(
+          title: Text('${matriz.razaoSocial} ($totalUsuarios)'),
+          trailing: !showExpansionArrow
+              ? const SizedBox()
+              : Icon(
+                  selectedMap[matriz.id] ?? false
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
+                ),
+          onExpansionChanged: (value) {
+            setState(() {
+              selectedMap[matriz.id] = value;
+            });
+          },
+          children: [
+            if (nivel <= 1)
+              ...usuariosMatriz.map(
+                (usuario) => ListTile(
+                  title: Row(
+                    children: [
+                      const SizedBox(width: 24),
+                      Expanded(
+                        child: GestureDetector(
+                          child: Text('${usuario.nome} \n ${usuario.usuario}'),
                         ),
-                      );
-                    },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.remove_red_eye),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetalhesUsuarioPage(
+                                usuario: usuario.uid,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ...filiaisComUsuarios
-            .map((filial) => _buildFilialTile(filial, usuarios)),
-      ],
+            ...filiaisComUsuarios
+                .map((filial) => _buildFilialTile(filial, usuarios)),
+          ],
+        ),
+      ),
     );
   }
 
@@ -330,55 +347,65 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
       selectedMap[filial.id] = false;
     }
 
-    return ExpansionTile(
-      title: Row(
-        children: [
-          const SizedBox(width: 12),
-          Text('${filial.razaoSocial} (${usersInFilial.length})'),
-        ],
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey, width: 1),
+        borderRadius: BorderRadius.circular(12),
       ),
-      trailing: !showExpansionArrow
-          ? const SizedBox()
-          : Icon(
-              selectedMap[filial.id] ?? false
-                  ? Icons.keyboard_arrow_up
-                  : Icons.keyboard_arrow_down,
-            ),
-      onExpansionChanged: (value) {
-        setState(() {
-          selectedMap[filial.id] = value;
-        });
-      },
-      children: [
-        ...usersInFilial.map(
-          (usuario) => ListTile(
-            title: Row(
-              children: [
-                const SizedBox(width: 24),
-                Expanded(
-                  child: GestureDetector(
-                    child: Text('${usuario.nome} \n ${usuario.usuario}'),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.remove_red_eye),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DetalhesUsuarioPage(
-                          usuario: usuario.uid,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-            // Adicione mais detalhes do usuário conforme necessário
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ExpansionTile(
+          title: Row(
+            children: [
+              const SizedBox(width: 12),
+              Text('${filial.razaoSocial} (${usersInFilial.length})'),
+            ],
           ),
+          trailing: !showExpansionArrow
+              ? const SizedBox()
+              : Icon(
+                  selectedMap[filial.id] ?? false
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
+                ),
+          onExpansionChanged: (value) {
+            setState(() {
+              selectedMap[filial.id] = value;
+            });
+          },
+          children: [
+            ...usersInFilial.map(
+              (usuario) => ListTile(
+                title: Row(
+                  children: [
+                    const SizedBox(width: 24),
+                    Expanded(
+                      child: GestureDetector(
+                        child: Text('${usuario.nome} \n ${usuario.usuario}'),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.remove_red_eye),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DetalhesUsuarioPage(
+                              usuario: usuario.uid,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+                // Adicione mais detalhes do usuário conforme necessário
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

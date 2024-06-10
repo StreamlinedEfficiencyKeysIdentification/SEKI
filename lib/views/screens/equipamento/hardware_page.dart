@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously, avoid_print
-
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +20,7 @@ class HardwarePageState extends State<HardwarePage> {
   final GlobalKey<AutocompleteUsuarioExampleState> _autocompleteKey =
       GlobalKey();
   final TextEditingController _qrcodeController = TextEditingController();
+  final TextEditingController _patrimonioController = TextEditingController();
   final TextEditingController _marcaController = TextEditingController();
   final TextEditingController _modeloController = TextEditingController();
   String _empresaSelecionada = '';
@@ -42,120 +41,243 @@ class HardwarePageState extends State<HardwarePage> {
           },
         ),
       ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _qrcodeController,
-                      decoration: const InputDecoration(labelText: 'QRcode'),
-                      enabled: false, // Desabilita a edição do campo
+      body: Center(
+        // Centraliza o conteúdo na tela
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.center, // Centraliza horizontalmente
+              mainAxisSize: MainAxisSize
+                  .min, // Ajusta a altura da coluna para seu conteúdo
+              children: [
+                Column(
+                  children: [
+                    Icon(
+                      Icons.computer,
+                      color: Color(0xFF0076BC),
+                      size: 140,
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.refresh),
-                    onPressed: () {
-                      _generateQRCodeHash();
-                    },
-                  ),
-                ],
-              ),
-              TextFormField(
-                controller: _marcaController,
-                decoration: const InputDecoration(labelText: 'Marca'),
-              ),
-              TextFormField(
-                controller: _modeloController,
-                decoration: const InputDecoration(labelText: 'Modelo'),
-              ),
-              ComboBoxEmpresa(
-                empresa: _empresaSelecionada,
-                onEmpresaSelected: (empresa) {
-                  setState(() {
-                    _empresaSelecionada = empresa;
-                  });
-                },
-              ),
-              ComboBoxSetor(
-                encontrado: true,
-                setor: _setorSelecionado,
-                onSetorSelected: (setor) {
-                  setState(() {
-                    _setorSelecionado = setor;
-                  });
-                },
-              ),
-              Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        usuarioValue
-                            ? 'Inserir Usuário'
-                            : 'Não Inserir Usuário',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: usuarioValue ? Colors.green : Colors.grey,
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Equipamento',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: TextField(
+                        controller: _qrcodeController,
+                        decoration: InputDecoration(
+                          labelText: 'QR Code',
+                          filled: true,
+                          fillColor: Color(0xFF0076BC).withOpacity(0.3),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                          ),
+                          labelStyle: TextStyle(
+                            color: Color(0xFF0076BC),
+                          ),
+                        ),
+                        enabled: false,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.refresh),
+                      onPressed: _generateQRCodeHash,
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      flex: 2,
+                      child: TextField(
+                        controller: _patrimonioController,
+                        decoration: InputDecoration(
+                          labelText: 'Patrimônio',
+                          filled: true,
+                          fillColor: Color(0xFF0076BC).withOpacity(0.3),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                          ),
+                          labelStyle: TextStyle(
+                            color: Color(0xFF0076BC),
+                          ),
                         ),
                       ),
-                      Switch(
-                        value: usuarioValue,
-                        onChanged: (value) {
-                          setState(() {
-                            usuarioValue = value;
-                          });
-                        },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _marcaController,
+                        decoration: InputDecoration(
+                          labelText: 'Marca',
+                          filled: true,
+                          fillColor: Color(0xFF0076BC).withOpacity(0.3),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                          ),
+                          labelStyle: TextStyle(
+                            color: Color(0xFF0076BC),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: TextField(
+                        controller: _modeloController,
+                        decoration: InputDecoration(
+                          labelText: 'Modelo',
+                          filled: true,
+                          fillColor: Color(0xFF0076BC).withOpacity(0.3),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                          ),
+                          labelStyle: TextStyle(
+                            color: Color(0xFF0076BC),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50.0),
+                            color: Color(0xFF0076BC).withOpacity(0.3),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          child: ComboBoxEmpresa(
+                            empresa: _empresaSelecionada,
+                            onEmpresaSelected: (empresa) {
+                              setState(() {
+                                _empresaSelecionada = empresa;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50.0),
+                            color: Color(0xFF0076BC).withOpacity(0.3),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 8),
+                          child: ComboBoxSetor(
+                            encontrado: true,
+                            setor: _setorSelecionado,
+                            onSetorSelected: (setor) {
+                              setState(() {
+                                _setorSelecionado = setor;
+                              });
+                            },
+                          ),
+                        ),
                       ),
                     ],
                   ),
-                  SizedBox(
-                    height: 50,
-                    child: usuarioValue
-                        ? AutocompleteUsuarioExample(
-                            user: _usuarioSelecionado,
-                            key: _autocompleteKey,
-                            onUsuarioSelected: (usuario) {
-                              setState(() {
-                                _usuarioSelecionado = usuario;
-                              });
-                            },
-                          )
-                        : const SizedBox.shrink(),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    _switchValue ? 'Equipamento Ativo' : 'Equipamento Inativo',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: _switchValue ? Colors.green : Colors.grey,
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      usuarioValue ? 'Com Usuário' : 'Sem Usuário',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: usuarioValue ? Colors.green : Colors.grey,
+                      ),
+                    ),
+                    Switch(
+                      value: usuarioValue,
+                      onChanged: (value) {
+                        setState(() {
+                          usuarioValue = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                usuarioValue
+                    ? AutocompleteUsuarioExample(
+                        user: _usuarioSelecionado,
+                        key: _autocompleteKey,
+                        onUsuarioSelected: (usuario) {
+                          setState(() {
+                            _usuarioSelecionado = usuario;
+                          });
+                        },
+                      )
+                    : const SizedBox.shrink(),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      _switchValue
+                          ? 'Equipamento Ativo'
+                          : 'Equipamento Inativo',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: _switchValue ? Colors.green : Colors.grey,
+                      ),
+                    ),
+                    Switch(
+                      value: _switchValue,
+                      onChanged: (value) {
+                        setState(() {
+                          _switchValue = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: cadastrarEquipamento,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF0076BC),
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                      ),
+                    ),
+                    child: const Text(
+                      'Registrar',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                  Switch(
-                    value: _switchValue,
-                    onChanged: (value) {
-                      setState(() {
-                        _switchValue = value;
-                      });
-                    },
-                  ),
-                ],
-              ),
-              ElevatedButton(
-                onPressed: cadastrarEquipamento,
-                child: const Text('Cadastrar'),
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -231,6 +353,7 @@ class HardwarePageState extends State<HardwarePage> {
 
   void cadastrarEquipamento() async {
     if (_qrcodeController.text.isEmpty ||
+        _patrimonioController.text.isEmpty ||
         _marcaController.text.isEmpty ||
         _modeloController.text.isEmpty ||
         _empresaSelecionada.isEmpty ||
@@ -260,12 +383,9 @@ class HardwarePageState extends State<HardwarePage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text(
-              'Usuário obrigatório',
-            ),
+            title: const Text('Usuário obrigatório'),
             content: const Text(
-              'Por favor, selecione um usuário ou desative a opção de inserir usuário.',
-            ),
+                'Por favor, selecione um usuário ou desative a opção de inserir usuário.'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -280,14 +400,15 @@ class HardwarePageState extends State<HardwarePage> {
       return;
     }
     bool waiting = await EquipamentoController.cadastrarEquipamento(
-        context,
-        _qrcodeController.text,
-        _empresaSelecionada,
-        _setorSelecionado,
-        _usuarioSelecionado,
-        _switchValue,
-        _marcaController.text,
-        _modeloController.text);
+      context,
+      _qrcodeController.text,
+      _empresaSelecionada,
+      _setorSelecionado,
+      _usuarioSelecionado,
+      _switchValue,
+      _marcaController.text,
+      _modeloController.text,
+    );
 
     if (waiting) {
       showDialog(
