@@ -127,41 +127,8 @@ class ChamadoController {
           );
         }).toList();
       }
-    } else if (nivelInt == 4) {
-      DocumentSnapshot docSnapshot = await FirebaseFirestore.instance
-          .collection('Chamados')
-          .doc(matriz)
-          .get();
-
-      if (docSnapshot.exists) {
-        Map<String, dynamic> data = docSnapshot.data() as Map<String, dynamic>;
-        chamados = data.entries
-            .where((entry) => entry.value['Usuario'] == usuario.uid)
-            .map((entry) {
-          return Chamado(
-            IDdoc: matriz,
-            IDchamado: entry.key,
-            QRcode: entry.value['QRcode'] ?? '',
-            Titulo: entry.value['Titulo'] ?? '',
-            Usuario: entry.value['Usuario'] ?? '',
-            Descricao: entry.value['Descricao'] ?? '',
-            Empresa: entry.value['Empresa'] ?? '',
-            Status: entry.value['Status'] ?? '',
-            Responsavel: entry.value['Responsavel'] ?? '',
-            EmpresaResponsavel: entry.value['EmpresaResponsavel'] ?? '',
-            DataCriacao: entry.value['DataCriacao'] != null
-                ? formatarTimeStamp(entry.value['DataCriacao'])
-                : '',
-            DataAtualizacao: entry.value['DataAtualizacao'] != null
-                ? formatarTimeStamp(entry.value['DataAtualizacao'])
-                : '',
-            Lido: entry.value['Lido'] ?? false,
-          );
-        }).toList();
-      }
     }
 
-    // Ordenar a lista de chamados por data de criação
     // Ordenar a lista de chamados por data de criação
     if (crescente) {
       chamados.sort((a, b) => a.DataCriacao.compareTo(b.DataCriacao));
