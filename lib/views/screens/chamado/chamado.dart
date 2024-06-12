@@ -226,10 +226,16 @@ class ChamadoState extends State<Chamado> {
           // Dados do chamado
           final chamadoData = {
             'QRcode': equip.qrcode,
-            'titulo': _tituloController.text,
-            'usuario': _usuarioSelecionado,
-            'descricao': _descricaoController.text,
-            'empresa': equip.empresa,
+            'Titulo': _tituloController.text,
+            'Usuario': _usuarioSelecionado,
+            'Descricao': _descricaoController.text,
+            'Empresa': equip.empresa,
+            'Status': 'Não iniciado',
+            'Responsavel': '',
+            'EmpresaResponsavel': '',
+            'DataCriacao': Timestamp.now(),
+            'DataAtualizacao': Timestamp.now(),
+            'Lido': false,
           };
 
           // Adicionar os dados do chamado ao documento na coleção "Chamados"
@@ -245,6 +251,8 @@ class ChamadoState extends State<Chamado> {
           _formKey.currentState?.reset();
           setState(() {
             _equipamentoController.clear();
+            _tituloController.clear();
+            _descricaoController.clear();
             _carregarUsuarioLogado();
             _isValid = false;
           });
