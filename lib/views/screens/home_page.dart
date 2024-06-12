@@ -83,7 +83,7 @@ class HomePageState extends State<HomePage> {
                                 String user = usuario.usuario;
 
                                 return FutureBuilder<List<Chamado>>(
-                                  future: ChamadoController.getChamados(),
+                                  future: ChamadoController.getChamadosHome(),
                                   builder: (context, snapshot) {
                                     if (snapshot.connectionState ==
                                         ConnectionState.waiting) {
