@@ -7,6 +7,7 @@ import 'package:internet_connection_checker_plus/internet_connection_checker_plu
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'views/screens/chamado/chamado.dart';
+import 'views/screens/chamado/view_chamado.dart';
 import 'views/screens/empresa/goup_page.dart';
 import 'views/screens/equipamento/hardware_page.dart';
 import 'views/screens/login_page.dart';
@@ -115,6 +116,7 @@ class _MyAppState extends State<MyApp> {
         '/chamado': (context) => const Chamado(
               qrcode: '',
             ),
+        '/view_chamados': (context) => const ViewChamados(),
       },
     );
   }
