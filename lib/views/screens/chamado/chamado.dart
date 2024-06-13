@@ -232,7 +232,6 @@ class ChamadoState extends State<Chamado> {
             'Empresa': equip.empresa,
             'Status': 'Não iniciado',
             'Responsavel': '',
-            'EmpresaResponsavel': '',
             'DataCriacao': Timestamp.now(),
             'DataAtualizacao': Timestamp.now(),
             'Lido': false,
