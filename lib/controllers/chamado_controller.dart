@@ -50,7 +50,6 @@ class ChamadoController {
             Empresa: data['Empresa'] ?? '',
             Status: data['Status'] ?? '',
             Responsavel: data['Responsavel'] ?? '',
-            EmpresaResponsavel: data['EmpresaResponsavel'] ?? '',
             DataCriacao: data['DataCriacao'] != null
                 ? formatarTimeStamp(data['DataCriacao'])
                 : '',
@@ -81,7 +80,6 @@ class ChamadoController {
             Empresa: entry.value['Empresa'] ?? '',
             Status: entry.value['Status'] ?? '',
             Responsavel: entry.value['Responsavel'] ?? '',
-            EmpresaResponsavel: entry.value['EmpresaResponsavel'] ?? '',
             DataCriacao: entry.value['DataCriacao'] != null
                 ? formatarTimeStamp(entry.value['DataCriacao'])
                 : '',
@@ -116,7 +114,6 @@ class ChamadoController {
             Empresa: entry.value['Empresa'] ?? '',
             Status: entry.value['Status'] ?? '',
             Responsavel: entry.value['Responsavel'] ?? '',
-            EmpresaResponsavel: entry.value['EmpresaResponsavel'] ?? '',
             DataCriacao: entry.value['DataCriacao'] != null
                 ? formatarTimeStamp(entry.value['DataCriacao'])
                 : '',
@@ -174,7 +171,6 @@ class ChamadoController {
             Empresa: entry.value['Empresa'] ?? '',
             Status: entry.value['Status'] ?? '',
             Responsavel: entry.value['Responsavel'] ?? '',
-            EmpresaResponsavel: entry.value['EmpresaResponsavel'] ?? '',
             DataCriacao: entry.value['DataCriacao'] != null
                 ? formatarTimeStamp(entry.value['DataCriacao'])
                 : '',
@@ -196,6 +192,105 @@ class ChamadoController {
       return chamados;
     }
     return [];
+  }
+
+  // Método para buscar um chamado específico pelo IDdoc e IDchamado
+  static Future<Chamado> getChamadoById(String iddoc, String idchamado) async {
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      // Realiza a consulta no Firestore para obter o documento principal
+      DocumentSnapshot docSnapshot =
+          await firestore.collection('Chamados').doc(iddoc).get();
+
+      if (docSnapshot.exists) {
+        // Obtém os dados do documento como um mapa
+        Map<String, dynamic> data = docSnapshot.data() as Map<String, dynamic>;
+
+        // Verifica se existe um map dentro do documento com o idchamado fornecido
+        if (data.containsKey(idchamado)) {
+          // Extrai os dados do chamado específico
+          Map<String, dynamic> chamadoData = data[idchamado];
+
+          // Cria um objeto Chamado com os dados extraídos
+          Chamado chamado = Chamado(
+            IDdoc: iddoc,
+            IDchamado: idchamado,
+            QRcode: chamadoData['QRcode'] ?? '',
+            Titulo: chamadoData['Titulo'] ?? '',
+            Usuario: chamadoData['Usuario'] ?? '',
+            Descricao: chamadoData['Descricao'] ?? '',
+            Empresa: chamadoData['Empresa'] ?? '',
+            Status: chamadoData['Status'] ?? '',
+            Responsavel: chamadoData['Responsavel'] ?? '',
+            DataCriacao: chamadoData['DataCriacao'] != null
+                ? formatarTimeStamp(chamadoData['DataCriacao'])
+                : '',
+            DataAtualizacao: chamadoData['DataAtualizacao'] != null
+                ? formatarTimeStamp(chamadoData['DataAtualizacao'])
+                : '',
+            Lido: chamadoData['Lido'] ?? false,
+          );
+
+          return chamado;
+        } else {
+          throw Exception(
+              'Chamado com ID $idchamado não encontrado no documento $iddoc');
+        }
+      } else {
+        throw Exception('Documento $iddoc não encontrado na coleção Chamados');
+      }
+    } catch (e) {
+      throw Exception('Erro ao buscar chamado: $e');
+    }
+  }
+
+  static Future<void> marcarChamadoComoLido(
+      String iddoc, String idchamado) async {
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      CollectionReference chamadosCollection = firestore.collection('Chamados');
+
+      // Atualizar o campo 'Lido' para true
+      await chamadosCollection.doc(iddoc).update({
+        '$idchamado.Lido': true,
+      });
+    } catch (e) {
+      throw Exception('Erro ao marcar chamado como lido: $e');
+    }
+  }
+
+  static Future<void> assumirChamado(
+      String iddoc, String idchamado, String uid) async {
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      CollectionReference chamadosCollection = firestore.collection('Chamados');
+
+      // Atualizar o campo 'Lido' para true
+      await chamadosCollection.doc(iddoc).update({
+        '$idchamado.Responsavel': uid,
+        '$idchamado.DataAtualizacao': Timestamp.now(),
+      });
+    } catch (e) {
+      throw Exception('Erro ao marcar chamado como lido: $e');
+    }
+  }
+
+  static Future<void> atualizarChamado(
+      String iddoc, String idchamado, String responsavel, String status) async {
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      CollectionReference chamadosCollection = firestore.collection('Chamados');
+
+      // Atualizar o campo 'Lido' para true
+      await chamadosCollection.doc(iddoc).update({
+        '$idchamado.Responsavel': responsavel,
+        '$idchamado.Status': status,
+        '$idchamado.DataAtualizacao': Timestamp.now(),
+      });
+    } catch (e) {
+      throw Exception('Erro ao marcar chamado como lido: $e');
+    }
   }
 }
 
