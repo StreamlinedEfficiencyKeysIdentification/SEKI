@@ -10,7 +10,6 @@ class Chamado {
   final String Empresa;
   final String Status;
   final String Responsavel;
-  final String EmpresaResponsavel;
   final String DataCriacao;
   final String DataAtualizacao;
   final bool Lido;
@@ -25,7 +24,6 @@ class Chamado {
     required this.Empresa,
     required this.Status,
     required this.Responsavel,
-    required this.EmpresaResponsavel,
     required this.DataCriacao,
     required this.DataAtualizacao,
     required this.Lido,
