@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testeseki/controllers/chamado_controller.dart';
 import 'package:testeseki/models/chamado_model.dart';
+import 'package:testeseki/views/screens/chamado/detalhe_chamado.dart';
 import '../../../controllers/usuario_controller.dart';
 import '../../main.dart';
 import '../../models/usuario_model.dart';
@@ -792,6 +793,22 @@ class HomePageState extends State<HomePage> {
                                                                                 Colors.white,
                                                                           ),
                                                                         ),
+                                                                        onTap:
+                                                                            () {
+                                                                          // Navegação para a tela de detalhes
+                                                                          Navigator
+                                                                              .push(
+                                                                            context,
+                                                                            MaterialPageRoute(
+                                                                              builder: (context) => DetalheChamado(
+                                                                                chamado: chamado,
+                                                                                nivel: usuario.nivel,
+                                                                                uid: usuario.uid,
+                                                                                empresa: usuario.empresa,
+                                                                              ),
+                                                                            ),
+                                                                          );
+                                                                        },
                                                                       ),
                                                                     );
                                                                   },
