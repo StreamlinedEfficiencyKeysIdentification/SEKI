@@ -5,6 +5,7 @@ import 'package:testeseki/controllers/chamado_controller.dart';
 import 'package:testeseki/controllers/usuario_controller.dart';
 import 'package:testeseki/models/chamado_model.dart';
 import 'package:testeseki/models/usuario_model.dart';
+import 'package:testeseki/views/screens/chamado/detalhe_chamado.dart';
 
 class ViewChamados extends StatefulWidget {
   const ViewChamados({super.key});
@@ -38,6 +39,12 @@ class ViewChamadosState extends State<ViewChamados> {
   void initState() {
     super.initState();
     _carregarUsuarioLogado();
+  }
+
+  @override
+  void dispose() {
+    _filtroController.dispose(); // Descarte o controlador
+    super.dispose();
   }
 
   Future<void> _carregarUsuarioLogado() async {
@@ -145,6 +152,19 @@ class ViewChamadosState extends State<ViewChamados> {
                             Text(chamado.Lido ? 'Lido' : 'Não lido'),
                           ],
                         ),
+                        onTap: () {
+                          // Navegação para a tela de detalhes
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetalheChamado(
+                                  chamado: chamado,
+                                  nivel: user.nivel,
+                                  uid: user.uid,
+                                  empresa: user.empresa),
+                            ),
+                          );
+                        },
                       );
                     },
                   );
