@@ -109,8 +109,7 @@ class AutocompleteUsuarioExampleState
                         decoration: InputDecoration(
                           hintText: 'Digite o nome do usuário',
                           hintStyle: const TextStyle(
-                            color:
-                                const Color(0xFF0076BC), // Cor do texto de dica
+                            color: Color(0xFF0076BC), // Cor do texto de dica
                           ),
                           filled: true,
                           fillColor: const Color(0xFF0076BC)
