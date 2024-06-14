@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:testeseki/controllers/chamado_controller.dart';
 import 'package:testeseki/models/chamado_model.dart';
 import 'package:testeseki/views/widgets/autocomplete_usuario.dart';
@@ -34,6 +35,8 @@ class DetalheChamado extends StatefulWidget {
 class DetalheChamadoState extends State<DetalheChamado> {
   final GlobalKey<AutocompleteUsuarioExampleState> _autocompleteKey =
       GlobalKey();
+  // Declare a GlobalKey para o FutureBuilder
+  final GlobalKey<State<DetalheChamado>> _futureBuilderKey = GlobalKey();
   Chamado _chamado = Chamado(
       IDdoc: '',
       IDchamado: '',
@@ -50,6 +53,7 @@ class DetalheChamadoState extends State<DetalheChamado> {
   int nivelUsuario = 0;
   String dropdownValue = '';
   late String _usuario = '';
+  late String user = '';
   String _usuarioSelecionado = '';
   bool waiting = false;
   String _empresa = '';
@@ -97,6 +101,7 @@ class DetalheChamadoState extends State<DetalheChamado> {
     if (usuarioSnapshot.exists) {
       setState(() {
         _usuario = usuarioSnapshot['Nome'];
+        user = usuarioSnapshot['Usuario'];
         waiting = true;
       });
     }
@@ -144,6 +149,82 @@ class DetalheChamadoState extends State<DetalheChamado> {
     }
   }
 
+  void _showNovaMensagemDialog() {
+    TextEditingController mensagemController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Nova Mensagem'),
+          content: TextField(
+            controller: mensagemController,
+            maxLines: 5,
+            decoration: const InputDecoration(
+              hintText: 'Digite sua mensagem...',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              child: const Text('Enviar'),
+              onPressed: () async {
+                String mensagem = mensagemController.text;
+                if (mensagem.isNotEmpty) {
+                  await FirebaseFirestore.instance.collection('Tramites').add({
+                    'IDchamado': _chamado.IDchamado,
+                    'IDusuario': widget.uid,
+                    'Mensagem': mensagem,
+                    'DataMensagem': FieldValue.serverTimestamp(),
+                  });
+                  Navigator.of(context).pop();
+                  _fetchMensagens();
+                  setState(() {
+                    _futureBuilderKey == GlobalKey();
+                  });
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> _fetchMensagens() async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('Tramites')
+        .where('IDchamado', isEqualTo: _chamado.IDchamado)
+        .orderBy('DataMensagem', descending: true)
+        .get();
+
+    List<Map<String, dynamic>> mensagensComUsuario = [];
+
+    for (DocumentSnapshot doc in querySnapshot.docs) {
+      Map<String, dynamic> mensagemData = doc.data() as Map<String, dynamic>;
+      String usuarioId = mensagemData['IDusuario'];
+
+      DocumentSnapshot usuarioSnapshot = await FirebaseFirestore.instance
+          .collection('Usuarios')
+          .doc(usuarioId)
+          .get();
+
+      if (usuarioSnapshot.exists) {
+        mensagemData['NomeUsuario'] = usuarioSnapshot['Usuario'];
+      } else {
+        mensagemData['NomeUsuario'] = 'Usuário desconhecido';
+      }
+
+      mensagensComUsuario.add(mensagemData);
+    }
+    return mensagensComUsuario;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -152,7 +233,7 @@ class DetalheChamadoState extends State<DetalheChamado> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushNamed(context, '/view_chamados');
+            Navigator.pop(context);
           },
         ),
       ),
@@ -172,22 +253,24 @@ class DetalheChamadoState extends State<DetalheChamado> {
             const SizedBox(height: 8.0),
             Text('Empresa: $_empresa'),
             const SizedBox(height: 8.0),
-            const Text('Status: '),
-            DropdownMenu<String>(
-              initialSelection: dropdownValue,
-              onSelected: (String? value) {
-                // This is called when the user selects an item.
-                setState(() {
-                  dropdownValue = value!;
-                });
-              },
-              dropdownMenuEntries:
-                  list.map<DropdownMenuEntry<String>>((String value) {
-                return DropdownMenuEntry<String>(value: value, label: value);
-              }).toList(),
-            ),
+            Text('Status: ${nivelUsuario == 4 ? _chamado.Status : ''}'),
+            if (nivelUsuario <= 3)
+              DropdownMenu<String>(
+                initialSelection: dropdownValue,
+                onSelected: (String? value) {
+                  // This is called when the user selects an item.
+                  setState(() {
+                    dropdownValue = value!;
+                  });
+                },
+                dropdownMenuEntries:
+                    list.map<DropdownMenuEntry<String>>((String value) {
+                  return DropdownMenuEntry<String>(value: value, label: value);
+                }).toList(),
+              ),
             const SizedBox(height: 8.0),
-            if (waiting)
+            Text(nivelUsuario == 4 ? 'Responsável: $user' : ''),
+            if (waiting && nivelUsuario <= 3)
               AutocompleteUsuarioExample(
                 user: _usuario,
                 key: _autocompleteKey,
@@ -214,6 +297,54 @@ class DetalheChamadoState extends State<DetalheChamado> {
             const SizedBox(height: 8.0),
             if (_isDataChanged()) _buildSaveButton(),
             if (_isDataChanged()) _buildCancelButton(),
+            const SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: _showNovaMensagemDialog,
+              child: const Text('Nova Mensagem'),
+            ),
+            FutureBuilder<List<Map<String, dynamic>>>(
+              future: _fetchMensagens(),
+              key: _futureBuilderKey,
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return const Text('Erro ao carregar mensagens');
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Text('Nenhuma mensagem encontrada');
+                } else {
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      Map<String, dynamic> mensagemData = snapshot.data![index];
+                      String mensagem = mensagemData['Mensagem'];
+                      String nomeUsuario = mensagemData['NomeUsuario'];
+                      Timestamp timestamp =
+                          mensagemData['DataMensagem'] as Timestamp;
+                      DateTime dateTime = timestamp.toDate();
+
+                      String formattedDate =
+                          DateFormat('dd/MM/yyyy \'às\' HH:mm:ss')
+                              .format(dateTime);
+
+                      return ListTile(
+                        title:
+                            Text('Enviado por: $nomeUsuario em $formattedDate'),
+                        subtitle: Text(
+                          mensagem,
+                          style: const TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }
+              },
+            )
           ],
         ),
       ),
