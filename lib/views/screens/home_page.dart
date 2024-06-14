@@ -638,7 +638,7 @@ class HomePageState extends State<HomePage> {
                                                                             MainAxisSize.max,
                                                                         children: [
                                                                           Icon(
-                                                                            Icons.call_rounded,
+                                                                            Icons.document_scanner,
                                                                             color:
                                                                                 Colors.white,
                                                                             size:
