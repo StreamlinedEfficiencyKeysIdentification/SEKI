@@ -49,7 +49,7 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
     return Scaffold(
       body: hasConnection
           ? Padding(
-              padding: EdgeInsets.fromLTRB(16.0, _statusBarHeight, 16.0, 16.0),
+              padding: EdgeInsets.fromLTRB(12.0, _statusBarHeight, 12.0, 12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -57,6 +57,7 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
                     child: Icon(
                       Icons.person,
                       size: 100,
+                      color: Colors.blue,
                     ),
                   ),
                   Padding(
@@ -330,7 +331,7 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
     final totalUsuarios = totalUsuariosFiliais + totalUsuariosMatriz;
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey, width: 1),
         borderRadius: BorderRadius.circular(12),
