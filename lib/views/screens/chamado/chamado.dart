@@ -365,7 +365,8 @@ class ChamadoState extends State<Chamado> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    if (waiting)
+                    Text(user.nivel == '4' ? 'Usuario: ${user.usuario}' : ''),
+                    if (waiting && user.nivel != '4')
                       AutocompleteUsuarioExample(
                         user: _usuario,
                         key: _autocompleteKey,
@@ -378,6 +379,7 @@ class ChamadoState extends State<Chamado> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _descricaoController,
+                      maxLines: 5,
                       decoration: InputDecoration(
                         prefixIcon: const Icon(
                           Icons.description,
