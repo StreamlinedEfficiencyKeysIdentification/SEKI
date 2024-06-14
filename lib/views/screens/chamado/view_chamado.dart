@@ -82,6 +82,12 @@ class ViewChamadosState extends State<ViewChamados> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Visualizar Chamados'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushNamed(context, '/home');
+          },
+        ),
         actions: [
           IconButton(
             onPressed: _alternarOrdem,
