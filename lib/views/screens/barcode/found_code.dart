@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:testeseki/controllers/equipamento_controller.dart';
 import 'package:testeseki/models/equipamento_model.dart';
+import 'package:testeseki/views/screens/chamado/chamado.dart';
 
 class FoundScreen extends StatefulWidget {
   final String value;
@@ -63,7 +64,7 @@ class _FoundScreenState extends State<FoundScreen> {
                       children: [
                         const Text(
                           "Result: ",
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 40),
                         ),
                         const SizedBox(height: 20),
                         Text(
@@ -113,7 +114,13 @@ class _FoundScreenState extends State<FoundScreen> {
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                Navigator.pushNamed(context, '/chamado');
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        Chamado(qrcode: widget.value),
+                                  ),
+                                );
                               },
                               child: const Text(
                                 'Abrir Chamado',

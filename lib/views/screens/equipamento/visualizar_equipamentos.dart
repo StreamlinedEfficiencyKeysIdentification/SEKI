@@ -57,11 +57,11 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20, bottom: 10),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 20, bottom: 10),
                         child: Icon(
                           Icons.computer, // Ícone de usuário
-                          color: const Color(0xFF0073BC),
+                          color: Color(0xFF0073BC),
                           size: 140, // Tamanho do ícone
                         ),
                       ),
@@ -265,6 +265,7 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
         .where((equipamento) => equipamento.empresa == matriz.id)
         .toList();
 
+    // Filtrar filiais com base nos equipamentos
     final filiaisComEquipamentos = filiais.where((filial) {
       final equipsInFilial = equipamentos
           .where((equipamento) =>
@@ -292,6 +293,7 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
                         equipamento.status == _statusFiltro))
                 .length);
 
+    // Incluir contagem de usuários da matriz se o nível do usuário for <= 1
     final totalEquipamentosMatriz = nivel <= 1
         ? equipamentosMatriz
             .where((equipamento) => (_statusFiltro == 'Ambos' ||

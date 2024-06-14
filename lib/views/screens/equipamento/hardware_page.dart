@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, avoid_print
+
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -52,15 +54,15 @@ class HardwarePageState extends State<HardwarePage> {
               mainAxisSize: MainAxisSize
                   .min, // Ajusta a altura da coluna para seu conteúdo
               children: [
-                Column(
+                const Column(
                   children: [
                     Icon(
                       Icons.computer,
                       color: Color(0xFF0076BC),
                       size: 140,
                     ),
-                    const SizedBox(height: 8),
-                    const Text(
+                    SizedBox(height: 8),
+                    Text(
                       'Equipamento',
                       style: TextStyle(
                         fontSize: 20,
@@ -79,11 +81,11 @@ class HardwarePageState extends State<HardwarePage> {
                         decoration: InputDecoration(
                           labelText: 'QR Code',
                           filled: true,
-                          fillColor: Color(0xFF0076BC).withOpacity(0.3),
+                          fillColor: const Color(0xFF0076BC).withOpacity(0.3),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(50.0),
                           ),
-                          labelStyle: TextStyle(
+                          labelStyle: const TextStyle(
                             color: Color(0xFF0076BC),
                           ),
                         ),
@@ -102,11 +104,11 @@ class HardwarePageState extends State<HardwarePage> {
                         decoration: InputDecoration(
                           labelText: 'Patrimônio',
                           filled: true,
-                          fillColor: Color(0xFF0076BC).withOpacity(0.3),
+                          fillColor: const Color(0xFF0076BC).withOpacity(0.3),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(50.0),
                           ),
-                          labelStyle: TextStyle(
+                          labelStyle: const TextStyle(
                             color: Color(0xFF0076BC),
                           ),
                         ),
@@ -123,11 +125,11 @@ class HardwarePageState extends State<HardwarePage> {
                         decoration: InputDecoration(
                           labelText: 'Marca',
                           filled: true,
-                          fillColor: Color(0xFF0076BC).withOpacity(0.3),
+                          fillColor: const Color(0xFF0076BC).withOpacity(0.3),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(50.0),
                           ),
-                          labelStyle: TextStyle(
+                          labelStyle: const TextStyle(
                             color: Color(0xFF0076BC),
                           ),
                         ),
@@ -140,11 +142,11 @@ class HardwarePageState extends State<HardwarePage> {
                         decoration: InputDecoration(
                           labelText: 'Modelo',
                           filled: true,
-                          fillColor: Color(0xFF0076BC).withOpacity(0.3),
+                          fillColor: const Color(0xFF0076BC).withOpacity(0.3),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(50.0),
                           ),
-                          labelStyle: TextStyle(
+                          labelStyle: const TextStyle(
                             color: Color(0xFF0076BC),
                           ),
                         ),
@@ -160,7 +162,7 @@ class HardwarePageState extends State<HardwarePage> {
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50.0),
-                            color: Color(0xFF0076BC).withOpacity(0.3),
+                            color: const Color(0xFF0076BC).withOpacity(0.3),
                           ),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 8),
@@ -179,7 +181,7 @@ class HardwarePageState extends State<HardwarePage> {
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50.0),
-                            color: Color(0xFF0076BC).withOpacity(0.3),
+                            color: const Color(0xFF0076BC).withOpacity(0.3),
                           ),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 8),
@@ -261,7 +263,7 @@ class HardwarePageState extends State<HardwarePage> {
                   child: ElevatedButton(
                     onPressed: cadastrarEquipamento,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF0076BC),
+                      backgroundColor: const Color(0xFF0076BC),
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50.0),
@@ -383,9 +385,12 @@ class HardwarePageState extends State<HardwarePage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Usuário obrigatório'),
+            title: const Text(
+              'Usuário obrigatório',
+            ),
             content: const Text(
-                'Por favor, selecione um usuário ou desative a opção de inserir usuário.'),
+              'Por favor, selecione um usuário ou desative a opção de inserir usuário.',
+            ),
             actions: [
               TextButton(
                 onPressed: () {

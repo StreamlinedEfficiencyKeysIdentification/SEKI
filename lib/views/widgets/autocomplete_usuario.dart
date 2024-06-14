@@ -108,11 +108,12 @@ class AutocompleteUsuarioExampleState
                       return TextField(
                         decoration: InputDecoration(
                           hintText: 'Digite o nome do usuário',
-                          hintStyle: TextStyle(
-                            color: Color(0xFF0076BC), // Cor do texto de dica
+                          hintStyle: const TextStyle(
+                            color:
+                                const Color(0xFF0076BC), // Cor do texto de dica
                           ),
                           filled: true,
-                          fillColor: Color(0xFF0076BC)
+                          fillColor: const Color(0xFF0076BC)
                               .withOpacity(0.3), // Cor de fundo com opacidade
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 8),

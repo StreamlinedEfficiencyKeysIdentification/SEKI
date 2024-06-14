@@ -145,5 +145,5 @@ String formatarTimeStamp(Timestamp timestamp) {
   DateTime localDateTime = dateTime.toLocal();
 
   // Formate a data e hora para exibição
-  return DateFormat('dd/MM/yyyy HH:mm:ss').format(localDateTime);
+  return DateFormat('dd/MM/yyyy \'às\' HH:mm:ss').format(localDateTime);
 }

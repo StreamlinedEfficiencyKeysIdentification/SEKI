@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../controllers/empresa_controller.dart';
 import '../../../controllers/usuario_controller.dart';
 import '../../../main.dart';
@@ -8,7 +9,7 @@ import '../../widgets/skeleton.dart';
 import 'detalhe_usuario.dart';
 
 class VisualizarUsuarios extends StatefulWidget {
-  const VisualizarUsuarios({Key? key});
+  const VisualizarUsuarios({super.key});
 
   @override
   State<VisualizarUsuarios> createState() => _VisualizarUsuariosState();
@@ -20,6 +21,7 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
   late Future<Usuario> _usuario;
   late String _statusFiltro = 'Ativo';
   late String _searchText = "";
+  double _statusBarHeight = 0;
 
   Map<String, bool> selectedMap = {};
 
@@ -29,6 +31,15 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
     _empresasFuture = EmpresaController.getEmpresas();
     _usuariosFuture = UsuarioController.getUsuarios();
     _usuario = UsuarioController.getUsuarioLogado();
+
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: [SystemUiOverlay.top]);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _statusBarHeight = MediaQuery.of(context).padding.top;
   }
 
   @override
@@ -36,175 +47,174 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
     final hasConnection = ConnectionNotifer.of(context).value;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Visualizar Usuários'),
-        leading: hasConnection
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/home');
-                },
-              )
-            : Container(),
-      ),
       body: hasConnection
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20, bottom: 10),
-                        child: Icon(
-                          Icons.person, // Ícone de usuário
-                          color: const Color(0xFF0073BC),
-                          size: 140, // Tamanho do ícone
-                        ),
-                      ),
-                      TextField(
-                        decoration: InputDecoration(
-                          hintText: 'Buscar por Nome ou Email',
-                          hintStyle: const TextStyle(fontSize: 14),
-                          filled: true,
-                          fillColor: const Color(0xFF0073BC).withOpacity(0.3),
-                          contentPadding: const EdgeInsets.symmetric(
-                              vertical: 15, horizontal: 10),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(50),
-                            borderSide: BorderSide.none,
-                          ),
-                          suffixIcon: const Icon(Icons.search,
-                              color: Colors.black), // Ícone à direita
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _searchText = value.toLowerCase();
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _statusFiltro = 'Ativo';
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              _statusFiltro == 'Ativo' ? Colors.blue : null,
-                        ),
-                        child: const Text('Ativo'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _statusFiltro = 'Inativo';
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              _statusFiltro == 'Inativo' ? Colors.blue : null,
-                        ),
-                        child: const Text('Inativo'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _statusFiltro = 'Ambos';
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              _statusFiltro == 'Ambos' ? Colors.blue : null,
-                        ),
-                        child: const Text('Ambos'),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: FutureBuilder<List<Empresa>>(
-                      future: _empresasFuture,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const SkeletonLoader();
-                        } else if (snapshot.hasError) {
-                          return Center(child: Text('Erro: ${snapshot.error}'));
-                        } else {
-                          List<Empresa> empresas;
-                          empresas = snapshot.data!;
-                          return FutureBuilder<List<Usuario>>(
-                            future: _usuariosFuture,
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const SkeletonLoader();
-                              } else if (snapshot.hasError) {
-                                return Center(
-                                    child: Text('Erro: ${snapshot.error}'));
-                              } else {
-                                final usuarios =
-                                    snapshot.data!.where((usuario) {
-                                  return (_statusFiltro == 'Ambos' ||
-                                          usuario.status == _statusFiltro) &&
-                                      (usuario.nome
-                                              .toLowerCase()
-                                              .contains(_searchText) ||
-                                          usuario.email
-                                              .toLowerCase()
-                                              .contains(_searchText));
-                                }).toList();
-
-                                return FutureBuilder<Usuario>(
-                                  future: _usuario,
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return const SkeletonLoader();
-                                    } else if (snapshot.hasError) {
-                                      return Center(
-                                          child:
-                                              Text('Erro: ${snapshot.error}'));
-                                    } else {
-                                      final usuario = snapshot.data!;
-                                      return ListView.builder(
-                                        itemCount: empresas.length,
-                                        itemBuilder: (context, index) {
-                                          final empresa = empresas[index];
-                                          if (empresa.matriz == empresa.id) {
-                                            // É uma empresa matriz
-                                            return _buildMatrizTile(empresa,
-                                                empresas, usuarios, usuario);
-                                          } else {
-                                            // É uma empresa filial (será tratada nas empresas matriz)
-                                            return Container();
-                                          }
-                                        },
-                                      );
-                                    }
-                                  },
-                                );
-                              }
-                            },
-                          );
-                        }
-                      },
+          ? Padding(
+              padding: EdgeInsets.fromLTRB(16.0, _statusBarHeight, 16.0, 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Center(
+                    child: Icon(
+                      Icons.person,
+                      size: 100,
                     ),
                   ),
-                ),
-              ],
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            decoration: InputDecoration(
+                              hintText: 'Busque por usuário',
+                              border: InputBorder.none,
+                              filled: true,
+                              fillColor:
+                                  const Color(0xFF0073BC).withOpacity(0.28),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 20.0, vertical: 12.0),
+                              suffixIcon: const Icon(Icons.search),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(50.0),
+                                borderSide:
+                                    const BorderSide(color: Colors.transparent),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(50.0),
+                                borderSide:
+                                    const BorderSide(color: Colors.transparent),
+                              ),
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                _searchText = value.toLowerCase();
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              _statusFiltro = 'Ativo';
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                _statusFiltro == 'Ativo' ? Colors.blue : null,
+                          ),
+                          child: const Text('Ativo'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              _statusFiltro = 'Inativo';
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                _statusFiltro == 'Inativo' ? Colors.blue : null,
+                          ),
+                          child: const Text('Inativo'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              _statusFiltro = 'Ambos';
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                _statusFiltro == 'Ambos' ? Colors.blue : null,
+                          ),
+                          child: const Text('Ambos'),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: FutureBuilder<List<Empresa>>(
+                        future: _empresasFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const SkeletonLoader();
+                          } else if (snapshot.hasError) {
+                            return Center(
+                                child: Text('Erro: ${snapshot.error}'));
+                          } else {
+                            List<Empresa> empresas;
+                            empresas = snapshot.data!;
+                            return FutureBuilder<List<Usuario>>(
+                              future: _usuariosFuture,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const SkeletonLoader();
+                                } else if (snapshot.hasError) {
+                                  return Center(
+                                      child: Text('Erro: ${snapshot.error}'));
+                                } else {
+                                  final usuarios =
+                                      snapshot.data!.where((usuario) {
+                                    return (_statusFiltro == 'Ambos' ||
+                                            usuario.status == _statusFiltro) &&
+                                        (usuario.nome
+                                                .toLowerCase()
+                                                .contains(_searchText) ||
+                                            usuario.email
+                                                .toLowerCase()
+                                                .contains(_searchText));
+                                  }).toList();
+
+                                  return FutureBuilder<Usuario>(
+                                    future: _usuario,
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const SkeletonLoader();
+                                      } else if (snapshot.hasError) {
+                                        return Center(
+                                            child: Text(
+                                                'Erro: ${snapshot.error}'));
+                                      } else {
+                                        final usuario = snapshot.data!;
+                                        return ListView.builder(
+                                          itemCount: empresas.length,
+                                          itemBuilder: (context, index) {
+                                            final empresa = empresas[index];
+                                            if (empresa.matriz == empresa.id) {
+                                              // É uma empresa matriz
+                                              return _buildMatrizTile(empresa,
+                                                  empresas, usuarios, usuario);
+                                            } else {
+                                              // É uma empresa filial (será tratada nas empresas matriz)
+                                              return Container();
+                                            }
+                                          },
+                                        );
+                                      }
+                                    },
+                                  );
+                                }
+                              },
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             )
           : Center(
               child: Column(
@@ -215,19 +225,59 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
                     color: Colors.red,
                     height: 100,
                   ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Sem conexão com a internet.',
-                    style: TextStyle(fontSize: 22),
+                  Container(
+                    margin: const EdgeInsets.only(top: 20, bottom: 10),
+                    child: const Text(
+                      'Sem conexão com a internet.',
+                      style: TextStyle(fontSize: 22),
+                    ),
                   ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'Verifique sua conexão e tente novamente.',
-                    style: TextStyle(fontSize: 16),
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 20),
+                    child: const Text(
+                      'Verifique sua conexão e tente novamente.',
+                      style: TextStyle(fontSize: 16),
+                    ),
                   )
                 ],
               ),
             ),
+      backgroundColor: Colors.grey[300],
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.0),
+            topRight: Radius.circular(20.0),
+          ),
+        ),
+        child: BottomAppBar(
+          color: Colors.transparent,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.arrow_back,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.home),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/home');
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.person),
+                onPressed: () {},
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -240,6 +290,7 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
     final usuariosMatriz =
         usuarios.where((usuario) => usuario.empresa == matriz.id).toList();
 
+    // Filtrar filiais com base nos usuários
     final filiaisComUsuarios = filiais.where((filial) {
       final usersInFilial = usuarios
           .where((usuario) =>
@@ -256,6 +307,7 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
       selectedMap[matriz.id] = false;
     }
 
+    // Contar usuários das filiais associadas à matriz
     final totalUsuariosFiliais = filiaisComUsuarios.fold<int>(
         0,
         (total, filial) =>
@@ -267,6 +319,7 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
                         usuario.status == _statusFiltro))
                 .length);
 
+    // Incluir contagem de usuários da matriz se o nível do usuário for <= 1
     final totalUsuariosMatriz = nivel <= 1
         ? usuariosMatriz
             .where((usuario) =>

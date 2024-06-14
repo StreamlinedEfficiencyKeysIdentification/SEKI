@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../../../controllers/empresa_controller.dart';
 import '../../../main.dart';
 import '../../../models/empresa_model.dart';
@@ -47,9 +46,9 @@ class _VisualizarEmpresasState extends State<VisualizarEmpresas> {
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 50), // Adicionando padding do topo
+                const Padding(
+                  padding:
+                      EdgeInsets.only(top: 50), // Adicionando padding do topo
                   child: Icon(
                     Icons.location_city, // Ícone de prédio
                     color: Color(0xFF0073BC),

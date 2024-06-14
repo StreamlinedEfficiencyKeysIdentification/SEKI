@@ -39,6 +39,7 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
   late String _usuario = '';
   late String _criador = '';
   bool _status = true;
+  bool waiting = false;
 
   String _empresaSelecionada = '';
   String _setorSelecionado = '';
@@ -112,6 +113,7 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
     if (usuarioSnapshot.exists) {
       setState(() {
         _usuario = usuarioSnapshot['Nome'];
+        waiting = true;
       });
     }
   }
@@ -260,17 +262,18 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
             ),
             //Chamar novamente esse componente para atualizar o nome do usuário
 
-            if (_usuarioSelecionado.isEmpty)
+            if (_usuarioSelecionado.isEmpty && waiting)
               const Text('Deseja anexar um usuário ao equipamento?'),
-            AutocompleteUsuarioExample(
-              user: _usuario,
-              key: _autocompleteKey,
-              onUsuarioSelected: (usuario) {
-                setState(() {
-                  _usuarioSelecionado = usuario;
-                });
-              },
-            ),
+            if (waiting)
+              AutocompleteUsuarioExample(
+                user: _usuario,
+                key: _autocompleteKey,
+                onUsuarioSelected: (usuario) {
+                  setState(() {
+                    _usuarioSelecionado = usuario;
+                  });
+                },
+              ),
             Row(
               children: [
                 Switch(

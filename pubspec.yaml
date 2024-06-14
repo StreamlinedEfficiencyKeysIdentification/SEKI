@@ -30,6 +30,8 @@ dev_dependencies:
   flutter_lints: ^3.0.0
 
 flutter:
+  assets:
+    - assets/no_internet.png
   uses-material-design: true
   assets:
     - images/userlogin.png
