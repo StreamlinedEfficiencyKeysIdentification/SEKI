@@ -86,95 +86,170 @@ class GroupPageState extends State<GroupPage> {
       appBar: AppBar(
         title: const Text('Cadastrar Empresa'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('Criação de Empresa'),
-            TextFormField(
-              controller: _cnpjController,
-              decoration: const InputDecoration(labelText: 'CNPJ'),
-            ),
-            TextFormField(
-              controller: _razaosocialController,
-              decoration: const InputDecoration(labelText: 'Razao Social'),
-            ),
-            FutureBuilder<Usuario>(
-              future: UsuarioController.getUsuarioLogado(),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}'); // Tratar erros
-                }
-
-                var usuario = snapshot.data;
-
-                // Você já tem os dados do usuário aqui, não precisa chamar a função getEmpresa
-                String? idEmpresa = usuario?.empresa;
-                String? nivel = usuario?.nivel;
-
-                // Se o nível for null ou vazio, não há permissões, retornar uma lista vazia
-                if (nivel == null || nivel.isEmpty) {
-                  return const SizedBox();
-                } else if (nivel == '1') {
-                  return const SizedBox();
-                } else {
-                  return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                    future: FirebaseFirestore.instance
-                        .collection('Empresa')
-                        .doc(idEmpresa)
-                        .get(),
-                    builder: (context, empresaSnapshot) {
-                      if (empresaSnapshot.hasError) {
-                        return Text(
-                            'Erro ao obter dados da empresa: ${empresaSnapshot.error}');
-                      }
-
-                      var empresaData = empresaSnapshot.data?.data();
-                      if (empresaData == null) {
-                        return const Text(
-                            'Empresa não encontrada'); // Lidar com o caso em que a empresa não existe
-                      }
-
-                      String? razaoSocial = empresaData['RazaoSocial'];
-
-                      return TextFormField(
-                        initialValue: razaoSocial,
-                        decoration:
-                            const InputDecoration(labelText: 'Empresa Pai'),
-                        readOnly: true,
-                      );
-                    },
-                  );
-                }
-              },
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  _switchValue ? 'Empresa ativa' : 'Empresa inativa',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: _switchValue ? Colors.green : Colors.red,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 30),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).size.height * 0.1,
+                ),
+                child: Image.asset(
+                  'images/empresa.png',
+                  width: 100,
+                  height: 100,
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Criação de Empresa',
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: const Color.fromRGBO(0, 115, 188, 0.2),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: TextFormField(
+                    controller: _cnpjController,
+                    decoration: const InputDecoration(
+                      hintText: 'CNPJ',
+                      border: InputBorder.none,
+                    ),
                   ),
                 ),
-                SwitchExample(
-                  onValueChanged: (value) {
-                    setState(() {
-                      _switchValue = value;
-                    });
-                  },
+              ),
+              const SizedBox(height: 20),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: const Color.fromRGBO(0, 115, 188, 0.2),
                 ),
-              ],
-            ),
-            ElevatedButton(
-              onPressed: () {
-                cadastrarEmpresa();
-              },
-              child: const Text('Cadastrar'),
-            ),
-          ],
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: TextFormField(
+                    controller: _razaosocialController,
+                    decoration: const InputDecoration(
+                      hintText: 'Razao Social',
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
+
+              //////////////////////
+              const SizedBox(height: 20),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: const Color.fromRGBO(0, 115, 188, 0.2),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: FutureBuilder<Usuario>(
+                    future: UsuarioController.getUsuarioLogado(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}'); // Tratar erros
+                      }
+
+                      var usuario = snapshot.data;
+
+                      // Você já tem os dados do usuário aqui, não precisa chamar a função getEmpresa
+                      String? idEmpresa = usuario?.empresa;
+                      String? nivel = usuario?.nivel;
+
+                      // Se o nível for null ou vazio, não há permissões, retornar uma lista vazia
+                      if (nivel == null || nivel.isEmpty) {
+                        return const SizedBox();
+                      } else if (nivel == '1') {
+                        return const SizedBox();
+                      } else {
+                        return FutureBuilder<
+                            DocumentSnapshot<Map<String, dynamic>>>(
+                          future: FirebaseFirestore.instance
+                              .collection('Empresa')
+                              .doc(idEmpresa)
+                              .get(),
+                          builder: (context, empresaSnapshot) {
+                            if (empresaSnapshot.hasError) {
+                              return Text(
+                                  'Erro ao obter dados da empresa: ${empresaSnapshot.error}');
+                            }
+
+                            var empresaData = empresaSnapshot.data?.data();
+                            if (empresaData == null) {
+                              return const Text(
+                                  'Empresa não encontrada'); // Lidar com o caso em que a empresa não existe
+                            }
+
+                            String? razaoSocial = empresaData['RazaoSocial'];
+
+                            return TextFormField(
+                              initialValue: razaoSocial,
+                              decoration: const InputDecoration(
+                                  labelText: 'Empresa Pai'),
+                              readOnly: true,
+                            );
+                          },
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    _switchValue ? 'Empresa ativa' : 'Empresa inativa',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: _switchValue ? Colors.green : Colors.red,
+                    ),
+                  ),
+                  SwitchExample(
+                    onValueChanged: (value) {
+                      setState(() {
+                        _switchValue = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  cadastrarEmpresa();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 19, 74, 119),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30)),
+                ),
+                child: const SizedBox(
+                  width: double.infinity,
+                  height: 35,
+                  child: Center(
+                    child: Text(
+                      'Cadastrar',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
