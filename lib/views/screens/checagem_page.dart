@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:testeseki/views/screens/inicio_page.dart';
 
 import 'home_page.dart';
-import 'login_page.dart';
 
 class ChecagemPage extends StatefulWidget {
   const ChecagemPage({super.key});
@@ -20,7 +20,7 @@ class ChecagemPageState extends State<ChecagemPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => LoginPage(),
+            builder: (context) => const InicioPage(),
           ),
         );
       } else {
