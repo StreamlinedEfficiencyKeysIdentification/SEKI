@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../controllers/empresa_controller.dart';
 import '../../../main.dart';
 import '../../../models/empresa_model.dart';
@@ -17,6 +18,7 @@ class _VisualizarEmpresasState extends State<VisualizarEmpresas> {
   late String _statusFiltro = 'Ativo';
   String _searchText = "";
   bool _searchInMatriz = false;
+  double _statusBarHeight = 0;
 
   Map<String, bool> selectedMap = {};
 
@@ -24,6 +26,15 @@ class _VisualizarEmpresasState extends State<VisualizarEmpresas> {
   void initState() {
     super.initState();
     _empresasFuture = EmpresaController.getEmpresas();
+
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: [SystemUiOverlay.top]);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _statusBarHeight = MediaQuery.of(context).padding.top;
   }
 
   @override
@@ -31,52 +42,68 @@ class _VisualizarEmpresasState extends State<VisualizarEmpresas> {
     final hasConnection = ConnectionNotifer.of(context).value;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Visualizar Empresas'),
-        leading: hasConnection
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/home');
-                },
-              )
-            : Container(),
-      ),
       body: hasConnection
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
+                  padding:
+                      EdgeInsets.fromLTRB(12.0, _statusBarHeight, 12.0, 12.0),
+                  child: Column(
                     children: [
-                      Expanded(
-                        child: TextField(
-                          decoration: const InputDecoration(
-                            labelText: 'Buscar por CNPJ ou Razão Social',
-                            labelStyle: TextStyle(fontSize: 14),
-                            prefixIcon: Icon(Icons.search),
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              _searchText = value.toLowerCase();
-                            });
-                          },
+                      const Padding(
+                        padding: EdgeInsets.only(top: 20, bottom: 10),
+                        child: Icon(
+                          Icons.location_city, // Ícone de prédio
+                          color: Color(0xFF0073BC),
+                          size: 140, // Ajustando o tamanho do ícone
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Column(
-                        children: [
-                          Text(_searchInMatriz ? 'Matriz' : 'Filial'),
-                          Switch(
-                            value: _searchInMatriz,
-                            onChanged: (value) {
-                              setState(() {
-                                _searchInMatriz = value;
-                              });
-                            },
-                          ),
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color:
+                                      const Color(0xFF0073BC).withOpacity(0.3),
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: TextField(
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: 'Buscar por CNPJ ou Razão Social',
+                                    hintStyle: TextStyle(fontSize: 14),
+                                    contentPadding: EdgeInsets.symmetric(
+                                        vertical: 15, horizontal: 10),
+                                    suffixIcon: Icon(Icons.search,
+                                        color: Colors.black), // Ícone à direita
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _searchText = value.toLowerCase();
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Column(
+                              children: [
+                                Text(_searchInMatriz ? 'Matriz' : 'Filial'),
+                                Switch(
+                                  value: _searchInMatriz,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _searchInMatriz = value;
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -200,6 +227,41 @@ class _VisualizarEmpresasState extends State<VisualizarEmpresas> {
                 ],
               ),
             ),
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.0),
+            topRight: Radius.circular(20.0),
+          ),
+        ),
+        child: BottomAppBar(
+          color: Colors.transparent,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.arrow_back,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.home),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/home');
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.person),
+                onPressed: () {},
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -220,89 +282,97 @@ class _VisualizarEmpresasState extends State<VisualizarEmpresas> {
       selectedMap[matriz.id] = false;
     }
 
-    return ExpansionTile(
-      title: Row(
-        children: [
-          Expanded(
-            child: GestureDetector(
-              child: Text('${matriz.razaoSocial} (${filiais.length})'),
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.remove_red_eye),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DetalhesEmpresaPage(
-                      empresaID: matriz.id, setorVisibility: true),
-                ),
-              );
-            },
-          ),
-        ],
+    return Card(
+      shape: RoundedRectangleBorder(
+        side: const BorderSide(color: Colors.black),
+        borderRadius: BorderRadius.circular(10), // Arredondado
       ),
-      trailing: !_searchInMatriz &&
-              showExpansionArrow // Se _searchInMatriz for verdadeiro, trailing fica null
-          ? SizedBox(
-              width: 30,
-              child: Icon(
-                selectedMap[matriz.id] ?? false
-                    ? Icons.keyboard_arrow_up
-                    : Icons.keyboard_arrow_down,
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      child: ExpansionTile(
+        title: Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                child: Text('${matriz.razaoSocial} (${filiais.length})'),
               ),
-            )
-          : const SizedBox(
-              width: 30,
             ),
-      onExpansionChanged:
-          !_searchInMatriz // Só permite expandir se _searchInMatriz for falso
-              ? (value) {
-                  setState(() {
-                    selectedMap[matriz.id] = value;
-                  });
-                }
-              : null,
-      children: !_searchInMatriz
-          ? filiais
-              .map(
-                (filial) => ListTile(
-                  title: Row(
-                    children: [
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: GestureDetector(
-                          child:
-                              Text('${filial.razaoSocial} \n ${filial.cnpj}'),
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.remove_red_eye),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DetalhesEmpresaPage(
-                                  empresaID: filial.id, setorVisibility: false),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
+            IconButton(
+              icon: const Icon(Icons.remove_red_eye),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DetalhesEmpresaPage(
+                        empresaID: matriz.id, setorVisibility: true),
                   ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DetalhesEmpresaPage(
-                            empresaID: filial.id, setorVisibility: false),
-                      ),
-                    );
-                  },
+                );
+              },
+            ),
+          ],
+        ),
+        trailing: !_searchInMatriz &&
+                showExpansionArrow // Se _searchInMatriz for verdadeiro, trailing fica null
+            ? SizedBox(
+                width: 30,
+                child: Icon(
+                  selectedMap[matriz.id] ?? false
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
                 ),
               )
-              .toList()
-          : [],
+            : const SizedBox(
+                width: 30,
+              ),
+        onExpansionChanged:
+            !_searchInMatriz // Só permite expandir se _searchInMatriz for falso
+                ? (value) {
+                    setState(() {
+                      selectedMap[matriz.id] = value;
+                    });
+                  }
+                : null,
+        children: !_searchInMatriz
+            ? filiais
+                .map(
+                  (filial) => ListTile(
+                    title: Row(
+                      children: [
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: GestureDetector(
+                            child:
+                                Text('${filial.razaoSocial} \n ${filial.cnpj}'),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.remove_red_eye),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DetalhesEmpresaPage(
+                                    empresaID: filial.id,
+                                    setorVisibility: false),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetalhesEmpresaPage(
+                              empresaID: filial.id, setorVisibility: false),
+                        ),
+                      );
+                    },
+                  ),
+                )
+                .toList()
+            : [],
+      ),
     );
   }
 }

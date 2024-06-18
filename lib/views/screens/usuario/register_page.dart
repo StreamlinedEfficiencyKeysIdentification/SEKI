@@ -30,89 +30,216 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Register'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('Register Page'),
-            TextFormField(
-              controller: _usuarioController,
-              decoration: const InputDecoration(labelText: 'Usuario'),
-            ),
-            TextFormField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-            ),
-            TextFormField(
-              controller: _nomeController,
-              decoration: const InputDecoration(labelText: 'Nome'),
-            ),
-            ComboBoxEmpresa(
-              empresa: _empresaSelecionada,
-              onEmpresaSelected: (empresa) {
-                setState(() {
-                  _empresaSelecionada =
-                      empresa; // Atualizar o estado do campo 'IDempresa'
-                });
-              },
-            ),
-            ComboBoxNivelAcesso(
-              nivel: _nivelSelecionado,
-              onNivelSelected: (nivel) {
-                setState(() {
-                  _nivelSelecionado =
-                      nivel; // Atualizar o estado do campo 'IDempresa'
-                });
-              },
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  _switchValue ? 'Usuário Ativo' : 'Usuário Inativo',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: _switchValue ? Colors.green : Colors.red,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 30),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).size.height * 0.1,
+                ),
+                child: Image.asset(
+                  'images/usuario.png',
+                  width: 100,
+                  height: 100,
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Usuário',
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: const Color.fromRGBO(0, 115, 188, 0.2),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: TextFormField(
+                    controller: _usuarioController,
+                    decoration: const InputDecoration(
+                      hintText: 'Usuário',
+                      border: InputBorder.none,
+                    ),
                   ),
                 ),
-                SwitchExample(
-                  onValueChanged: (value) {
-                    setState(() {
-                      _switchValue = value;
-                    });
-                  },
+              ),
+              const SizedBox(height: 20),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: const Color.fromRGBO(0, 115, 188, 0.2),
                 ),
-              ],
-            ),
-            ElevatedButton(
-              onPressed: () {
-                String user = _usuarioController.text.trim();
-                String email = _emailController.text.trim();
-                String nome = _nomeController.text.trim();
-
-                if (user.isEmpty ||
-                    email.isEmpty ||
-                    nome.isEmpty ||
-                    _empresaSelecionada.isEmpty ||
-                    _nivelSelecionado.isEmpty) {
-                  // Se algum dos campos estiver vazio, informe ao usuário e não prossiga com o registro
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Por favor, preencha todos os campos.'),
-                      backgroundColor: Colors.red,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: TextFormField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(
+                      hintText: 'Email',
+                      border: InputBorder.none,
                     ),
-                  );
-                } else {
-                  _register(context, _empresaSelecionada, _nivelSelecionado);
-                }
-              },
-              child: const Text('Register'),
-            ),
-          ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: const Color.fromRGBO(0, 115, 188, 0.2),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: TextFormField(
+                    controller: _nomeController,
+                    decoration: const InputDecoration(
+                      hintText: 'Nome',
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: const Color.fromRGBO(0, 115, 188, 0.2),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: ComboBoxEmpresa(
+                    empresa: _empresaSelecionada,
+                    onEmpresaSelected: (empresa) {
+                      setState(() {
+                        _empresaSelecionada =
+                            empresa; // Atualizar o estado do campo 'IDempresa'
+                      });
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: const Color.fromRGBO(0, 115, 188, 0.2),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: ComboBoxNivelAcesso(
+                    nivel: _nivelSelecionado,
+                    onNivelSelected: (nivel) {
+                      setState(() {
+                        _nivelSelecionado =
+                            nivel; // Atualizar o estado do campo 'IDempresa'
+                      });
+                    },
+                  ),
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    _switchValue ? 'Usuário Ativo' : 'Usuário Inativo',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: _switchValue ? Colors.green : Colors.red,
+                    ),
+                  ),
+                  SwitchExample(
+                    onValueChanged: (value) {
+                      setState(() {
+                        _switchValue = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  String user = _usuarioController.text.trim();
+                  String email = _emailController.text.trim();
+                  String nome = _nomeController.text.trim();
+
+                  if (user.isEmpty ||
+                      email.isEmpty ||
+                      nome.isEmpty ||
+                      _empresaSelecionada.isEmpty ||
+                      _nivelSelecionado.isEmpty) {
+                    // Se algum dos campos estiver vazio, informe ao usuário e não prossiga com o registro
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Por favor, preencha todos os campos.'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  } else {
+                    _register(context, _empresaSelecionada, _nivelSelecionado);
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 19, 74, 119),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: const SizedBox(
+                  width: double.infinity,
+                  height: 35,
+                  child: Center(
+                    child: Text(
+                      'Registrar',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.0),
+            topRight: Radius.circular(20.0),
+          ),
+        ),
+        child: BottomAppBar(
+          color: Colors.transparent,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.arrow_back,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.home),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/home');
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.person),
+                onPressed: () {},
+              ),
+            ],
+          ),
         ),
       ),
     );

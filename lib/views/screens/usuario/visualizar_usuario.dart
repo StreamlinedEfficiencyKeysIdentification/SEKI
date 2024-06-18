@@ -48,173 +48,175 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
 
     return Scaffold(
       body: hasConnection
-          ? Padding(
-              padding: EdgeInsets.fromLTRB(16.0, _statusBarHeight, 16.0, 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Center(
-                    child: Icon(
-                      Icons.person,
-                      size: 100,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: 'Busque por usuário',
-                              border: InputBorder.none,
-                              filled: true,
-                              fillColor:
-                                  const Color(0xFF0073BC).withOpacity(0.28),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 20.0, vertical: 12.0),
-                              suffixIcon: const Icon(Icons.search),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(50.0),
-                                borderSide:
-                                    const BorderSide(color: Colors.transparent),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(50.0),
-                                borderSide:
-                                    const BorderSide(color: Colors.transparent),
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding:
+                      EdgeInsets.fromLTRB(12.0, _statusBarHeight, 12.0, 12.0),
+                  child: Column(
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(top: 20, bottom: 10),
+                        child: Icon(
+                          Icons.person,
+                          size: 140,
+                          color: Color(0xFF0073BC),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color:
+                                      const Color(0xFF0073BC).withOpacity(0.3),
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: TextField(
+                                  decoration: const InputDecoration(
+                                    hintText: 'Busque por usuário',
+                                    border: InputBorder.none,
+                                    hintStyle: TextStyle(fontSize: 14),
+                                    contentPadding: EdgeInsets.symmetric(
+                                        vertical: 15, horizontal: 10),
+                                    suffixIcon:
+                                        Icon(Icons.search, color: Colors.black),
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _searchText = value.toLowerCase();
+                                    });
+                                  },
+                                ),
                               ),
                             ),
-                            onChanged: (value) {
-                              setState(() {
-                                _searchText = value.toLowerCase();
-                              });
-                            },
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              _statusFiltro = 'Ativo';
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                _statusFiltro == 'Ativo' ? Colors.blue : null,
-                          ),
-                          child: const Text('Ativo'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              _statusFiltro = 'Inativo';
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                _statusFiltro == 'Inativo' ? Colors.blue : null,
-                          ),
-                          child: const Text('Inativo'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              _statusFiltro = 'Ambos';
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                _statusFiltro == 'Ambos' ? Colors.blue : null,
-                          ),
-                          child: const Text('Ambos'),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: FutureBuilder<List<Empresa>>(
-                        future: _empresasFuture,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const SkeletonLoader();
-                          } else if (snapshot.hasError) {
-                            return Center(
-                                child: Text('Erro: ${snapshot.error}'));
-                          } else {
-                            List<Empresa> empresas;
-                            empresas = snapshot.data!;
-                            return FutureBuilder<List<Usuario>>(
-                              future: _usuariosFuture,
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return const SkeletonLoader();
-                                } else if (snapshot.hasError) {
-                                  return Center(
-                                      child: Text('Erro: ${snapshot.error}'));
-                                } else {
-                                  final usuarios =
-                                      snapshot.data!.where((usuario) {
-                                    return (_statusFiltro == 'Ambos' ||
-                                            usuario.status == _statusFiltro) &&
-                                        (usuario.nome
-                                                .toLowerCase()
-                                                .contains(_searchText) ||
-                                            usuario.email
-                                                .toLowerCase()
-                                                .contains(_searchText));
-                                  }).toList();
-
-                                  return FutureBuilder<Usuario>(
-                                    future: _usuario,
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.waiting) {
-                                        return const SkeletonLoader();
-                                      } else if (snapshot.hasError) {
-                                        return Center(
-                                            child: Text(
-                                                'Erro: ${snapshot.error}'));
-                                      } else {
-                                        final usuario = snapshot.data!;
-                                        return ListView.builder(
-                                          itemCount: empresas.length,
-                                          itemBuilder: (context, index) {
-                                            final empresa = empresas[index];
-                                            if (empresa.matriz == empresa.id) {
-                                              // É uma empresa matriz
-                                              return _buildMatrizTile(empresa,
-                                                  empresas, usuarios, usuario);
-                                            } else {
-                                              // É uma empresa filial (será tratada nas empresas matriz)
-                                              return Container();
-                                            }
-                                          },
-                                        );
-                                      }
-                                    },
-                                  );
-                                }
-                              },
-                            );
-                          }
-                        },
                       ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _statusFiltro = 'Ativo';
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              _statusFiltro == 'Ativo' ? Colors.blue : null,
+                        ),
+                        child: const Text('Ativo'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _statusFiltro = 'Inativo';
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              _statusFiltro == 'Inativo' ? Colors.blue : null,
+                        ),
+                        child: const Text('Inativo'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _statusFiltro = 'Ambos';
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              _statusFiltro == 'Ambos' ? Colors.blue : null,
+                        ),
+                        child: const Text('Ambos'),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: FutureBuilder<List<Empresa>>(
+                      future: _empresasFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const SkeletonLoader();
+                        } else if (snapshot.hasError) {
+                          return Center(child: Text('Erro: ${snapshot.error}'));
+                        } else {
+                          List<Empresa> empresas;
+                          empresas = snapshot.data!;
+                          return FutureBuilder<List<Usuario>>(
+                            future: _usuariosFuture,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const SkeletonLoader();
+                              } else if (snapshot.hasError) {
+                                return Center(
+                                    child: Text('Erro: ${snapshot.error}'));
+                              } else {
+                                final usuarios =
+                                    snapshot.data!.where((usuario) {
+                                  return (_statusFiltro == 'Ambos' ||
+                                          usuario.status == _statusFiltro) &&
+                                      (usuario.nome
+                                              .toLowerCase()
+                                              .contains(_searchText) ||
+                                          usuario.email
+                                              .toLowerCase()
+                                              .contains(_searchText));
+                                }).toList();
+
+                                return FutureBuilder<Usuario>(
+                                  future: _usuario,
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return const SkeletonLoader();
+                                    } else if (snapshot.hasError) {
+                                      return Center(
+                                          child:
+                                              Text('Erro: ${snapshot.error}'));
+                                    } else {
+                                      final usuario = snapshot.data!;
+                                      return ListView.builder(
+                                        itemCount: empresas.length,
+                                        itemBuilder: (context, index) {
+                                          final empresa = empresas[index];
+                                          if (empresa.matriz == empresa.id) {
+                                            // É uma empresa matriz
+                                            return _buildMatrizTile(empresa,
+                                                empresas, usuarios, usuario);
+                                          } else {
+                                            // É uma empresa filial (será tratada nas empresas matriz)
+                                            return Container();
+                                          }
+                                        },
+                                      );
+                                    }
+                                  },
+                                );
+                              }
+                            },
+                          );
+                        }
+                      },
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             )
           : Center(
               child: Column(
@@ -242,7 +244,6 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
                 ],
               ),
             ),
-      backgroundColor: Colors.grey[300],
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
@@ -329,52 +330,62 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
 
     final totalUsuarios = totalUsuariosFiliais + totalUsuariosMatriz;
 
-    return ExpansionTile(
-      title: Text('${matriz.razaoSocial} ($totalUsuarios)'),
-      trailing: !showExpansionArrow
-          ? const SizedBox()
-          : Icon(
-              selectedMap[matriz.id] ?? false
-                  ? Icons.keyboard_arrow_up
-                  : Icons.keyboard_arrow_down,
-            ),
-      onExpansionChanged: (value) {
-        setState(() {
-          selectedMap[matriz.id] = value;
-        });
-      },
-      children: [
-        if (nivel <= 1)
-          ...usuariosMatriz.map(
-            (usuario) => ListTile(
-              title: Row(
-                children: [
-                  const SizedBox(width: 24),
-                  Expanded(
-                    child: GestureDetector(
-                      child: Text('${usuario.nome} \n ${usuario.usuario}'),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.remove_red_eye),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetalhesUsuarioPage(
-                            usuario: usuario.uid,
-                          ),
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey, width: 1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ExpansionTile(
+          title: Text('${matriz.razaoSocial} ($totalUsuarios)'),
+          trailing: !showExpansionArrow
+              ? const SizedBox()
+              : Icon(
+                  selectedMap[matriz.id] ?? false
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
+                ),
+          onExpansionChanged: (value) {
+            setState(() {
+              selectedMap[matriz.id] = value;
+            });
+          },
+          children: [
+            if (nivel <= 1)
+              ...usuariosMatriz.map(
+                (usuario) => ListTile(
+                  title: Row(
+                    children: [
+                      const SizedBox(width: 24),
+                      Expanded(
+                        child: GestureDetector(
+                          child: Text('${usuario.nome} \n ${usuario.usuario}'),
                         ),
-                      );
-                    },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.remove_red_eye),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetalhesUsuarioPage(
+                                usuario: usuario.uid,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ...filiaisComUsuarios
-            .map((filial) => _buildFilialTile(filial, usuarios)),
-      ],
+            ...filiaisComUsuarios
+                .map((filial) => _buildFilialTile(filial, usuarios)),
+          ],
+        ),
+      ),
     );
   }
 
@@ -390,55 +401,65 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
       selectedMap[filial.id] = false;
     }
 
-    return ExpansionTile(
-      title: Row(
-        children: [
-          const SizedBox(width: 12),
-          Text('${filial.razaoSocial} (${usersInFilial.length})'),
-        ],
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey, width: 1),
+        borderRadius: BorderRadius.circular(12),
       ),
-      trailing: !showExpansionArrow
-          ? const SizedBox()
-          : Icon(
-              selectedMap[filial.id] ?? false
-                  ? Icons.keyboard_arrow_up
-                  : Icons.keyboard_arrow_down,
-            ),
-      onExpansionChanged: (value) {
-        setState(() {
-          selectedMap[filial.id] = value;
-        });
-      },
-      children: [
-        ...usersInFilial.map(
-          (usuario) => ListTile(
-            title: Row(
-              children: [
-                const SizedBox(width: 24),
-                Expanded(
-                  child: GestureDetector(
-                    child: Text('${usuario.nome} \n ${usuario.usuario}'),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.remove_red_eye),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DetalhesUsuarioPage(
-                          usuario: usuario.uid,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-            // Adicione mais detalhes do usuário conforme necessário
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ExpansionTile(
+          title: Row(
+            children: [
+              const SizedBox(width: 12),
+              Text('${filial.razaoSocial} (${usersInFilial.length})'),
+            ],
           ),
+          trailing: !showExpansionArrow
+              ? const SizedBox()
+              : Icon(
+                  selectedMap[filial.id] ?? false
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
+                ),
+          onExpansionChanged: (value) {
+            setState(() {
+              selectedMap[filial.id] = value;
+            });
+          },
+          children: [
+            ...usersInFilial.map(
+              (usuario) => ListTile(
+                title: Row(
+                  children: [
+                    const SizedBox(width: 24),
+                    Expanded(
+                      child: GestureDetector(
+                        child: Text('${usuario.nome} \n ${usuario.usuario}'),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.remove_red_eye),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DetalhesUsuarioPage(
+                              usuario: usuario.uid,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+                // Adicione mais detalhes do usuário conforme necessário
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

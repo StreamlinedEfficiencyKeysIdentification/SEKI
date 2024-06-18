@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../controllers/empresa_controller.dart';
 import '../../../controllers/equipamento_controller.dart';
 import '../../../controllers/usuario_controller.dart';
@@ -22,6 +23,7 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
   late Future<Usuario> _usuario;
   String _statusFiltro = 'Ativo';
   String _searchText = "";
+  double _statusBarHeight = 0;
 
   Map<String, bool> selectedMap = {};
 
@@ -31,6 +33,15 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
     _empresasFuture = EmpresaController.getEmpresas();
     _equipamentosFuture = EquipamentoController.getEquipamentos();
     _usuario = UsuarioController.getUsuarioLogado();
+
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: [SystemUiOverlay.top]);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _statusBarHeight = MediaQuery.of(context).padding.top;
   }
 
   @override
@@ -38,37 +49,54 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
     final hasConnection = ConnectionNotifer.of(context).value;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Visualizar Equipamentos'),
-        leading: hasConnection
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/home');
-                },
-              )
-            : Container(),
-      ),
       body: hasConnection
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
+                  padding:
+                      EdgeInsets.fromLTRB(12.0, _statusBarHeight, 12.0, 12.0),
+                  child: Column(
                     children: [
-                      Expanded(
-                        child: TextField(
-                          decoration: const InputDecoration(
-                            labelText: 'Buscar por Marca, Modelo, QRCode',
-                            labelStyle: TextStyle(fontSize: 12),
-                            prefixIcon: Icon(Icons.search),
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              _searchText = value.toLowerCase();
-                            });
-                          },
+                      const Padding(
+                        padding: EdgeInsets.only(top: 20, bottom: 10),
+                        child: Icon(
+                          Icons.computer, // Ícone de usuário
+                          color: Color(0xFF0073BC),
+                          size: 140, // Tamanho do ícone
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color:
+                                      const Color(0xFF0073BC).withOpacity(0.3),
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: TextField(
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText:
+                                        'Buscar por Marca, Modelo, QRCode',
+                                    hintStyle: TextStyle(fontSize: 14),
+                                    contentPadding: EdgeInsets.symmetric(
+                                        vertical: 15, horizontal: 10),
+                                    suffixIcon: Icon(Icons.search,
+                                        color: Colors.black), // Ícone à direita
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _searchText = value.toLowerCase();
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -225,6 +253,41 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
                 ],
               ),
             ),
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.0),
+            topRight: Radius.circular(20.0),
+          ),
+        ),
+        child: BottomAppBar(
+          color: Colors.transparent,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.arrow_back,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.home),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/home');
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.person),
+                onPressed: () {},
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -274,32 +337,116 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
             .length
         : 0;
 
-    final totalUsuarios = totalEquipamentosFiliais + totalEquipamentosMatriz;
+    final totalEquipamentos =
+        totalEquipamentosFiliais + totalEquipamentosMatriz;
 
-    return ExpansionTile(
-      title: Text('${matriz.razaoSocial} ($totalUsuarios)'),
-      trailing: !showExpansionArrow
-          ? const SizedBox()
-          : Icon(
-              selectedMap[matriz.id] ?? false
-                  ? Icons.keyboard_arrow_up
-                  : Icons.keyboard_arrow_down,
-            ),
-      onExpansionChanged: (value) {
-        setState(() {
-          selectedMap[matriz.id] = value;
-        });
-      },
-      children: [
-        if (nivel <= 2)
-          ...equipamentosMatriz.map((equipamento) => ListTile(
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey, width: 1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ExpansionTile(
+          title: Text('${matriz.razaoSocial} ($totalEquipamentos)'),
+          trailing: !showExpansionArrow
+              ? const SizedBox()
+              : Icon(
+                  selectedMap[matriz.id] ?? false
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
+                ),
+          onExpansionChanged: (value) {
+            setState(() {
+              selectedMap[matriz.id] = value;
+            });
+          },
+          children: [
+            if (nivel <= 2)
+              ...equipamentosMatriz.map((equipamento) => ListTile(
+                    title: Row(
+                      children: [
+                        const SizedBox(width: 24),
+                        Expanded(
+                          child: GestureDetector(
+                            child: Text(
+                                '${equipamento.qrcode} \n ${equipamento.empresa}'),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.remove_red_eye),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DetalhesEquipamentoPage(
+                                  equipamento: equipamento.id,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  )),
+            ...filiaisComEquipamentos
+                .map((filial) => _buildFilialTile(filial, equipamentos)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilialTile(Empresa filial, List<Equipamento> equipamentos) {
+    final equipsInFilial = equipamentos
+        .where((equipamento) =>
+            equipamento.empresa == filial.id &&
+            (_statusFiltro == 'Ambos' || equipamento.status == _statusFiltro))
+        .toList();
+    final showExpansionArrow = equipsInFilial.isNotEmpty;
+
+    if (!selectedMap.containsKey(filial.id)) {
+      selectedMap[filial.id] = false;
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey, width: 1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ExpansionTile(
+          title: Row(
+            children: [
+              const SizedBox(width: 12),
+              Text('${filial.razaoSocial} (${equipsInFilial.length})'),
+            ],
+          ),
+          trailing: !showExpansionArrow
+              ? const SizedBox()
+              : Icon(
+                  selectedMap[filial.id] ?? false
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
+                ),
+          onExpansionChanged: (value) {
+            setState(() {
+              selectedMap[filial.id] = value;
+            });
+          },
+          children: [
+            ...equipsInFilial.map(
+              (equipamento) => ListTile(
                 title: Row(
                   children: [
                     const SizedBox(width: 24),
                     Expanded(
                       child: GestureDetector(
                         child: Text(
-                            '${equipamento.qrcode} \n ${equipamento.empresa}'),
+                            '${equipamento.qrcode} \n ${equipamento.marca} ${equipamento.modelo}'),
                       ),
                     ),
                     IconButton(
@@ -317,74 +464,11 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
                     ),
                   ],
                 ),
-              )),
-        ...filiaisComEquipamentos
-            .map((filial) => _buildFilialTile(filial, equipamentos)),
-      ],
-    );
-  }
-
-  Widget _buildFilialTile(Empresa filial, List<Equipamento> equipamentos) {
-    final equipsInFilial = equipamentos
-        .where((equipamento) =>
-            equipamento.empresa == filial.id &&
-            (_statusFiltro == 'Ambos' || equipamento.status == _statusFiltro))
-        .toList();
-    final showExpansionArrow = equipsInFilial.isNotEmpty;
-
-    if (!selectedMap.containsKey(filial.id)) {
-      selectedMap[filial.id] = false;
-    }
-
-    return ExpansionTile(
-      title: Row(
-        children: [
-          const SizedBox(width: 12),
-          Text('${filial.razaoSocial} (${equipsInFilial.length})'),
-        ],
-      ),
-      trailing: !showExpansionArrow
-          ? const SizedBox()
-          : Icon(
-              selectedMap[filial.id] ?? false
-                  ? Icons.keyboard_arrow_up
-                  : Icons.keyboard_arrow_down,
+              ),
             ),
-      onExpansionChanged: (value) {
-        setState(() {
-          selectedMap[filial.id] = value;
-        });
-      },
-      children: [
-        ...equipsInFilial.map(
-          (equipamento) => ListTile(
-            title: Row(
-              children: [
-                const SizedBox(width: 24),
-                Expanded(
-                  child: GestureDetector(
-                    child: Text(
-                        '${equipamento.qrcode} \n ${equipamento.marca} ${equipamento.modelo}'),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.remove_red_eye),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DetalhesEquipamentoPage(
-                          equipamento: equipamento.id,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

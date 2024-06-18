@@ -8,7 +8,7 @@ class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key});
 
   @override
-  ResetPasswordPageState createState() => ResetPasswordPageState();
+  State<ResetPasswordPage> createState() => ResetPasswordPageState();
 }
 
 class ResetPasswordPageState extends State<ResetPasswordPage> {
@@ -19,37 +19,110 @@ class ResetPasswordPageState extends State<ResetPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Redefinir Senha'),
-      ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextFormField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'E-mail'),
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _isLoading ? null : _resetPassword,
-              child: const Text('Enviar E-mail de Redefinição'),
-            ),
-            if (_errorMessage.isNotEmpty)
+        padding: const EdgeInsets.symmetric(horizontal: 30),
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(
-                  _errorMessage,
-                  style: const TextStyle(color: Colors.red),
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).size.height * 0.1,
+                ),
+                child: Image.asset(
+                  'images/cadeado.png',
+                  width: 100,
+                  height: 100,
                 ),
               ),
-            if (_isLoading)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 8.0),
-                child: CircularProgressIndicator(),
+              const SizedBox(height: 10),
+              const Center(
+                child: Text(
+                  'Recuperar Senha',
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
-          ],
+              const SizedBox(height: 60),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: const Color.fromRGBO(0, 115, 188, 0.2),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: TextField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(
+                      hintText: 'Email',
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 26.0),
+              ElevatedButton(
+                onPressed: _isLoading ? null : _resetPassword,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 19, 74, 119),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: const SizedBox(
+                  width: double.infinity,
+                  height: 35,
+                  child: Center(
+                    child: Text(
+                      'Enviar E-mail de Redefinição',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              if (_errorMessage.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(
+                    _errorMessage,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ),
+              if (_isLoading)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                  child: CircularProgressIndicator(),
+                ),
+            ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.0),
+            topRight: Radius.circular(20.0),
+          ),
+        ),
+        child: BottomAppBar(
+          color: Colors.transparent,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.arrow_back,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

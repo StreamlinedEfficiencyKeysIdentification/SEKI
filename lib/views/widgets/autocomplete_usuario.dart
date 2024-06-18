@@ -106,9 +106,21 @@ class AutocompleteUsuarioExampleState
                     fieldViewBuilder:
                         (context, controller, focusNode, onEditingComplete) {
                       return TextField(
-                        decoration: const InputDecoration(
-                          hintText:
-                              'Digite o nome do usuário', // Adicione o texto de dica aqui
+                        decoration: InputDecoration(
+                          hintText: 'Digite o nome do usuário',
+                          hintStyle: const TextStyle(
+                            color: Color(0xFF0076BC), // Cor do texto de dica
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xFF0076BC)
+                              .withOpacity(0.3), // Cor de fundo com opacidade
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                                50.0), // Borda arredondada
+                            borderSide: BorderSide.none, // Sem borda visível
+                          ),
                         ),
                         controller: controller,
                         focusNode: focusNode,
