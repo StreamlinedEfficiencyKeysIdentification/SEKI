@@ -5,8 +5,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+import '../../main.dart';
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => LoginPageState();
+}
+
+class LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -103,6 +111,8 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasConnection = ConnectionNotifer.of(context).value;
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -180,7 +190,7 @@ class LoginPage extends StatelessWidget {
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: () => _login(context),
+                        onPressed: hasConnection ? () => _login(context) : null,
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
                               const Color.fromARGB(255, 19, 74, 119),
@@ -188,13 +198,13 @@ class LoginPage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(30),
                           ),
                         ),
-                        child: const SizedBox(
+                        child: SizedBox(
                           width: double.infinity,
                           height: 35,
                           child: Center(
                             child: Text(
-                              'Login',
-                              style: TextStyle(
+                              hasConnection ? 'Login' : 'Sem Conexão',
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,

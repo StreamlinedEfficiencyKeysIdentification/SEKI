@@ -99,7 +99,7 @@ class _MyAppState extends State<MyApp> {
       routes: {
         // ignore: prefer_const_constructors
         '/': (context) => ChecagemPage(),
-        '/login': (context) => LoginPage(),
+        '/login': (context) => const LoginPage(),
         '/reset_password': (context) => const ResetPasswordPage(),
         '/register': (context) => const RegisterPage(),
         '/view_usuarios': (context) => const VisualizarUsuarios(),
