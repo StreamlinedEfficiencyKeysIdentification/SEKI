@@ -52,16 +52,41 @@ class HomePageState extends State<HomePage> {
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                return ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: 6,
-                                  itemBuilder: (context, index) {
-                                    return const SkeletonItem();
-                                  },
-                                );
+                                return const SkeletonItem();
                               } else if (snapshot.hasError) {
-                                return const Text(
-                                    'Erro ao carregar o nome do usuário.');
+                                return Column(
+                                  children: [
+                                    const Text(
+                                        'Erro ao carregar o nome do usuário.'),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.pushReplacementNamed(
+                                            context, '/');
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color.fromARGB(
+                                            255, 19, 74, 119),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(30)),
+                                      ),
+                                      child: const SizedBox(
+                                        width: double.infinity,
+                                        height: 35,
+                                        child: Center(
+                                          child: Text(
+                                            'Tentar novamente',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
                               } else {
                                 Usuario usuario = snapshot.data ??
                                     Usuario(
@@ -88,13 +113,7 @@ class HomePageState extends State<HomePage> {
                                   builder: (context, snapshot) {
                                     if (snapshot.connectionState ==
                                         ConnectionState.waiting) {
-                                      return ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: 6,
-                                        itemBuilder: (context, index) {
-                                          return const SkeletonItem();
-                                        },
-                                      );
+                                      return const SkeletonItem();
                                     } else if (snapshot.hasError) {
                                       return const Center(
                                           child: Text(
@@ -909,7 +928,14 @@ class HomePageState extends State<HomePage> {
                   ),
                   IconButton(
                     icon: const Icon(Icons.person),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SkeletonItem(),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
