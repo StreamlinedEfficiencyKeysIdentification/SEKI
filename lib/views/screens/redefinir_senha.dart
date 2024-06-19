@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../main.dart';
+
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key});
 
@@ -18,6 +20,8 @@ class ResetPasswordPageState extends State<ResetPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    final hasConnection = ConnectionNotifer.of(context).value;
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -61,20 +65,26 @@ class ResetPasswordPageState extends State<ResetPasswordPage> {
               ),
               const SizedBox(height: 26.0),
               ElevatedButton(
-                onPressed: _isLoading ? null : _resetPassword,
+                onPressed: hasConnection
+                    ? _isLoading
+                        ? null
+                        : _resetPassword
+                    : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 19, 74, 119),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                child: const SizedBox(
+                child: SizedBox(
                   width: double.infinity,
                   height: 35,
                   child: Center(
                     child: Text(
-                      'Enviar E-mail de Redefinição',
-                      style: TextStyle(
+                      hasConnection
+                          ? 'Enviar E-mail de Redefinição'
+                          : 'Sem Conexão',
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
