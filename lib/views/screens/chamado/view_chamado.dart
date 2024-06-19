@@ -6,6 +6,7 @@ import 'package:testeseki/controllers/usuario_controller.dart';
 import 'package:testeseki/models/chamado_model.dart';
 import 'package:testeseki/models/usuario_model.dart';
 import 'package:testeseki/views/screens/chamado/detalhe_chamado.dart';
+import 'package:testeseki/views/widgets/skeleton.dart';
 
 class ViewChamados extends StatefulWidget {
   const ViewChamados({super.key});
@@ -140,7 +141,7 @@ class ViewChamadosState extends State<ViewChamados> {
                   return Center(child: Text('Erro: ${snapshot.error}'));
                 } else if (snapshot.connectionState ==
                     ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const SkeletonLoader();
                 } else if (snapshot.data == null || snapshot.data!.isEmpty) {
                   return const Center(
                       child: Text('Nenhum chamado encontrado.'));
