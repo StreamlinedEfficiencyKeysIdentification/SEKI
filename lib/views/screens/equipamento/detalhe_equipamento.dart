@@ -134,6 +134,7 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blue,
         title: const Text('Detalhes do Equipamento'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -176,6 +177,7 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
           },
         ),
       ),
+      backgroundColor: Colors.blue,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -183,7 +185,7 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
           children: [
             Row(
               children: [
-                Text('QRcode: $_qrcode'),
+                Text('QRcode: $_qrcode',style: const TextStyle(color: Colors.white, fontSize: 16),),
                 const SizedBox(height: 16.0),
                 IconButton(
                   icon: const Icon(Icons.qr_code),

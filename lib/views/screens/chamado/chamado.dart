@@ -269,6 +269,7 @@ class ChamadoState extends State<Chamado> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blue,
         title: const Text('Chamado'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -277,7 +278,10 @@ class ChamadoState extends State<Chamado> {
           },
         ),
       ),
+              backgroundColor: Colors.blue,
+
       body: Center(
+        
         child: Form(
           key: _formKey,
           child: Column(
@@ -289,17 +293,20 @@ class ChamadoState extends State<Chamado> {
                 child: Column(
                   children: [
                     TextFormField(
+                      
                       keyboardType: TextInputType.number,
                       controller: _equipamentoController,
                       decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
                         prefixIcon: const Icon(
                           Icons.laptop,
                           color: Colors.blue,
                         ),
-                        hintText: "Insira um equipamento",
+                        hintText: "Insira um equipamento", 
                         focusedBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(
-                            color: Colors.blue,
+                            color: Color.fromARGB(255, 255, 255, 255),
                             width: 5,
                           ),
                         ),
@@ -310,6 +317,7 @@ class ChamadoState extends State<Chamado> {
                             width: 2,
                             style: BorderStyle.solid,
                           ),
+                          
                         ),
                         suffixIcon: Container(
                           margin: const EdgeInsets.all(8),
@@ -343,6 +351,8 @@ class ChamadoState extends State<Chamado> {
                     TextFormField(
                       controller: _tituloController,
                       decoration: InputDecoration(
+                         filled: true,
+                          fillColor: Colors.white,
                         prefixIcon: const Icon(
                           Icons.person,
                           color: Colors.blue,
@@ -381,6 +391,8 @@ class ChamadoState extends State<Chamado> {
                       controller: _descricaoController,
                       maxLines: 5,
                       decoration: InputDecoration(
+                         filled: true,
+                          fillColor: Colors.white,
                         prefixIcon: const Icon(
                           Icons.description,
                           color: Colors.blue,
@@ -406,7 +418,7 @@ class ChamadoState extends State<Chamado> {
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(100, 50),
-                        backgroundColor: Colors.blue,
+                        backgroundColor: Color.fromARGB(255, 255, 255, 255),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
                         ),
@@ -416,7 +428,8 @@ class ChamadoState extends State<Chamado> {
                         "Enviar",
                         style: TextStyle(
                           fontSize: 20,
-                          color: Colors.white,
+                          color: Colors.blue,
+                          backgroundColor: Colors.white
                         ),
                       ),
                     ),

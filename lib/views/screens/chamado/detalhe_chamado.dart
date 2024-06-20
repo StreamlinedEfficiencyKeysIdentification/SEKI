@@ -228,7 +228,9 @@ class DetalheChamadoState extends State<DetalheChamado> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blue,
       appBar: AppBar(
+        backgroundColor: Colors.blue,
         title: const Text('Detalhes do Chamado'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -240,117 +242,240 @@ class DetalheChamadoState extends State<DetalheChamado> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              'ID do Chamado: ${_chamado.IDchamado}',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8.0),
-            Text('Título: ${_chamado.Titulo}'),
-            const SizedBox(height: 8.0),
-            Text('Descrição: ${_chamado.Descricao}'),
-            const SizedBox(height: 8.0),
-            Text('Empresa: $_empresa'),
-            const SizedBox(height: 8.0),
-            Text('Status: ${nivelUsuario == 4 ? _chamado.Status : ''}'),
-            if (nivelUsuario <= 3)
-              DropdownMenu<String>(
-                initialSelection: dropdownValue,
-                onSelected: (String? value) {
-                  // This is called when the user selects an item.
-                  setState(() {
-                    dropdownValue = value!;
-                  });
-                },
-                dropdownMenuEntries:
-                    list.map<DropdownMenuEntry<String>>((String value) {
-                  return DropdownMenuEntry<String>(value: value, label: value);
-                }).toList(),
-              ),
-            const SizedBox(height: 8.0),
-            Text(nivelUsuario == 4 ? 'Responsável: $user' : ''),
-            if (waiting && nivelUsuario <= 3)
-              AutocompleteUsuarioExample(
-                user: _usuario,
-                key: _autocompleteKey,
-                onUsuarioSelected: (usuario) {
-                  setState(() {
-                    _usuarioSelecionado = usuario;
-                  });
-                },
-              ),
-            const SizedBox(height: 8.0),
-            Text('Data de Criação: ${_chamado.DataCriacao}'),
-            const SizedBox(height: 8.0),
-            Text('Data de Atualização: ${_chamado.DataAtualizacao}'),
-            const SizedBox(height: 8.0),
-            Text('Lido: ${_chamado.Lido ? 'Sim' : 'Não'}'),
-            const SizedBox(height: 8.0),
-            if (nivelUsuario <= 3 &&
-                _chamado.Responsavel.isEmpty &&
-                widget.uid != _chamado.Responsavel)
-              ElevatedButton(
-                onPressed: _assumirChamado,
-                child: const Text('Assumir'),
-              ),
-            const SizedBox(height: 8.0),
-            if (_isDataChanged()) _buildSaveButton(),
-            if (_isDataChanged()) _buildCancelButton(),
+            _buildInfoSection(),
             const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _showNovaMensagemDialog,
-              child: const Text('Nova Mensagem'),
-            ),
-            FutureBuilder<List<Map<String, dynamic>>>(
-              future: _fetchMensagens(),
-              key: _futureBuilderKey,
-              builder: (BuildContext context,
-                  AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  return const Text('Erro ao carregar mensagens');
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Text('Nenhuma mensagem encontrada');
-                } else {
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      Map<String, dynamic> mensagemData = snapshot.data![index];
-                      String mensagem = mensagemData['Mensagem'];
-                      String nomeUsuario = mensagemData['NomeUsuario'];
-                      Timestamp timestamp =
-                          mensagemData['DataMensagem'] as Timestamp;
-                      DateTime dateTime = timestamp.toDate();
-
-                      String formattedDate =
-                          DateFormat('dd/MM/yyyy \'às\' HH:mm:ss')
-                              .format(dateTime);
-
-                      return ListTile(
-                        title:
-                            Text('Enviado por: $nomeUsuario em $formattedDate'),
-                        subtitle: Text(
-                          mensagem,
-                          style: const TextStyle(
-                            fontSize: 16,
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                }
-              },
-            )
+            _buildDropdownAndResponsavel(),
+            const SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
+            _buildAssumirButton(),
+            const SizedBox(height: 16.0),
+            _buildSaveAndCancelButton(),
+            const SizedBox(height: 16.0),
+            _buildNovaMensagemButton(),
+            const SizedBox(height: 16.0),
+            _buildMensagensList(),
           ],
         ),
       ),
     );
   }
 
+  Widget _buildInfoSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildBoldText('Chamado: ${_chamado.IDchamado}'),
+        _buildTextCausa('${_chamado.Titulo}'),
+        _buildTextProblema('Problema: ${_chamado.Descricao}'),
+        _buildText(nivelUsuario == 4 ? 'Status: ${_chamado.Status}' : ''),
+        _buildText(nivelUsuario == 4 ? 'Responsável: $user' : ''),
+        _buildTextEmpresa(' $_empresa'),
+        _buildText('Criado em: ${_chamado.DataCriacao}'),
+        _buildText('Atualizado: ${_chamado.DataAtualizacao}'),
+        _buildText('Lido: ${_chamado.Lido ? 'Sim' : 'Não'}'),
+      ],
+    );
+  }
+
+  Widget _buildDropdownAndResponsavel() {
+    if (nivelUsuario <= 3) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          DropdownMenu<String>(
+            initialSelection: dropdownValue,
+            onSelected: (String? value) {
+              setState(() {
+                dropdownValue = value!;
+              });
+            },
+            dropdownMenuEntries:
+                list.map<DropdownMenuEntry<String>>((String value) {
+              return DropdownMenuEntry<String>(value: value, label: value);
+            }).toList(),
+          ),
+          const SizedBox(height: 8.0),
+          if (waiting)
+            AutocompleteUsuarioExample(
+              user: _usuario,
+              key: _autocompleteKey,
+              onUsuarioSelected: (usuario) {
+                setState(() {
+                  _usuarioSelecionado = usuario;
+                });
+              },
+            ),
+        ],
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
+  }
+
+
+  Widget _buildAssumirButton() {
+    if (nivelUsuario <= 3 &&
+        _chamado.Responsavel.isEmpty &&
+        widget.uid != _chamado.Responsavel) {
+      return ElevatedButton(
+        onPressed: _assumirChamado,
+        child: const Text('Assumir'),
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildSaveAndCancelButton() {
+    if (_isDataChanged()) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildSaveButton(),
+          _buildCancelButton(),
+        ],
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildNovaMensagemButton() {
+    return ElevatedButton(
+      onPressed: _showNovaMensagemDialog,
+      child: const Text('Nova Mensagem'),
+    );
+  }
+
+  Widget _buildMensagensList() {
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: _fetchMensagens(),
+      key: _futureBuilderKey,
+      builder: (BuildContext context,
+          AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return const Center(child: Text('Erro ao carregar mensagens'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('Nenhuma mensagem encontrada'));
+        } else {
+          return ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: snapshot.data!.length,
+            itemBuilder: (BuildContext context, int index) {
+              Map<String, dynamic> mensagemData = snapshot.data![index];
+              bool isMinhaMensagem = mensagemData['Remetente'] ==
+                  'eu'; // Adaptar conforme sua lógica de remetente
+
+              return _buildMessageBubble(
+                mensagemData['Mensagem'],
+                mensagemData['NomeUsuario'],
+                mensagemData['DataMensagem'] as Timestamp,
+                isMinhaMensagem,
+              );
+            },
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildMessageBubble(String mensagem, String nomeUsuario,
+      Timestamp timestamp, bool isMinhaMensagem) {
+    CrossAxisAlignment alignment =
+        isMinhaMensagem ? CrossAxisAlignment.end : CrossAxisAlignment.start;
+    Color bubbleColor = isMinhaMensagem ? Colors.blue[200]! : Colors.grey[300]!;
+
+    DateTime dateTime = timestamp.toDate();
+    String formattedDate =
+        DateFormat('dd/MM/yyyy \'às\' HH:mm:ss').format(dateTime);
+
+    return Align(
+      alignment: isMinhaMensagem ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+        padding: const EdgeInsets.all(12.0),
+        decoration: BoxDecoration(
+          color: bubbleColor,
+          borderRadius: BorderRadius.circular(16.0),
+        ),
+        child: Column(
+          crossAxisAlignment: alignment,
+          children: [
+            Text(
+              '$nomeUsuario - $formattedDate',
+              style: const TextStyle(fontSize: 12.0),
+            ),
+            const SizedBox(height: 4.0),
+            Text(
+              mensagem,
+              style: const TextStyle(fontSize: 16.0),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBoldText(String text) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Image.asset(
+          'images/chatsupport.png',
+          height: 24,
+          width: 36,
+        ),
+        const SizedBox(width: 8),
+        Text(
+          text,
+          style: const TextStyle(fontWeight: FontWeight.w200, color: Colors.white, fontSize: 20),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildText(String text) {
+    return Text(
+      text,
+      style: const TextStyle(fontSize: 15),
+    );
+  }
+
+   Widget _buildTextCausa(String text) {
+    return Text(
+      text,
+      style: const TextStyle(fontSize: 18,fontWeight: FontWeight.bold, color: Color.fromARGB(255, 23, 36, 49)),
+    );
+  }
+    Widget _buildTextEmpresa(String text) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Image.asset(
+          'images/empresa.png',
+          height: 24,
+          width: 36, color: Colors.white,
+        ),
+        const SizedBox(width: 8),
+        Text(
+          text,
+          style: const TextStyle(fontWeight: FontWeight.w200, color: Color.fromARGB(255, 220, 220, 221), fontSize: 18),
+        ),
+      ],
+    );
+  }
+
+ Widget _buildTextProblema(String text) {
+    return Text(
+      text,
+      style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 7, 7, 46)),
+    );
+  }
   bool _isDataChanged() {
     return dropdownValue != _chamado.Status ||
         _usuarioSelecionado != _chamado.Responsavel;
