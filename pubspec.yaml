@@ -31,6 +31,7 @@ dev_dependencies:
 
 flutter:
   assets:
+    - images/chatsupport.png
     - images/userlogin.png
     - images/cadeado.png
     - images/usuario.png
