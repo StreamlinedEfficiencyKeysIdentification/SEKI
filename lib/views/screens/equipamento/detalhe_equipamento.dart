@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../barcode/view_code.dart';
 import '../../../controllers/equipamento_controller.dart';
 import '../../../models/equipamento_model.dart';
@@ -45,12 +46,22 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
   String _setorSelecionado = '';
   String _usuarioSelecionado = '';
   bool _setorEncontrado = true;
+  double _statusBarHeight = 0;
 
   @override
   void initState() {
     super.initState();
     // Inicialize os campos editáveis com os valores do usuário
     _fetchEquipamento();
+
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: [SystemUiOverlay.top]);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _statusBarHeight = MediaQuery.of(context).padding.top;
   }
 
   void _fetchEquipamento() async {
@@ -133,57 +144,17 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Detalhes do Equipamento'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            if (_isDataChanged()) {
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Descartar Alterações?'),
-                    content: const Text(
-                        'Tem certeza que deseja descartar as alterações e sair?'),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          // Resetar os campos para os valores originais
-                          setState(() {
-                            // Resetar os campos para os valores originais
-                            initializeFields();
-                          });
-                          Navigator.pop(context); // Fechar o AlertDialog
-                          Navigator.pushNamed(context, '/view_equipamentos');
-                        },
-                        child: const Text('Sim'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context); // Fechar o AlertDialog
-                        },
-                        child: const Text('Não'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            } else {
-              Navigator.pushNamed(context, '/view_equipamentos');
-            }
-          },
-        ),
-      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.fromLTRB(12.0, _statusBarHeight + 12.0, 12.0, 12.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Text('QRcode: $_qrcode'),
+                Text(
+                  'QRcode: $_qrcode',
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                ),
                 const SizedBox(height: 16.0),
                 IconButton(
                   icon: const Icon(Icons.qr_code),
@@ -303,6 +274,77 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
               ],
             ),
           ],
+        ),
+      ),
+      backgroundColor: Colors.blue,
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.0),
+            topRight: Radius.circular(20.0),
+          ),
+        ),
+        child: BottomAppBar(
+          color: Colors.transparent,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.arrow_back,
+                ),
+                onPressed: () {
+                  if (_isDataChanged()) {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Descartar Alterações?'),
+                          content: const Text(
+                              'Tem certeza que deseja descartar as alterações e sair?'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                // Resetar os campos para os valores originais
+                                setState(() {
+                                  // Resetar os campos para os valores originais
+                                  initializeFields();
+                                });
+                                Navigator.pop(context); // Fechar o AlertDialog
+                                Navigator.pushNamed(
+                                    context, '/view_equipamentos');
+                              },
+                              child: const Text('Sim'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context); // Fechar o AlertDialog
+                              },
+                              child: const Text('Não'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else {
+                    Navigator.pushNamed(context, '/view_equipamentos');
+                  }
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.home),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/home');
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.person),
+                onPressed: () {},
+              ),
+            ],
+          ),
         ),
       ),
     );

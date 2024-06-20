@@ -165,13 +165,14 @@ class ViewChamadosState extends State<ViewChamados> {
                             children: [
                               ListTile(
                                 tileColor:
-                                    const Color.fromARGB(54, 255, 255, 255),
+                                    const Color.fromARGB(255, 255, 255, 255),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(
                                       10), // Define o raio do border aqui
                                 ),
                                 title: Text(chamado.IDchamado),
-                                subtitle: Text(chamado.Titulo),
+                                subtitle: Text(
+                                    '${chamado.Titulo}\n${chamado.DataCriacao}'),
                                 trailing: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [

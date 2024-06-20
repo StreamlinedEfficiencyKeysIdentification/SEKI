@@ -268,15 +268,6 @@ class ChamadoState extends State<Chamado> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chamado'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pushNamed(context, '/');
-          },
-        ),
-      ),
       body: Center(
         child: Form(
           key: _formKey,
@@ -292,6 +283,8 @@ class ChamadoState extends State<Chamado> {
                       keyboardType: TextInputType.number,
                       controller: _equipamentoController,
                       decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
                         prefixIcon: const Icon(
                           Icons.laptop,
                           color: Colors.blue,
@@ -299,7 +292,7 @@ class ChamadoState extends State<Chamado> {
                         hintText: "Insira um equipamento",
                         focusedBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(
-                            color: Colors.blue,
+                            color: Color.fromARGB(255, 255, 255, 255),
                             width: 5,
                           ),
                         ),
@@ -343,6 +336,8 @@ class ChamadoState extends State<Chamado> {
                     TextFormField(
                       controller: _tituloController,
                       decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
                         prefixIcon: const Icon(
                           Icons.person,
                           color: Colors.blue,
@@ -381,6 +376,8 @@ class ChamadoState extends State<Chamado> {
                       controller: _descricaoController,
                       maxLines: 5,
                       decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
                         prefixIcon: const Icon(
                           Icons.description,
                           color: Colors.blue,
@@ -406,7 +403,8 @@ class ChamadoState extends State<Chamado> {
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(100, 50),
-                        backgroundColor: Colors.blue,
+                        backgroundColor:
+                            const Color.fromARGB(255, 255, 255, 255),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
                         ),
@@ -416,12 +414,48 @@ class ChamadoState extends State<Chamado> {
                         "Enviar",
                         style: TextStyle(
                           fontSize: 20,
-                          color: Colors.white,
+                          color: Colors.blue,
                         ),
                       ),
                     ),
                   ],
                 ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      backgroundColor: Colors.blue,
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.0),
+            topRight: Radius.circular(20.0),
+          ),
+        ),
+        child: BottomAppBar(
+          color: Colors.transparent,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.arrow_back,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.home),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/home');
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.person),
+                onPressed: () {},
               ),
             ],
           ),

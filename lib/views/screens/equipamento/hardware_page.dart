@@ -74,7 +74,7 @@ class HardwarePageState extends State<HardwarePage> {
             LayoutBuilder(
               builder: (context, constraints) {
                 return SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.55,
+                  height: MediaQuery.of(context).size.height * 0.63,
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     child: Column(
@@ -274,34 +274,35 @@ class HardwarePageState extends State<HardwarePage> {
                             ),
                           ],
                         ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: cadastrarEquipamento,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromARGB(255, 19, 74, 119),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30)),
+                          ),
+                          child: const SizedBox(
+                            width: double.infinity,
+                            height: 35,
+                            child: Center(
+                              child: Text(
+                                'Cadastrar',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 );
               },
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: cadastrarEquipamento,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 19, 74, 119),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30)),
-              ),
-              child: const SizedBox(
-                width: double.infinity,
-                height: 35,
-                child: Center(
-                  child: Text(
-                    'Cadastrar',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
             ),
           ],
         ),
