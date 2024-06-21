@@ -267,7 +267,7 @@ class DetalheChamadoState extends State<DetalheChamado> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildBoldText('Chamado: ${_chamado.IDchamado}'),
-        _buildTextCausa('${_chamado.Titulo}'),
+        _buildTextCausa(' ${_chamado.Titulo}'),
         _buildTextProblema('Problema: ${_chamado.Descricao}'),
         _buildText(nivelUsuario == 4 ? 'Status: ${_chamado.Status}' : ''),
         _buildText(nivelUsuario == 4 ? 'Responsável: $user' : ''),
@@ -349,77 +349,95 @@ class DetalheChamadoState extends State<DetalheChamado> {
     );
   }
 
-  Widget _buildMensagensList() {
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: _fetchMensagens(),
-      key: _futureBuilderKey,
-      builder: (BuildContext context,
-          AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return const Center(child: Text('Erro ao carregar mensagens'));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('Nenhuma mensagem encontrada'));
-        } else {
-          return ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: snapshot.data!.length,
-            itemBuilder: (BuildContext context, int index) {
-              Map<String, dynamic> mensagemData = snapshot.data![index];
-              bool isMinhaMensagem = mensagemData['Remetente'] ==
-                  'eu'; // Adaptar conforme sua lógica de remetente
-
-              return _buildMessageBubble(
-                mensagemData['Mensagem'],
-                mensagemData['NomeUsuario'],
-                mensagemData['DataMensagem'] as Timestamp,
-                isMinhaMensagem,
-              );
-            },
-          );
-        }
-      },
-    );
-  }
-
-  Widget _buildMessageBubble(String mensagem, String nomeUsuario,
-      Timestamp timestamp, bool isMinhaMensagem) {
-    CrossAxisAlignment alignment =
-        isMinhaMensagem ? CrossAxisAlignment.end : CrossAxisAlignment.start;
-    Color bubbleColor = isMinhaMensagem ? Colors.blue[200]! : Colors.grey[300]!;
-
-    DateTime dateTime = timestamp.toDate();
-    String formattedDate =
-        DateFormat('dd/MM/yyyy \'às\' HH:mm:ss').format(dateTime);
-
-    return Align(
-      alignment: isMinhaMensagem ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-        padding: const EdgeInsets.all(12.0),
-        decoration: BoxDecoration(
-          color: bubbleColor,
-          borderRadius: BorderRadius.circular(16.0),
-        ),
-        child: Column(
-          crossAxisAlignment: alignment,
-          children: [
-            Text(
-              '$nomeUsuario - $formattedDate',
-              style: const TextStyle(fontSize: 12.0),
-            ),
-            const SizedBox(height: 4.0),
-            Text(
-              mensagem,
-              style: const TextStyle(fontSize: 16.0),
-            ),
-          ],
-        ),
+Widget _buildMensagensList() {
+  return FutureBuilder<List<Map<String, dynamic>>>(
+    future: _fetchMensagens(),
+    key: _futureBuilderKey,
+    builder: (BuildContext context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(child: CircularProgressIndicator());
+      } else if (snapshot.hasError) {
+        return const Center(child: Text('Erro ao carregar mensagens'));
+      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+  return const Center(
+    child: Padding(
+      padding:  EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.info_outline,
+            size: 48.0,
+            color: Colors.grey,
+          ),
+           SizedBox(height: 16.0),
+          Text(
+            'No momento não há mensagens.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 18.0),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+
+
+      } else {
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: snapshot.data!.length,
+          itemBuilder: (BuildContext context, int index) {
+            Map<String, dynamic> mensagemData = snapshot.data![index];
+            String usuarioId = mensagemData['IDusuario'];
+            bool isResponsavel = usuarioId == _chamado.Responsavel;
+
+            return _buildMessageBubble(
+              mensagemData['Mensagem'],
+              mensagemData['NomeUsuario'],
+              mensagemData['DataMensagem'] as Timestamp,
+              isResponsavel,
+            );
+          },
+        );
+      }
+    },
+  );
+}
+
+ Widget _buildMessageBubble(String mensagem, String nomeUsuario, Timestamp timestamp, bool isResponsavel) {
+  CrossAxisAlignment alignment = isResponsavel ? CrossAxisAlignment.end : CrossAxisAlignment.start;
+  Color bubbleColor = isResponsavel ? Colors.blue[200]! : Colors.grey[300]!;
+
+  DateTime dateTime = timestamp.toDate();
+  String formattedDate = DateFormat('dd/MM/yyyy \'às\' HH:mm:ss').format(dateTime);
+
+  return Align(
+    alignment: isResponsavel ? Alignment.centerRight : Alignment.centerLeft,
+    child: Container(
+      margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+      padding: const EdgeInsets.all(12.0),
+      decoration: BoxDecoration(
+        color: bubbleColor,
+        borderRadius: BorderRadius.circular(16.0),
+      ),
+      child: Column(
+        crossAxisAlignment: alignment,
+        children: [
+          Text(
+            '$nomeUsuario - $formattedDate',
+            style: const TextStyle(fontSize: 12.0),
+          ),
+          const SizedBox(height: 4.0),
+          Text(
+            mensagem,
+            style: const TextStyle(fontSize: 16.0),
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
   Widget _buildBoldText(String text) {
     return Row(

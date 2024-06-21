@@ -168,7 +168,7 @@ class ViewChamadosState extends State<ViewChamados> {
                           child: Column(
                             children: [
                               ListTile(
-                                tileColor: Color.fromARGB(255, 255, 255, 255),
+                                tileColor:const Color.fromARGB(255, 255, 255, 255),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(
                                       10), // Define o raio do border aqui

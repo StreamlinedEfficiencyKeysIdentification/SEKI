@@ -418,7 +418,7 @@ class ChamadoState extends State<Chamado> {
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(100, 50),
-                        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+                        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
                         ),
