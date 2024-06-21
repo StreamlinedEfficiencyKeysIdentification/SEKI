@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 import 'package:testeseki/controllers/usuario_controller.dart';
 import 'package:testeseki/models/equipamento_model.dart';
 import 'package:testeseki/models/usuario_model.dart';
@@ -57,6 +58,7 @@ class ChamadoState extends State<Chamado> {
     status: '',
   );
   String _usuarioSelecionado = '';
+  double _statusBarHeight = 0;
 
   @override
   void initState() {
@@ -68,6 +70,15 @@ class ChamadoState extends State<Chamado> {
       _equipamentoController.text = widget.qrcode;
       _searchFirestore(widget.qrcode);
     }
+
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: [SystemUiOverlay.top]);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _statusBarHeight = MediaQuery.of(context).padding.top;
   }
 
   @override
@@ -271,161 +282,262 @@ class ChamadoState extends State<Chamado> {
       body: Center(
         child: Form(
           key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                child: Column(
-                  children: [
-                    TextFormField(
-                      keyboardType: TextInputType.number,
-                      controller: _equipamentoController,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        prefixIcon: const Icon(
-                          Icons.laptop,
-                          color: Colors.blue,
-                        ),
-                        hintText: "Insira um equipamento",
-                        focusedBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color.fromARGB(255, 255, 255, 255),
-                            width: 5,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide(
-                            color: _isValid ? Colors.green : Colors.red,
-                            width: 2,
-                            style: BorderStyle.solid,
-                          ),
-                        ),
-                        suffixIcon: Container(
-                          margin: const EdgeInsets.all(8),
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size(100, 50),
-                              backgroundColor: Colors.blue,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                            ),
-                            onPressed: _openScanner,
-                            child: const Text(
-                              "Search",
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(16.0, _statusBarHeight, 16.0, 16.0),
+              child: Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.center, // Centraliza horizontalmente
+                mainAxisSize: MainAxisSize
+                    .min, // Ajusta a altura da coluna para seu conteúdo
+                children: [
+                  const Column(
+                    children: [
+                      Icon(
+                        Icons.quick_contacts_mail_outlined,
+                        color: Color(0xFF0076BC),
+                        size: 100,
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Campo obrigatório';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _tituloController,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        prefixIcon: const Icon(
-                          Icons.person,
-                          color: Colors.blue,
-                        ),
-                        hintText: "Insira um Titulo",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          borderSide: const BorderSide(
-                            color: Colors.black,
-                            width: 1,
-                            style: BorderStyle.solid,
-                          ),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Campo obrigatório';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    Text(user.nivel == '4' ? 'Usuario: ${user.usuario}' : ''),
-                    if (waiting && user.nivel != '4')
-                      AutocompleteUsuarioExample(
-                        user: _usuario,
-                        key: _autocompleteKey,
-                        onUsuarioSelected: (usuario) {
-                          setState(() {
-                            _usuarioSelecionado = usuario;
-                          });
-                        },
-                      ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _descricaoController,
-                      maxLines: 5,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        prefixIcon: const Icon(
-                          Icons.description,
-                          color: Colors.blue,
-                        ),
-                        hintText: "Descrição: ",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          borderSide: const BorderSide(
-                            color: Colors.black,
-                            width: 1,
-                            style: BorderStyle.solid,
-                          ),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Campo obrigatório';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(100, 50),
-                        backgroundColor:
-                            const Color.fromARGB(255, 255, 255, 255),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                      ),
-                      onPressed: _submitForm,
-                      child: const Text(
-                        "Enviar",
+                      SizedBox(height: 8),
+                      Text(
+                        'Abertura de chamado',
                         style: TextStyle(
                           fontSize: 20,
-                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    keyboardType: TextInputType.number,
+                    controller: _equipamentoController,
+                    style: const TextStyle(
+                      color: Color(0xFF0076BC),
+                    ),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      prefixIcon: const Icon(
+                        Icons.laptop,
+                        color: Colors.blue,
+                      ),
+                      labelText: 'Insira um equipamento',
+                      labelStyle: TextStyle(
+                        color: _isValid ? Colors.green : Colors.lightBlueAccent,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide(
+                          color: _isValid ? Colors.green : Colors.red,
+                          width: 2,
+                          style: BorderStyle.solid,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                        borderSide: const BorderSide(
+                          width: 2.0,
+                          color: Color(0xFF0076BC),
+                        ),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                        borderSide: const BorderSide(
+                          width: 1.0,
+                          color: Colors.red, // Cor da borda quando há um erro
+                        ),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                        borderSide: const BorderSide(
+                          width: 2.0,
+                          color: Colors
+                              .red, // Cor da borda quando o campo está focado e há um erro
+                        ),
+                      ),
+                      suffixIcon: Container(
+                        margin: const EdgeInsets.all(8),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(100, 50),
+                            backgroundColor: Colors.blue,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                          ),
+                          onPressed: _openScanner,
+                          child: const Text(
+                            "Search",
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ],
-                ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Campo obrigatório';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _tituloController,
+                    style: const TextStyle(
+                      color: Color(0xFF0076BC),
+                    ),
+                    decoration: InputDecoration(
+                      labelText: 'Insira um Titulo',
+                      labelStyle: const TextStyle(
+                        color: Colors.lightBlueAccent,
+                      ),
+                      filled: true,
+                      fillColor: const Color.fromARGB(255, 255, 255, 255),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                        borderSide: const BorderSide(
+                          width: 1.0,
+                          color: Colors.lightBlueAccent,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                        borderSide: const BorderSide(
+                          width: 2.0,
+                          color: Colors
+                              .lightBlueAccent, // Cor da borda quando o campo está habilitado
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                        borderSide: const BorderSide(
+                          width: 2.0,
+                          color: Color(0xFF0076BC),
+                        ),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                        borderSide: const BorderSide(
+                          width: 1.0,
+                          color: Colors.red, // Cor da borda quando há um erro
+                        ),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                        borderSide: const BorderSide(
+                          width: 2.0,
+                          color: Colors
+                              .red, // Cor da borda quando o campo está focado e há um erro
+                        ),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Campo obrigatório';
+                      }
+                      return null;
+                    },
+                  ),
+                  Text(user.nivel == '4' ? 'Usuario: ${user.usuario}' : ''),
+                  if (waiting && user.nivel != '4')
+                    AutocompleteUsuarioExample(
+                      user: _usuario,
+                      key: _autocompleteKey,
+                      onUsuarioSelected: (usuario) {
+                        setState(() {
+                          _usuarioSelecionado = usuario;
+                        });
+                      },
+                    ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _descricaoController,
+                    maxLines: 5,
+                    decoration: InputDecoration(
+                      labelText: 'Insira a descrição',
+                      alignLabelWithHint: true,
+                      labelStyle: const TextStyle(
+                        color: Colors.lightBlueAccent,
+                      ),
+                      filled: true,
+                      fillColor: const Color.fromARGB(255, 255, 255, 255),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                        borderSide: const BorderSide(
+                          width: 1.0,
+                          color: Colors.lightBlueAccent,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                        borderSide: const BorderSide(
+                          width: 2.0,
+                          color: Colors
+                              .lightBlueAccent, // Cor da borda quando o campo está habilitado
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                        borderSide: const BorderSide(
+                          width: 2.0,
+                          color: Color(0xFF0076BC),
+                        ),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                        borderSide: const BorderSide(
+                          width: 1.0,
+                          color: Colors.red, // Cor da borda quando há um erro
+                        ),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                        borderSide: const BorderSide(
+                          width: 2.0,
+                          color: Colors
+                              .red, // Cor da borda quando o campo está focado e há um erro
+                        ),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Campo obrigatório';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _submitForm,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF0076BC),
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50.0),
+                        ),
+                      ),
+                      child: const Text(
+                        'Enviar chamado',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
-      backgroundColor: Colors.blue,
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: Colors.white,

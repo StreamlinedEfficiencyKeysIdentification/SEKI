@@ -106,21 +106,56 @@ class AutocompleteUsuarioExampleState
                     fieldViewBuilder:
                         (context, controller, focusNode, onEditingComplete) {
                       return TextField(
+                        style: const TextStyle(
+                          color: Color(0xFF0076BC),
+                        ),
                         decoration: InputDecoration(
-                          hintText: 'Digite o nome do usuário',
-                          hintStyle: const TextStyle(
-                            color: Color(0xFF0076BC), // Cor do texto de dica
+                          labelText: 'Digite o nome do usuário',
+                          labelStyle: const TextStyle(
+                            color: Colors.lightBlueAccent,
                           ),
                           filled: true,
-                          fillColor: const Color.fromARGB(255, 255, 255, 255)
-                              .withOpacity(0.3), // Cor de fundo com opacidade
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
+                          fillColor: const Color.fromARGB(255, 255, 255, 255),
+                          prefixIcon: const Icon(
+                            Icons.person,
+                            color: Colors.blue,
+                          ),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                                50.0), // Borda arredondada
+                            borderRadius: BorderRadius.circular(50.0),
                             borderSide: const BorderSide(
-                                width: 1.0), // Sem borda visível
+                              width: 1.0,
+                              color: Colors.lightBlueAccent,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                            borderSide: const BorderSide(
+                              width: 2.0,
+                              color: Colors.lightBlueAccent,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                            borderSide: const BorderSide(
+                              width: 2.0,
+                              color: Color(0xFF0076BC),
+                            ),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                            borderSide: const BorderSide(
+                              width: 1.0,
+                              color:
+                                  Colors.red, // Cor da borda quando há um erro
+                            ),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                            borderSide: const BorderSide(
+                              width: 2.0,
+                              color: Colors
+                                  .red, // Cor da borda quando o campo está focado e há um erro
+                            ),
                           ),
                         ),
                         controller: controller,

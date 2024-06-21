@@ -79,25 +79,53 @@ class ComboBoxSetorState extends State<ComboBoxSetor> {
                     const Text(
                       'Setor não encontrado. Por favor, escolha um setor existente.',
                     ),
-                  DropdownButton<String>(
-                    hint: const Text('Selecione um setor'),
-                    value:
-                        _setorSelecionada.isNotEmpty ? _setorSelecionada : null,
-                    onChanged: (String? newValue) {
-                      if (newValue != null) {
-                        setState(() {
-                          _setorSelecionada = newValue;
-                        });
-                        widget.onSetorSelected(newValue);
-                      }
-                    },
-                    items: setor.map<DropdownMenuItem<String>>(
-                        (Map<String, dynamic> setor) {
-                      return DropdownMenuItem<String>(
-                        value: setor['ID'] as String,
-                        child: Text(setor['Descricao'] as String),
-                      );
-                    }).toList(),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50.0),
+                      border: Border.all(
+                        color: Colors
+                            .lightBlueAccent, // Cor da borda quando o campo está habilitado
+                        width: 2.0,
+                      ),
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        hint: const Text(
+                          'Selecione um setor',
+                          style: TextStyle(
+                            color: Colors.lightBlueAccent,
+                          ),
+                        ),
+                        alignment: Alignment.center,
+                        borderRadius: BorderRadius.circular(25.0),
+                        iconEnabledColor: Colors.blue,
+                        style: const TextStyle(
+                          color: Color(0xFF0076BC),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                        value: _setorSelecionada.isNotEmpty
+                            ? _setorSelecionada
+                            : null,
+                        onChanged: (String? newValue) {
+                          if (newValue != null) {
+                            setState(() {
+                              _setorSelecionada = newValue;
+                            });
+                            widget.onSetorSelected(newValue);
+                          }
+                        },
+                        items: setor.map<DropdownMenuItem<String>>(
+                            (Map<String, dynamic> setor) {
+                          return DropdownMenuItem<String>(
+                            value: setor['ID'] as String,
+                            child: Text(setor['Descricao'] as String),
+                          );
+                        }).toList(),
+                      ),
+                    ),
                   ),
                 ],
               ),

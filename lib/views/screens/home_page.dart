@@ -141,12 +141,15 @@ class HomePageState extends State<HomePage> {
                                                     color: Colors.white,
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                            30),
+                                                      30,
+                                                    ),
                                                   ),
                                                   child: IconButton(
                                                     icon: const Icon(
-                                                        Icons.logout),
-                                                    color: Colors.blue,
+                                                      Icons.logout,
+                                                      color: Color(0xFF0076BC),
+                                                      size: 32,
+                                                    ),
                                                     onPressed: () =>
                                                         _logout(context),
                                                   ),
@@ -163,6 +166,8 @@ class HomePageState extends State<HomePage> {
                                                   style: const TextStyle(
                                                       fontSize: 18,
                                                       color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                       fontFamily: 'RobotoMono'),
                                                 ),
                                               ],
@@ -301,6 +306,16 @@ class HomePageState extends State<HomePage> {
                                                                             .center,
                                                                     children: [
                                                                       ElevatedButton(
+                                                                        style: ElevatedButton
+                                                                            .styleFrom(
+                                                                          shape:
+                                                                              const CircleBorder(),
+                                                                          padding: const EdgeInsets
+                                                                              .all(
+                                                                              12),
+                                                                          backgroundColor:
+                                                                              Colors.white, // Cor de fundo do botão
+                                                                        ),
                                                                         onPressed:
                                                                             () {
                                                                           Navigator.pushNamed(
@@ -311,12 +326,26 @@ class HomePageState extends State<HomePage> {
                                                                             const Icon(
                                                                           Icons
                                                                               .remove_red_eye_outlined,
+                                                                          color:
+                                                                              Color(0xFF0076BC),
+                                                                          size:
+                                                                              44,
                                                                         ),
                                                                       ),
                                                                       const SizedBox(
                                                                           width:
-                                                                              10),
+                                                                              48),
                                                                       ElevatedButton(
+                                                                        style: ElevatedButton
+                                                                            .styleFrom(
+                                                                          shape:
+                                                                              const CircleBorder(),
+                                                                          padding: const EdgeInsets
+                                                                              .all(
+                                                                              12),
+                                                                          backgroundColor:
+                                                                              Colors.white, // Cor de fundo do botão
+                                                                        ),
                                                                         onPressed:
                                                                             () {
                                                                           Navigator.pushNamed(
@@ -327,6 +356,10 @@ class HomePageState extends State<HomePage> {
                                                                             const Icon(
                                                                           Icons
                                                                               .add,
+                                                                          color:
+                                                                              Color(0xFF0076BC),
+                                                                          size:
+                                                                              44,
                                                                         ),
                                                                       ),
                                                                     ],
@@ -428,6 +461,16 @@ class HomePageState extends State<HomePage> {
                                                                             .center,
                                                                     children: [
                                                                       ElevatedButton(
+                                                                        style: ElevatedButton
+                                                                            .styleFrom(
+                                                                          shape:
+                                                                              const CircleBorder(),
+                                                                          padding: const EdgeInsets
+                                                                              .all(
+                                                                              12),
+                                                                          backgroundColor:
+                                                                              Colors.white, // Cor de fundo do botão
+                                                                        ),
                                                                         onPressed:
                                                                             () {
                                                                           Navigator.pushNamed(
@@ -438,12 +481,26 @@ class HomePageState extends State<HomePage> {
                                                                             const Icon(
                                                                           Icons
                                                                               .remove_red_eye_outlined,
+                                                                          color:
+                                                                              Color(0xFF0076BC),
+                                                                          size:
+                                                                              44,
                                                                         ),
                                                                       ),
                                                                       const SizedBox(
                                                                           width:
-                                                                              10),
+                                                                              48),
                                                                       ElevatedButton(
+                                                                        style: ElevatedButton
+                                                                            .styleFrom(
+                                                                          shape:
+                                                                              const CircleBorder(),
+                                                                          padding: const EdgeInsets
+                                                                              .all(
+                                                                              12),
+                                                                          backgroundColor:
+                                                                              Colors.white, // Cor de fundo do botão
+                                                                        ),
                                                                         onPressed:
                                                                             () {
                                                                           Navigator.pushNamed(
@@ -454,6 +511,10 @@ class HomePageState extends State<HomePage> {
                                                                             const Icon(
                                                                           Icons
                                                                               .add,
+                                                                          color:
+                                                                              Color(0xFF0076BC),
+                                                                          size:
+                                                                              44,
                                                                         ),
                                                                       ),
                                                                     ],
@@ -555,6 +616,16 @@ class HomePageState extends State<HomePage> {
                                                                             .center,
                                                                     children: [
                                                                       ElevatedButton(
+                                                                        style: ElevatedButton
+                                                                            .styleFrom(
+                                                                          shape:
+                                                                              const CircleBorder(),
+                                                                          padding: const EdgeInsets
+                                                                              .all(
+                                                                              12),
+                                                                          backgroundColor:
+                                                                              Colors.white, // Cor de fundo do botão
+                                                                        ),
                                                                         onPressed:
                                                                             () {
                                                                           Navigator.pushNamed(
@@ -565,12 +636,26 @@ class HomePageState extends State<HomePage> {
                                                                             const Icon(
                                                                           Icons
                                                                               .remove_red_eye_outlined,
+                                                                          color:
+                                                                              Color(0xFF0076BC),
+                                                                          size:
+                                                                              44,
                                                                         ),
                                                                       ),
                                                                       const SizedBox(
                                                                           width:
-                                                                              10),
+                                                                              48),
                                                                       ElevatedButton(
+                                                                        style: ElevatedButton
+                                                                            .styleFrom(
+                                                                          shape:
+                                                                              const CircleBorder(),
+                                                                          padding: const EdgeInsets
+                                                                              .all(
+                                                                              12),
+                                                                          backgroundColor:
+                                                                              Colors.white, // Cor de fundo do botão
+                                                                        ),
                                                                         onPressed:
                                                                             () {
                                                                           Navigator.pushNamed(
@@ -581,6 +666,10 @@ class HomePageState extends State<HomePage> {
                                                                             const Icon(
                                                                           Icons
                                                                               .add,
+                                                                          color:
+                                                                              Color(0xFF0076BC),
+                                                                          size:
+                                                                              44,
                                                                         ),
                                                                       ),
                                                                     ],
@@ -684,6 +773,15 @@ class HomePageState extends State<HomePage> {
                                                                       if (nivelUsuario <=
                                                                           3)
                                                                         ElevatedButton(
+                                                                          style:
+                                                                              ElevatedButton.styleFrom(
+                                                                            shape:
+                                                                                const CircleBorder(),
+                                                                            padding:
+                                                                                const EdgeInsets.all(12),
+                                                                            backgroundColor:
+                                                                                Colors.white, // Cor de fundo do botão
+                                                                          ),
                                                                           onPressed:
                                                                               () {
                                                                             Navigator.pushNamed(context,
@@ -692,12 +790,28 @@ class HomePageState extends State<HomePage> {
                                                                           child:
                                                                               const Icon(
                                                                             Icons.remove_red_eye_outlined,
+                                                                            color:
+                                                                                Color(0xFF0076BC),
+                                                                            size:
+                                                                                44,
                                                                           ),
                                                                         ),
-                                                                      const SizedBox(
-                                                                          width:
-                                                                              10),
+                                                                      if (nivelUsuario <=
+                                                                          3)
+                                                                        const SizedBox(
+                                                                            width:
+                                                                                48),
                                                                       ElevatedButton(
+                                                                        style: ElevatedButton
+                                                                            .styleFrom(
+                                                                          shape:
+                                                                              const CircleBorder(),
+                                                                          padding: const EdgeInsets
+                                                                              .all(
+                                                                              12),
+                                                                          backgroundColor:
+                                                                              Colors.white, // Cor de fundo do botão
+                                                                        ),
                                                                         onPressed:
                                                                             () {
                                                                           Navigator.pushNamed(
@@ -708,6 +822,10 @@ class HomePageState extends State<HomePage> {
                                                                             const Icon(
                                                                           Icons
                                                                               .add,
+                                                                          color:
+                                                                              Color(0xFF0076BC),
+                                                                          size:
+                                                                              44,
                                                                         ),
                                                                       ),
                                                                     ],
@@ -774,7 +892,7 @@ class HomePageState extends State<HomePage> {
                                                                         statusIcon =
                                                                             Icons.timer; // Ícone de relógio
                                                                         break;
-                                                                      case "Concluido":
+                                                                      case "Concluído":
                                                                         statusColor =
                                                                             Colors.green;
                                                                         statusIcon =
@@ -854,8 +972,8 @@ class HomePageState extends State<HomePage> {
                       ),
                     ),
                     Positioned(
-                      bottom: 10,
-                      right: 10,
+                      bottom: 16,
+                      right: 16,
                       child: Visibility(
                         child: ElevatedButton(
                           onPressed: () {
@@ -863,13 +981,14 @@ class HomePageState extends State<HomePage> {
                           },
                           style: ElevatedButton.styleFrom(
                             shape: const CircleBorder(),
-                            padding: const EdgeInsets.all(20),
+                            padding: const EdgeInsets.all(16),
                             backgroundColor:
                                 const Color.fromARGB(255, 255, 255, 255),
                           ),
                           child: const Icon(
                             Icons.qr_code_scanner_outlined,
-                            color: Colors.blue,
+                            color: Color(0xFF0076BC),
+                            size: 48,
                           ),
                         ),
                       ),
@@ -919,15 +1038,23 @@ class HomePageState extends State<HomePage> {
                   const IconButton(
                     icon: Icon(
                       Icons.arrow_back,
+                      size: 32,
                     ),
                     onPressed: null,
                   ),
                   const IconButton(
-                    icon: Icon(Icons.home),
+                    icon: Icon(
+                      Icons.home,
+                      size: 32,
+                    ),
                     onPressed: null,
                   ),
                   IconButton(
-                    icon: const Icon(Icons.person),
+                    icon: const Icon(
+                      Icons.person,
+                      color: Color(0xFF0076BC),
+                      size: 32,
+                    ),
                     onPressed: () {
                       Navigator.pushReplacement(
                         context,

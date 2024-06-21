@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../main.dart';
@@ -17,6 +18,22 @@ class LoginPage extends StatefulWidget {
 class LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  double _statusBarHeight = 0;
+  bool _obscureText = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: [SystemUiOverlay.top]);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _statusBarHeight = MediaQuery.of(context).padding.top;
+  }
 
   void _login(BuildContext context) async {
     String email = _emailController.text.trim();
@@ -114,63 +131,150 @@ class LoginPageState extends State<LoginPage> {
     final hasConnection = ConnectionNotifer.of(context).value;
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30),
-        child: Center(
-          child: SingleChildScrollView(
+      body: Center(
+        // Centraliza o conteúdo na tela
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(16.0, _statusBarHeight, 16.0, 16.0),
             child: Column(
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.only(
-                    top: MediaQuery.of(context).size.height * 0.1,
-                  ),
-                  child: Image.asset(
-                    'images/userlogin.png',
-                    width: 100,
-                    height: 100,
-                  ),
+              crossAxisAlignment:
+                  CrossAxisAlignment.center, // Centraliza horizontalmente
+              mainAxisSize: MainAxisSize
+                  .min, // Ajusta a altura da coluna para seu conteúdo
+              children: [
+                Column(
+                  children: [
+                    Image.asset(
+                      'images/userlogin.png',
+                      width: 100,
+                      height: 100,
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Login',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 10),
-                const Text(
-                  'Login',
-                  style: TextStyle(fontSize: 16),
-                ),
-                const SizedBox(height: 40),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    color: const Color.fromRGBO(0, 115, 188, 0.2),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _emailController,
+                  style: const TextStyle(
+                    color: Color(0xFF0076BC),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: TextField(
-                      controller: _emailController,
-                      decoration: const InputDecoration(
-                        hintText: 'Email',
-                        border: InputBorder.none,
+                  decoration: InputDecoration(
+                    labelText: 'E-mail',
+                    labelStyle: const TextStyle(
+                      color: Colors.lightBlueAccent,
+                    ),
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 255, 255, 255),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 1.0,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Colors
+                            .lightBlueAccent, // Cor da borda quando o campo está habilitado
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Color(0xFF0076BC),
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 1.0,
+                        color: Colors.red, // Cor da borda quando há um erro
+                      ),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Colors
+                            .red, // Cor da borda quando o campo está focado e há um erro
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    color: const Color.fromRGBO(0, 115, 188, 0.2),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _passwordController,
+                  obscureText: _obscureText,
+                  style: const TextStyle(
+                    color: Color(0xFF0076BC),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: TextField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        hintText: 'Senha',
-                        border: InputBorder.none,
+                  decoration: InputDecoration(
+                    labelText: 'Senha',
+                    labelStyle: const TextStyle(
+                      color: Colors.lightBlueAccent,
+                    ),
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 255, 255, 255),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 1.0,
+                        color: Colors.lightBlueAccent,
                       ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Colors
+                            .lightBlueAccent, // Cor da borda quando o campo está habilitado
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Color(0xFF0076BC),
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 1.0,
+                        color: Colors.red, // Cor da borda quando há um erro
+                      ),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Colors
+                            .red, // Cor da borda quando o campo está focado e há um erro
+                      ),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureText ? Icons.visibility_off : Icons.visibility,
+                        color: const Color(0xFF0076BC),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      },
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
                   child: Column(
@@ -185,30 +289,29 @@ class LoginPageState extends State<LoginPage> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(255, 19, 74, 119),
+                            color: Color(0xFF0076BC),
                           ),
                         ),
                       ),
-                      ElevatedButton(
-                        onPressed: hasConnection ? () => _login(context) : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromARGB(255, 19, 74, 119),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed:
+                              hasConnection ? () => _login(context) : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF0076BC),
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50.0),
+                            ),
                           ),
-                        ),
-                        child: SizedBox(
-                          width: double.infinity,
-                          height: 35,
-                          child: Center(
-                            child: Text(
-                              hasConnection ? 'Login' : 'Sem Conexão',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
+                          child: Text(
+                            hasConnection ? 'Login' : 'Sem Conexão',
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
                             ),
                           ),
                         ),

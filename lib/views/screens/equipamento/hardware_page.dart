@@ -49,242 +49,327 @@ class HardwarePageState extends State<HardwarePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.fromLTRB(16.0, _statusBarHeight, 16.0, 0),
-        child: Column(
-          children: [
-            const Column(
+      body: Center(
+        // Centraliza o conteúdo na tela
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(16.0, _statusBarHeight, 16.0, 16.0),
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.center, // Centraliza horizontalmente
+              mainAxisSize: MainAxisSize
+                  .min, // Ajusta a altura da coluna para seu conteúdo
               children: [
-                Icon(
-                  Icons.computer,
-                  color: Color(0xFF0076BC),
-                  size: 140,
+                const Column(
+                  children: [
+                    Icon(
+                      Icons.computer,
+                      color: Color(0xFF0076BC),
+                      size: 100,
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Equipamento',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
-                Text(
-                  'Equipamento',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _qrcodeController,
+                  readOnly: true,
+                  enableInteractiveSelection: false,
+                  style: const TextStyle(
+                    color: Color(0xFF0076BC),
+                  ),
+                  decoration: InputDecoration(
+                    labelText: 'QR Code',
+                    labelStyle: const TextStyle(
+                      color: Colors.lightBlueAccent,
+                    ),
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 255, 255, 255),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 1.0,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Colors
+                            .lightBlueAccent, // Cor da borda quando o campo está habilitado
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Color(0xFF0076BC),
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 1.0,
+                        color: Colors.red, // Cor da borda quando há um erro
+                      ),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Colors
+                            .red, // Cor da borda quando o campo está focado e há um erro
+                      ),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: const Icon(
+                        Icons.refresh,
+                        color: Color(0xFF0076BC),
+                        size: 32.0,
+                      ),
+                      onPressed: _generateQRCodeHash,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _marcaController,
+                        style: const TextStyle(
+                          color: Color(0xFF0076BC),
+                        ),
+                        decoration: InputDecoration(
+                          labelText: 'Marca',
+                          labelStyle: const TextStyle(
+                            color: Colors.lightBlueAccent,
+                          ),
+                          filled: true,
+                          fillColor: const Color.fromARGB(255, 255, 255, 255),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                            borderSide: const BorderSide(
+                              width: 1.0,
+                              color: Colors.lightBlueAccent,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                            borderSide: const BorderSide(
+                              width: 2.0,
+                              color: Colors
+                                  .lightBlueAccent, // Cor da borda quando o campo está habilitado
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                            borderSide: const BorderSide(
+                              width: 2.0,
+                              color: Color(0xFF0076BC),
+                            ),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                            borderSide: const BorderSide(
+                              width: 1.0,
+                              color:
+                                  Colors.red, // Cor da borda quando há um erro
+                            ),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                            borderSide: const BorderSide(
+                              width: 2.0,
+                              color: Colors
+                                  .red, // Cor da borda quando o campo está focado e há um erro
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: TextField(
+                        controller: _modeloController,
+                        style: const TextStyle(
+                          color: Color(0xFF0076BC),
+                        ),
+                        decoration: InputDecoration(
+                          labelText: 'Modelo',
+                          labelStyle: const TextStyle(
+                            color: Colors.lightBlueAccent,
+                          ),
+                          filled: true,
+                          fillColor: const Color.fromARGB(255, 255, 255, 255),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                            borderSide: const BorderSide(
+                              width: 1.0,
+                              color: Colors.lightBlueAccent,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                            borderSide: const BorderSide(
+                              width: 2.0,
+                              color: Colors
+                                  .lightBlueAccent, // Cor da borda quando o campo está habilitado
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                            borderSide: const BorderSide(
+                              width: 2.0,
+                              color: Color(0xFF0076BC),
+                            ),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                            borderSide: const BorderSide(
+                              width: 1.0,
+                              color:
+                                  Colors.red, // Cor da borda quando há um erro
+                            ),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                            borderSide: const BorderSide(
+                              width: 2.0,
+                              color: Colors
+                                  .red, // Cor da borda quando o campo está focado e há um erro
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 0),
+                      child: ComboBoxEmpresa(
+                        empresa: _empresaSelecionada,
+                        onEmpresaSelected: (empresa) {
+                          setState(() {
+                            _empresaSelecionada = empresa;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 0),
+                      child: ComboBoxSetor(
+                        encontrado: true,
+                        setor: _setorSelecionado,
+                        onSetorSelected: (setor) {
+                          setState(() {
+                            _setorSelecionado = setor;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      usuarioValue ? 'Com Usuário' : 'Sem Usuário',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: usuarioValue
+                            ? const Color(0xFF0076BC)
+                            : Colors.grey,
+                      ),
+                    ),
+                    SwitchExample(
+                      onValueChanged: (value) {
+                        setState(() {
+                          usuarioValue = value;
+                          _usuarioSelecionado = '';
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                usuarioValue
+                    ? AutocompleteUsuarioExample(
+                        user: _usuarioSelecionado,
+                        key: _autocompleteKey,
+                        onUsuarioSelected: (usuario) {
+                          setState(() {
+                            _usuarioSelecionado = usuario;
+                          });
+                        },
+                      )
+                    : const SizedBox.shrink(),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      _switchValue
+                          ? 'Equipamento Ativo'
+                          : 'Equipamento Inativo',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: _switchValue
+                            ? const Color(0xFF0076BC)
+                            : Colors.grey,
+                      ),
+                    ),
+                    SwitchExample(
+                      onValueChanged: (value) {
+                        setState(() {
+                          _switchValue = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: cadastrarEquipamento,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF0076BC),
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                      ),
+                    ),
+                    child: const Text(
+                      'Registrar',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                return SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.63,
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 2,
-                              child: TextField(
-                                controller: _qrcodeController,
-                                decoration: InputDecoration(
-                                  labelText: 'QR Code',
-                                  filled: true,
-                                  fillColor:
-                                      const Color(0xFF0076BC).withOpacity(0.3),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(50.0),
-                                  ),
-                                  labelStyle: const TextStyle(
-                                    color: Color(0xFF0076BC),
-                                  ),
-                                ),
-                                enabled: false,
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.refresh),
-                              onPressed: _generateQRCodeHash,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                controller: _marcaController,
-                                decoration: InputDecoration(
-                                  labelText: 'Marca',
-                                  filled: true,
-                                  fillColor:
-                                      const Color(0xFF0076BC).withOpacity(0.3),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(50.0),
-                                  ),
-                                  labelStyle: const TextStyle(
-                                    color: Color(0xFF0076BC),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: TextField(
-                                controller: _modeloController,
-                                decoration: InputDecoration(
-                                  labelText: 'Modelo',
-                                  filled: true,
-                                  fillColor:
-                                      const Color(0xFF0076BC).withOpacity(0.3),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(50.0),
-                                  ),
-                                  labelStyle: const TextStyle(
-                                    color: Color(0xFF0076BC),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16.0),
-                          child: Column(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50.0),
-                                  color:
-                                      const Color(0xFF0076BC).withOpacity(0.3),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 8),
-                                child: ComboBoxEmpresa(
-                                  empresa: _empresaSelecionada,
-                                  onEmpresaSelected: (empresa) {
-                                    setState(() {
-                                      _empresaSelecionada = empresa;
-                                    });
-                                  },
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50.0),
-                                  color:
-                                      const Color(0xFF0076BC).withOpacity(0.3),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 8),
-                                child: ComboBoxSetor(
-                                  encontrado: true,
-                                  setor: _setorSelecionado,
-                                  onSetorSelected: (setor) {
-                                    setState(() {
-                                      _setorSelecionado = setor;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  usuarioValue
-                                      ? 'Inserir Usuário'
-                                      : 'Não Inserir Usuário',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: usuarioValue
-                                        ? Colors.green
-                                        : Colors.grey,
-                                  ),
-                                ),
-                                Switch(
-                                  value: usuarioValue,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      usuarioValue = value;
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                            usuarioValue
-                                ? AutocompleteUsuarioExample(
-                                    user: _usuarioSelecionado,
-                                    key: _autocompleteKey,
-                                    onUsuarioSelected: (usuario) {
-                                      setState(() {
-                                        _usuarioSelecionado = usuario;
-                                      });
-                                    },
-                                  )
-                                : const SizedBox.shrink(),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              _switchValue
-                                  ? 'Equipamento Ativo'
-                                  : 'Equipamento Inativo',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color:
-                                    _switchValue ? Colors.green : Colors.grey,
-                              ),
-                            ),
-                            Switch(
-                              value: _switchValue,
-                              onChanged: (value) {
-                                setState(() {
-                                  _switchValue = value;
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: cadastrarEquipamento,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color.fromARGB(255, 19, 74, 119),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30)),
-                          ),
-                          child: const SizedBox(
-                            width: double.infinity,
-                            height: 35,
-                            child: Center(
-                              child: Text(
-                                'Cadastrar',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ],
+          ),
         ),
       ),
       bottomNavigationBar: Container(
@@ -393,53 +478,36 @@ class HardwarePageState extends State<HardwarePage> {
   }
 
   void cadastrarEquipamento() async {
-    if (_qrcodeController.text.isEmpty ||
-        _marcaController.text.isEmpty ||
+    if (_marcaController.text.isEmpty ||
         _modeloController.text.isEmpty ||
         _empresaSelecionada.isEmpty ||
         _setorSelecionado.isEmpty) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Campos obrigatórios'),
-            content:
-                const Text('Por favor, preencha todos os campos obrigatórios.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, preencha todos os campos.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    if (_qrcodeController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, gere um QR Code.'),
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }
     if (usuarioValue && _usuarioSelecionado.isEmpty) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text(
-              'Usuário obrigatório',
-            ),
-            content: const Text(
-              'Por favor, selecione um usuário ou desative a opção de inserir usuário.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'Por favor, selecione um usuário ou desative a opção de inserir usuário.'),
+          backgroundColor: Colors.red,
+        ),
       );
+
       return;
     }
     bool waiting = await EquipamentoController.cadastrarEquipamento(
@@ -529,7 +597,7 @@ class _SwitchExampleState extends State<SwitchExample> {
       if (states.contains(MaterialState.selected)) {
         return const Icon(Icons.check);
       }
-      return const Icon(Icons.close);
+      return null;
     },
   );
 
@@ -539,6 +607,7 @@ class _SwitchExampleState extends State<SwitchExample> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Switch(
+          activeColor: const Color(0xFF0076BC),
           thumbIcon: thumbIcon,
           value: light1,
           onChanged: (bool value) {

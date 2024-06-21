@@ -35,6 +35,15 @@ class GroupPageState extends State<GroupPage> {
   }
 
   Future<void> cadastrarEmpresa() async {
+    if (_cnpjController.text.isEmpty || _razaosocialController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, preencha todos os campos.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
     // Obtenha os valores dos campos de texto
     String cnpj = _cnpjController.text.trim();
     String razaoSocial = _razaosocialController.text.trim();
@@ -99,108 +108,229 @@ class GroupPageState extends State<GroupPage> {
                   height: 100,
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               const Text(
                 'Criação de Empresa',
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 20),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  color: const Color.fromRGBO(0, 115, 188, 0.2),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: TextFormField(
-                    controller: _cnpjController,
-                    decoration: const InputDecoration(
-                      hintText: 'CNPJ',
-                      border: InputBorder.none,
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _cnpjController,
+                style: const TextStyle(
+                  color: Color(0xFF0076BC),
+                ),
+                decoration: InputDecoration(
+                  labelText: 'CNPJ',
+                  labelStyle: const TextStyle(
+                    color: Colors.lightBlueAccent,
+                  ),
+                  hintStyle: const TextStyle(
+                    color: Colors.lightBlueAccent, // Cor do texto de dica
+                  ),
+                  filled: true,
+                  fillColor: const Color.fromARGB(255, 255, 255, 255),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(50.0),
+                    borderSide: const BorderSide(
+                      width: 1.0,
+                      color: Colors.lightBlueAccent,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(50.0),
+                    borderSide: const BorderSide(
+                      width: 2.0,
+                      color: Colors
+                          .lightBlueAccent, // Cor da borda quando o campo está habilitado
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(50.0),
+                    borderSide: const BorderSide(
+                      width: 2.0,
+                      color: Color(0xFF0076BC),
+                    ),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(50.0),
+                    borderSide: const BorderSide(
+                      width: 1.0,
+                      color: Colors.red, // Cor da borda quando há um erro
+                    ),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(50.0),
+                    borderSide: const BorderSide(
+                      width: 2.0,
+                      color: Colors
+                          .red, // Cor da borda quando o campo está focado e há um erro
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  color: const Color.fromRGBO(0, 115, 188, 0.2),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _razaosocialController,
+                style: const TextStyle(
+                  color: Color(0xFF0076BC),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: TextFormField(
-                    controller: _razaosocialController,
-                    decoration: const InputDecoration(
-                      hintText: 'Razao Social',
-                      border: InputBorder.none,
+                decoration: InputDecoration(
+                  labelText: 'Razão Social',
+                  labelStyle: const TextStyle(
+                    color: Colors.lightBlueAccent,
+                  ),
+                  hintStyle: const TextStyle(
+                    color: Colors.lightBlueAccent, // Cor do texto de dica
+                  ),
+                  filled: true,
+                  fillColor: const Color.fromARGB(255, 255, 255, 255),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(50.0),
+                    borderSide: const BorderSide(
+                      width: 1.0,
+                      color: Colors.lightBlueAccent,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(50.0),
+                    borderSide: const BorderSide(
+                      width: 2.0,
+                      color: Colors
+                          .lightBlueAccent, // Cor da borda quando o campo está habilitado
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(50.0),
+                    borderSide: const BorderSide(
+                      width: 2.0,
+                      color: Color(0xFF0076BC),
+                    ),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(50.0),
+                    borderSide: const BorderSide(
+                      width: 1.0,
+                      color: Colors.red, // Cor da borda quando há um erro
+                    ),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(50.0),
+                    borderSide: const BorderSide(
+                      width: 2.0,
+                      color: Colors
+                          .red, // Cor da borda quando o campo está focado e há um erro
                     ),
                   ),
                 ),
               ),
+              const SizedBox(height: 16),
+              FutureBuilder<Usuario>(
+                future: UsuarioController.getUsuarioLogado(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}'); // Tratar erros
+                  }
 
-              //////////////////////
-              const SizedBox(height: 20),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  color: const Color.fromRGBO(0, 115, 188, 0.2),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: FutureBuilder<Usuario>(
-                    future: UsuarioController.getUsuarioLogado(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}'); // Tratar erros
-                      }
+                  var usuario = snapshot.data;
 
-                      var usuario = snapshot.data;
+                  // Você já tem os dados do usuário aqui, não precisa chamar a função getEmpresa
+                  String? idEmpresa = usuario?.empresa;
+                  String? nivel = usuario?.nivel;
 
-                      // Você já tem os dados do usuário aqui, não precisa chamar a função getEmpresa
-                      String? idEmpresa = usuario?.empresa;
-                      String? nivel = usuario?.nivel;
+                  // Se o nível for null ou vazio, não há permissões, retornar uma lista vazia
+                  if (nivel == null || nivel.isEmpty) {
+                    return const SizedBox();
+                  } else if (nivel == '1') {
+                    return const SizedBox();
+                  } else {
+                    return FutureBuilder<
+                        DocumentSnapshot<Map<String, dynamic>>>(
+                      future: FirebaseFirestore.instance
+                          .collection('Empresa')
+                          .doc(idEmpresa)
+                          .get(),
+                      builder: (context, empresaSnapshot) {
+                        if (empresaSnapshot.hasError) {
+                          return Text(
+                              'Erro ao obter dados da empresa: ${empresaSnapshot.error}');
+                        }
 
-                      // Se o nível for null ou vazio, não há permissões, retornar uma lista vazia
-                      if (nivel == null || nivel.isEmpty) {
-                        return const SizedBox();
-                      } else if (nivel == '1') {
-                        return const SizedBox();
-                      } else {
-                        return FutureBuilder<
-                            DocumentSnapshot<Map<String, dynamic>>>(
-                          future: FirebaseFirestore.instance
-                              .collection('Empresa')
-                              .doc(idEmpresa)
-                              .get(),
-                          builder: (context, empresaSnapshot) {
-                            if (empresaSnapshot.hasError) {
-                              return Text(
-                                  'Erro ao obter dados da empresa: ${empresaSnapshot.error}');
-                            }
+                        var empresaData = empresaSnapshot.data?.data();
+                        if (empresaData == null) {
+                          return const Text(
+                              'Empresa não encontrada'); // Lidar com o caso em que a empresa não existe
+                        }
 
-                            var empresaData = empresaSnapshot.data?.data();
-                            if (empresaData == null) {
-                              return const Text(
-                                  'Empresa não encontrada'); // Lidar com o caso em que a empresa não existe
-                            }
+                        String? razaoSocial = empresaData['RazaoSocial'];
 
-                            String? razaoSocial = empresaData['RazaoSocial'];
-
-                            return TextFormField(
-                              initialValue: razaoSocial,
-                              decoration: const InputDecoration(
-                                  labelText: 'Empresa Pai'),
-                              readOnly: true,
-                            );
-                          },
+                        return TextField(
+                          controller: TextEditingController(text: razaoSocial),
+                          readOnly: true,
+                          enableInteractiveSelection: false,
+                          style: const TextStyle(
+                            color: Color(0xFF0076BC),
+                            fontSize: 16,
+                          ),
+                          decoration: InputDecoration(
+                            labelText: 'Empresa Pai',
+                            labelStyle: const TextStyle(
+                              color: Colors.lightBlueAccent,
+                            ),
+                            hintStyle: const TextStyle(
+                              color: Colors
+                                  .lightBlueAccent, // Cor do texto de dica
+                            ),
+                            filled: true,
+                            fillColor: const Color.fromARGB(255, 255, 255, 255),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(50.0),
+                              borderSide: const BorderSide(
+                                width: 1.0,
+                                color: Colors.lightBlueAccent,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(50.0),
+                              borderSide: const BorderSide(
+                                width: 2.0,
+                                color: Colors
+                                    .lightBlueAccent, // Cor da borda quando o campo está habilitado
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(50.0),
+                              borderSide: const BorderSide(
+                                width: 2.0,
+                                color: Color(0xFF0076BC),
+                              ),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(50.0),
+                              borderSide: const BorderSide(
+                                width: 1.0,
+                                color: Colors
+                                    .red, // Cor da borda quando há um erro
+                              ),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(50.0),
+                              borderSide: const BorderSide(
+                                width: 2.0,
+                                color: Colors
+                                    .red, // Cor da borda quando o campo está focado e há um erro
+                              ),
+                            ),
+                          ),
                         );
-                      }
-                    },
-                  ),
-                ),
+                      },
+                    );
+                  }
+                },
               ),
-
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -209,7 +339,8 @@ class GroupPageState extends State<GroupPage> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: _switchValue ? Colors.green : Colors.red,
+                      color:
+                          _switchValue ? const Color(0xFF0076BC) : Colors.grey,
                     ),
                   ),
                   SwitchExample(
@@ -221,26 +352,24 @@ class GroupPageState extends State<GroupPage> {
                   ),
                 ],
               ),
-              ElevatedButton(
-                onPressed: () {
-                  cadastrarEmpresa();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 19, 74, 119),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30)),
-                ),
-                child: const SizedBox(
-                  width: double.infinity,
-                  height: 35,
-                  child: Center(
-                    child: Text(
-                      'Cadastrar',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: cadastrarEmpresa,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0076BC),
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                    ),
+                  ),
+                  child: const Text(
+                    'Registrar',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -265,19 +394,29 @@ class GroupPageState extends State<GroupPage> {
               IconButton(
                 icon: const Icon(
                   Icons.arrow_back,
+                  color: Color(0xFF0076BC),
+                  size: 32,
                 ),
                 onPressed: () {
                   Navigator.pop(context);
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.home),
+                icon: const Icon(
+                  Icons.home,
+                  color: Color(0xFF0076BC),
+                  size: 32,
+                ),
                 onPressed: () {
                   Navigator.pushNamed(context, '/home');
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.person),
+                icon: const Icon(
+                  Icons.person,
+                  color: Color(0xFF0076BC),
+                  size: 32,
+                ),
                 onPressed: () {},
               ),
             ],
@@ -306,7 +445,7 @@ class _SwitchExampleState extends State<SwitchExample> {
       if (states.contains(MaterialState.selected)) {
         return const Icon(Icons.check);
       }
-      return const Icon(Icons.close);
+      return null;
     },
   );
 
@@ -316,6 +455,7 @@ class _SwitchExampleState extends State<SwitchExample> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Switch(
+          activeColor: const Color(0xFF0076BC),
           thumbIcon: thumbIcon,
           value: light1,
           onChanged: (bool value) {

@@ -354,56 +354,19 @@ class SetorPageState extends State<SetorPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Setores'),
-        leading: isSelectionMode
-            ? IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () {
-                  setState(() {
-                    isSelectionMode = false;
-                  });
-                  initializeSelection();
-                },
-              )
-            : IconButton(
-                onPressed: () {
-                  if (_checkForChanges(true)) {
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Descartar Alterações?'),
-                          content: const Text(
-                              'Tem certeza que deseja descartar as alterações e sair?'),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context); // Fechar o AlertDialog
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text('Sim'),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context); // Fechar o AlertDialog
-                              },
-                              child: const Text('Não'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  } else {
-                    Navigator.of(context).pop();
-                  }
-                },
-                icon: const Icon(Icons.arrow_back)),
-      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).size.height * 0.1,
+            ),
+            child: Image.asset(
+              'images/setor.png',
+              width: 100,
+              height: 100,
+            ),
+          ),
           const SizedBox(height: 10),
           SizedBox(
             height: 50,
@@ -522,7 +485,7 @@ class SetorPageState extends State<SetorPage> {
                 });
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey,
+                backgroundColor: const Color.fromARGB(255, 190, 10, 10),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -538,6 +501,96 @@ class SetorPageState extends State<SetorPage> {
             ),
           const SizedBox(height: 50),
         ],
+      ),
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.0),
+            topRight: Radius.circular(20.0),
+          ),
+        ),
+        child: BottomAppBar(
+          color: Colors.transparent,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              isSelectionMode
+                  ? IconButton(
+                      icon: const Icon(
+                        Icons.close,
+                        color: Color(0xFF0076BC),
+                        size: 32,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          isSelectionMode = false;
+                        });
+                        initializeSelection();
+                      },
+                    )
+                  : IconButton(
+                      onPressed: () {
+                        if (_checkForChanges(true)) {
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Descartar Alterações?'),
+                                content: const Text(
+                                    'Tem certeza que deseja descartar as alterações e sair?'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(
+                                          context); // Fechar o AlertDialog
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('Sim'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(
+                                          context); // Fechar o AlertDialog
+                                    },
+                                    child: const Text('Não'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        } else {
+                          Navigator.of(context).pop();
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: Color(0xFF0076BC),
+                        size: 32,
+                      ),
+                    ),
+              IconButton(
+                icon: const Icon(
+                  Icons.home,
+                  color: Color(0xFF0076BC),
+                  size: 32,
+                ),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/home');
+                },
+              ),
+              IconButton(
+                icon: const Icon(
+                  Icons.person,
+                  color: Color(0xFF0076BC),
+                  size: 32,
+                ),
+                onPressed: () {},
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -55,96 +55,162 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
               children: [
                 Padding(
                   padding:
-                      EdgeInsets.fromLTRB(12.0, _statusBarHeight, 12.0, 12.0),
+                      EdgeInsets.fromLTRB(16.0, _statusBarHeight, 16.0, 16.0),
                   child: Column(
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.only(top: 20, bottom: 10),
-                        child: Icon(
-                          Icons.computer, // Ícone de usuário
-                          color: Color(0xFF0073BC),
-                          size: 140, // Tamanho do ícone
-                        ),
+                      const Column(
+                        children: [
+                          Icon(
+                            Icons.computer, // Ícone de usuário
+                            color: Color(0xFF0073BC),
+                            size: 100, // Tamanho do ícone
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Equipamentos',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color:
-                                      const Color(0xFF0073BC).withOpacity(0.3),
-                                  borderRadius: BorderRadius.circular(50),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              onChanged: (value) {
+                                setState(() {
+                                  _searchText = value.toLowerCase();
+                                });
+                              },
+                              style: const TextStyle(
+                                color: Color(0xFF0076BC),
+                              ),
+                              decoration: InputDecoration(
+                                labelText: 'Buscar por Marca, Modelo, QRCode',
+                                labelStyle: const TextStyle(
+                                  color: Colors.black,
                                 ),
-                                child: TextField(
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText:
-                                        'Buscar por Marca, Modelo, QRCode',
-                                    hintStyle: TextStyle(fontSize: 14),
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 15, horizontal: 10),
-                                    suffixIcon: Icon(Icons.search,
-                                        color: Colors.black), // Ícone à direita
+                                filled: true,
+                                fillColor:
+                                    const Color.fromARGB(255, 255, 255, 255),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(50.0),
+                                  borderSide: const BorderSide(
+                                    width: 1.0,
+                                    color: Colors.lightBlueAccent,
                                   ),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _searchText = value.toLowerCase();
-                                    });
-                                  },
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(50.0),
+                                  borderSide: const BorderSide(
+                                    width: 2.0,
+                                    color: Colors
+                                        .lightBlueAccent, // Cor da borda quando o campo está habilitado
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(50.0),
+                                  borderSide: const BorderSide(
+                                    width: 2.0,
+                                    color: Color(0xFF0076BC),
+                                  ),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(50.0),
+                                  borderSide: const BorderSide(
+                                    width: 1.0,
+                                    color: Colors
+                                        .red, // Cor da borda quando há um erro
+                                  ),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(50.0),
+                                  borderSide: const BorderSide(
+                                    width: 2.0,
+                                    color: Colors
+                                        .red, // Cor da borda quando o campo está focado e há um erro
+                                  ),
+                                ),
+                                suffixIcon: const Icon(
+                                  Icons.search,
+                                  color: Color(0xFF0076BC),
+                                  size: 32.0,
                                 ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _statusFiltro = 'Ativo';
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              _statusFiltro == 'Ativo' ? Colors.blue : null,
-                        ),
-                        child: const Text('Ativo'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _statusFiltro = 'Ativo';
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _statusFiltro == 'Ativo'
+                            ? const Color(0xFF0076BC)
+                            : Colors.white,
                       ),
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _statusFiltro = 'Inativo';
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              _statusFiltro == 'Inativo' ? Colors.blue : null,
+                      child: Text(
+                        'Ativo',
+                        style: TextStyle(
+                          color: _statusFiltro == 'Ativo'
+                              ? Colors.white
+                              : Colors.black,
                         ),
-                        child: const Text('Inativo'),
                       ),
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _statusFiltro = 'Ambos';
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              _statusFiltro == 'Ambos' ? Colors.blue : null,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _statusFiltro = 'Inativo';
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _statusFiltro == 'Inativo'
+                            ? const Color(0xFF0076BC)
+                            : Colors.white,
+                      ),
+                      child: Text(
+                        'Inativo',
+                        style: TextStyle(
+                          color: _statusFiltro == 'Inativo'
+                              ? Colors.white
+                              : Colors.black,
                         ),
-                        child: const Text('Ambos'),
                       ),
-                    ],
-                  ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _statusFiltro = 'Ambos';
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _statusFiltro == 'Ambos'
+                            ? const Color(0xFF0076BC)
+                            : Colors.white,
+                      ),
+                      child: Text(
+                        'Ambos',
+                        style: TextStyle(
+                          color: _statusFiltro == 'Ambos'
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 Expanded(
                   child: Padding(
@@ -269,19 +335,29 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
               IconButton(
                 icon: const Icon(
                   Icons.arrow_back,
+                  color: Color(0xFF0076BC),
+                  size: 32,
                 ),
                 onPressed: () {
                   Navigator.pushNamed(context, '/home');
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.home),
+                icon: const Icon(
+                  Icons.home,
+                  color: Color(0xFF0076BC),
+                  size: 32,
+                ),
                 onPressed: () {
                   Navigator.pushNamed(context, '/home');
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.person),
+                icon: const Icon(
+                  Icons.person,
+                  color: Color(0xFF0076BC),
+                  size: 32,
+                ),
                 onPressed: () {},
               ),
             ],
@@ -348,51 +424,72 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: ExpansionTile(
-          title: Text('${matriz.razaoSocial} ($totalEquipamentos)'),
-          trailing: !showExpansionArrow
-              ? const SizedBox()
-              : Icon(
-                  selectedMap[matriz.id] ?? false
-                      ? Icons.keyboard_arrow_up
-                      : Icons.keyboard_arrow_down,
-                ),
-          onExpansionChanged: (value) {
-            setState(() {
-              selectedMap[matriz.id] = value;
-            });
-          },
-          children: [
-            if (nivel <= 2)
-              ...equipamentosMatriz.map((equipamento) => ListTile(
-                    title: Row(
-                      children: [
-                        const SizedBox(width: 24),
-                        Expanded(
-                          child: GestureDetector(
-                            child: Text(
-                                '${equipamento.qrcode} \n ${equipamento.empresa}'),
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.remove_red_eye),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DetalhesEquipamentoPage(
-                                  equipamento: equipamento.id,
+        child: Theme(
+          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+          child: ExpansionTile(
+            title: Text(
+              '${matriz.razaoSocial} ($totalEquipamentos)',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+            trailing: !showExpansionArrow
+                ? const SizedBox()
+                : Icon(
+                    selectedMap[matriz.id] ?? false
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
+                  ),
+            onExpansionChanged: (value) {
+              setState(() {
+                selectedMap[matriz.id] = value;
+              });
+            },
+            children: [
+              if (nivel <= 2)
+                ...equipamentosMatriz.map((equipamento) => ListTile(
+                      title: Row(
+                        children: [
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: GestureDetector(
+                              child: Text(
+                                '${equipamento.qrcode} \n ${equipamento.empresa}',
+                                style: const TextStyle(
+                                  fontSize: 16,
                                 ),
                               ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  )),
-            ...filiaisComEquipamentos
-                .map((filial) => _buildFilialTile(filial, equipamentos)),
-          ],
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.remove_red_eye,
+                              color: Colors.white,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              shape: const CircleBorder(),
+                              padding: const EdgeInsets.all(8),
+                              backgroundColor: const Color(0xFF0076BC),
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DetalhesEquipamentoPage(
+                                    equipamento: equipamento.id,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    )),
+              ...filiaisComEquipamentos
+                  .map((filial) => _buildFilialTile(filial, equipamentos)),
+            ],
+          ),
         ),
       ),
     );
@@ -411,7 +508,7 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+      margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 0),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey, width: 1),
         borderRadius: BorderRadius.circular(12),
@@ -421,8 +518,14 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
         child: ExpansionTile(
           title: Row(
             children: [
-              const SizedBox(width: 12),
-              Text('${filial.razaoSocial} (${equipsInFilial.length})'),
+              const SizedBox(width: 4),
+              Text(
+                '${filial.razaoSocial} (${equipsInFilial.length})',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
             ],
           ),
           trailing: !showExpansionArrow
@@ -439,30 +542,52 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
           },
           children: [
             ...equipsInFilial.map(
-              (equipamento) => ListTile(
-                title: Row(
-                  children: [
-                    const SizedBox(width: 24),
-                    Expanded(
-                      child: GestureDetector(
-                        child: Text(
-                            '${equipamento.qrcode} \n ${equipamento.marca} ${equipamento.modelo}'),
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.remove_red_eye),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DetalhesEquipamentoPage(
-                              equipamento: equipamento.id,
+              (equipamento) => Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200], // Fundo cinza
+                    borderRadius:
+                        BorderRadius.circular(8), // Borda arredondada opcional
+                  ),
+                  child: ListTile(
+                    title: Row(
+                      children: [
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: GestureDetector(
+                            child: Text(
+                              '${equipamento.qrcode} \n ${equipamento.marca} ${equipamento.modelo}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                              ),
                             ),
                           ),
-                        );
-                      },
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.remove_red_eye,
+                            color: Colors.white,
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            shape: const CircleBorder(),
+                            padding: const EdgeInsets.all(8),
+                            backgroundColor: const Color(0xFF0076BC),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DetalhesEquipamentoPage(
+                                  equipamento: equipamento.id,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),

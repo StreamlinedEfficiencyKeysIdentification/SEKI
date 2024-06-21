@@ -48,109 +48,183 @@ class _VisualizarEmpresasState extends State<VisualizarEmpresas> {
               children: [
                 Padding(
                   padding:
-                      EdgeInsets.fromLTRB(12.0, _statusBarHeight, 12.0, 12.0),
+                      EdgeInsets.fromLTRB(16.0, _statusBarHeight, 16.0, 16.0),
                   child: Column(
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.only(top: 20, bottom: 10),
-                        child: Icon(
-                          Icons.location_city, // Ícone de prédio
-                          color: Color(0xFF0073BC),
-                          size: 140, // Ajustando o tamanho do ícone
-                        ),
+                      const Column(
+                        children: [
+                          Icon(
+                            Icons.location_city,
+                            color: Color(0xFF0076BC),
+                            size: 100,
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Empresas',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color:
-                                      const Color(0xFF0073BC).withOpacity(0.3),
-                                  borderRadius: BorderRadius.circular(50),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              onChanged: (value) {
+                                setState(() {
+                                  _searchText = value.toLowerCase();
+                                });
+                              },
+                              style: const TextStyle(
+                                color: Color(0xFF0076BC),
+                              ),
+                              decoration: InputDecoration(
+                                labelText: 'Buscar por CNPJ ou Razão Social',
+                                labelStyle: const TextStyle(
+                                  color: Colors.black,
                                 ),
-                                child: TextField(
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Buscar por CNPJ ou Razão Social',
-                                    hintStyle: TextStyle(fontSize: 14),
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 15, horizontal: 10),
-                                    suffixIcon: Icon(Icons.search,
-                                        color: Colors.black), // Ícone à direita
+                                filled: true,
+                                fillColor:
+                                    const Color.fromARGB(255, 255, 255, 255),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(50.0),
+                                  borderSide: const BorderSide(
+                                    width: 1.0,
+                                    color: Colors.lightBlueAccent,
                                   ),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _searchText = value.toLowerCase();
-                                    });
-                                  },
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(50.0),
+                                  borderSide: const BorderSide(
+                                    width: 2.0,
+                                    color: Colors
+                                        .lightBlueAccent, // Cor da borda quando o campo está habilitado
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(50.0),
+                                  borderSide: const BorderSide(
+                                    width: 2.0,
+                                    color: Color(0xFF0076BC),
+                                  ),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(50.0),
+                                  borderSide: const BorderSide(
+                                    width: 1.0,
+                                    color: Colors
+                                        .red, // Cor da borda quando há um erro
+                                  ),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(50.0),
+                                  borderSide: const BorderSide(
+                                    width: 2.0,
+                                    color: Colors
+                                        .red, // Cor da borda quando o campo está focado e há um erro
+                                  ),
+                                ),
+                                suffixIcon: const Icon(
+                                  Icons.search,
+                                  color: Color(0xFF0076BC),
+                                  size: 32.0,
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            Column(
-                              children: [
-                                Text(_searchInMatriz ? 'Matriz' : 'Filial'),
-                                Switch(
-                                  value: _searchInMatriz,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _searchInMatriz = value;
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: 8),
+                          Column(
+                            children: [
+                              Text(
+                                _searchInMatriz ? 'Matriz' : 'Filial',
+                                style: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              Switch(
+                                activeColor: const Color(0xFF0076BC),
+                                inactiveTrackColor: Colors.white,
+                                inactiveThumbColor: Colors.grey,
+                                value: _searchInMatriz,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _searchInMatriz = value;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _statusFiltro = 'Ativo';
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              _statusFiltro == 'Ativo' ? Colors.blue : null,
-                        ),
-                        child: const Text('Ativo'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _statusFiltro = 'Ativo';
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _statusFiltro == 'Ativo'
+                            ? const Color(0xFF0076BC)
+                            : Colors.white,
                       ),
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _statusFiltro = 'Inativo';
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              _statusFiltro == 'Inativo' ? Colors.blue : null,
+                      child: Text(
+                        'Ativo',
+                        style: TextStyle(
+                          color: _statusFiltro == 'Ativo'
+                              ? Colors.white
+                              : Colors.black,
                         ),
-                        child: const Text('Inativo'),
                       ),
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _statusFiltro = 'Ambos';
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              _statusFiltro == 'Ambos' ? Colors.blue : null,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _statusFiltro = 'Inativo';
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _statusFiltro == 'Inativo'
+                            ? const Color(0xFF0076BC)
+                            : Colors.white,
+                      ),
+                      child: Text(
+                        'Inativo',
+                        style: TextStyle(
+                          color: _statusFiltro == 'Inativo'
+                              ? Colors.white
+                              : Colors.black,
                         ),
-                        child: const Text('Ambos'),
                       ),
-                    ],
-                  ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _statusFiltro = 'Ambos';
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _statusFiltro == 'Ambos'
+                            ? const Color(0xFF0076BC)
+                            : Colors.white,
+                      ),
+                      child: Text(
+                        'Ambos',
+                        style: TextStyle(
+                          color: _statusFiltro == 'Ambos'
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 Expanded(
                   child: Padding(
@@ -243,19 +317,29 @@ class _VisualizarEmpresasState extends State<VisualizarEmpresas> {
               IconButton(
                 icon: const Icon(
                   Icons.arrow_back,
+                  color: Color(0xFF0076BC),
+                  size: 32,
                 ),
                 onPressed: () {
                   Navigator.pushNamed(context, '/home');
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.home),
+                icon: const Icon(
+                  Icons.home,
+                  color: Color(0xFF0076BC),
+                  size: 32,
+                ),
                 onPressed: () {
                   Navigator.pushNamed(context, '/home');
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.person),
+                icon: const Icon(
+                  Icons.person,
+                  color: Color(0xFF0076BC),
+                  size: 32,
+                ),
                 onPressed: () {},
               ),
             ],
@@ -263,6 +347,14 @@ class _VisualizarEmpresasState extends State<VisualizarEmpresas> {
         ),
       ),
     );
+  }
+
+  String formatCNPJ(String cnpj) {
+    // Verifica se o CNPJ possui exatamente 14 caracteres
+    if (cnpj.length != 14) {
+      return cnpj; // Retorna o CNPJ original se não tiver 14 caracteres
+    }
+    return '${cnpj.substring(0, 2)}.${cnpj.substring(2, 5)}.${cnpj.substring(5, 8)}/${cnpj.substring(8, 12)}-${cnpj.substring(12, 14)}';
   }
 
   Widget _buildMatrizTile(Empresa matriz, List<Empresa> todasEmpresas) {
@@ -282,96 +374,142 @@ class _VisualizarEmpresasState extends State<VisualizarEmpresas> {
       selectedMap[matriz.id] = false;
     }
 
-    return Card(
-      shape: RoundedRectangleBorder(
-        side: const BorderSide(color: Colors.black),
-        borderRadius: BorderRadius.circular(10), // Arredondado
-      ),
+    return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-      child: ExpansionTile(
-        title: Row(
-          children: [
-            Expanded(
-              child: GestureDetector(
-                child: Text('${matriz.razaoSocial} (${filiais.length})'),
-              ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.remove_red_eye),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DetalhesEmpresaPage(
-                        empresaID: matriz.id, setorVisibility: true),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey, width: 1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Theme(
+          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+          child: ExpansionTile(
+            backgroundColor: Colors.white,
+            title: Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    child: Text(
+                      '${matriz.razaoSocial} (${filiais.length})\n${formatCNPJ(matriz.cnpj)}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
                   ),
-                );
-              },
-            ),
-          ],
-        ),
-        trailing: !_searchInMatriz &&
-                showExpansionArrow // Se _searchInMatriz for verdadeiro, trailing fica null
-            ? SizedBox(
-                width: 30,
-                child: Icon(
-                  selectedMap[matriz.id] ?? false
-                      ? Icons.keyboard_arrow_up
-                      : Icons.keyboard_arrow_down,
                 ),
-              )
-            : const SizedBox(
-                width: 30,
-              ),
-        onExpansionChanged:
-            !_searchInMatriz // Só permite expandir se _searchInMatriz for falso
-                ? (value) {
-                    setState(() {
-                      selectedMap[matriz.id] = value;
-                    });
-                  }
-                : null,
-        children: !_searchInMatriz
-            ? filiais
-                .map(
-                  (filial) => ListTile(
-                    title: Row(
-                      children: [
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: GestureDetector(
-                            child:
-                                Text('${filial.razaoSocial} \n ${filial.cnpj}'),
+                IconButton(
+                  icon: const Icon(
+                    Icons.remove_red_eye,
+                    color: Colors.white,
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    shape: const CircleBorder(),
+                    padding: const EdgeInsets.all(8),
+                    backgroundColor:
+                        const Color(0xFF0076BC), // Cor de fundo do botão
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetalhesEmpresaPage(
+                            empresaID: matriz.id, setorVisibility: true),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+            trailing: !_searchInMatriz &&
+                    showExpansionArrow // Se _searchInMatriz for verdadeiro, trailing fica null
+                ? SizedBox(
+                    width: 30,
+                    child: Icon(
+                      selectedMap[matriz.id] ?? false
+                          ? Icons.keyboard_arrow_up
+                          : Icons.keyboard_arrow_down,
+                    ),
+                  )
+                : const SizedBox(
+                    width: 30,
+                  ),
+            onExpansionChanged:
+                !_searchInMatriz // Só permite expandir se _searchInMatriz for falso
+                    ? (value) {
+                        setState(() {
+                          selectedMap[matriz.id] = value;
+                        });
+                      }
+                    : null,
+            children: !_searchInMatriz
+                ? filiais
+                    .map(
+                      (filial) => Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200], // Fundo cinza
+                            borderRadius: BorderRadius.circular(
+                                8), // Borda arredondada opcional
+                          ),
+                          child: ListTile(
+                            title: Row(
+                              children: [
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: GestureDetector(
+                                    child: Text(
+                                      '${filial.razaoSocial} \n ${formatCNPJ(filial.cnpj)}',
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.remove_red_eye,
+                                    color: Colors.white,
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    shape: const CircleBorder(),
+                                    padding: const EdgeInsets.all(8),
+                                    backgroundColor: const Color(0xFF0076BC),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            DetalhesEmpresaPage(
+                                                empresaID: filial.id,
+                                                setorVisibility: false),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DetalhesEmpresaPage(
+                                      empresaID: filial.id,
+                                      setorVisibility: false),
+                                ),
+                              );
+                            },
                           ),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.remove_red_eye),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DetalhesEmpresaPage(
-                                    empresaID: filial.id,
-                                    setorVisibility: false),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetalhesEmpresaPage(
-                              empresaID: filial.id, setorVisibility: false),
-                        ),
-                      );
-                    },
-                  ),
-                )
-                .toList()
-            : [],
+                      ),
+                    )
+                    .toList()
+                : [],
+          ),
+        ),
       ),
     );
   }

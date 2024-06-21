@@ -150,12 +150,20 @@ class ViewChamadosState extends State<ViewChamados> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: const Text('Chamados'),
+        title: const Text(
+          'Chamados',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
             onPressed: _alternarOrdem,
-            icon: Icon(iconeOrdem), // Use a variável de ícone
+            icon: Icon(
+              iconeOrdem,
+              color: Colors.white,
+            ), // Use a variável de ícone
             tooltip:
                 ordemCrescente ? 'Ordenar Decrescente' : 'Ordenar Crescente',
           ),
@@ -165,6 +173,7 @@ class ViewChamadosState extends State<ViewChamados> {
                 _resetFilters();
               }
             },
+            iconColor: Colors.white,
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
               const PopupMenuItem<String>(
                 value: 'none',
@@ -354,19 +363,29 @@ class ViewChamadosState extends State<ViewChamados> {
               IconButton(
                 icon: const Icon(
                   Icons.arrow_back,
+                  color: Color(0xFF0076BC),
+                  size: 32,
                 ),
                 onPressed: () {
                   Navigator.pushNamed(context, '/home');
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.home),
+                icon: const Icon(
+                  Icons.home,
+                  color: Color(0xFF0076BC),
+                  size: 32,
+                ),
                 onPressed: () {
                   Navigator.pushNamed(context, '/home');
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.person),
+                icon: const Icon(
+                  Icons.person,
+                  color: Color(0xFF0076BC),
+                  size: 32,
+                ),
                 onPressed: () {},
               ),
             ],
