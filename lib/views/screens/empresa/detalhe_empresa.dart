@@ -107,6 +107,7 @@ class DetalhesEmpresaPageState extends State<DetalhesEmpresaPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blue,
         title: const Text('Detalhes da Empresa'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -149,12 +150,18 @@ class DetalhesEmpresaPageState extends State<DetalhesEmpresaPage> {
           },
         ),
       ),
+      backgroundColor: Colors.blue,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
+            const SizedBox(height: 20),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: Color.fromARGB(255, 142, 200, 236),
+              ),
               child: _buildEditableField(
                 'Razão Social',
                 _razaoSocial,
@@ -162,28 +169,37 @@ class DetalhesEmpresaPageState extends State<DetalhesEmpresaPage> {
                 (value) => setState(() => _razaoSocial = value),
               ),
             ),
+
             const SizedBox(height: 16.0), // Espaçamento
 
-            // Campos editáveis
-            _buildEditableField(
-              'CNPJ',
-              _cnpj,
-              cnpjController,
-              (value) => setState(() => _cnpj = value),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: Color.fromARGB(255, 142, 200, 236),
+              ),
+              child: _buildEditableField(
+                'CNPJ',
+                _cnpj,
+                cnpjController,
+                (value) => setState(() => _cnpj = value),
+              ),
             ),
+
+            // Campos editáveis
+
             Text(
               'Matriz: $_matriz',
               style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
             Text(
               'Criador: $_criador',
               style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
             Row(
               children: [
@@ -196,7 +212,16 @@ class DetalhesEmpresaPageState extends State<DetalhesEmpresaPage> {
                     });
                   },
                 ),
-                Text(_status ? 'Ativo' : 'Inativo'),
+                Text(
+                  _status ? 'Ativo' : 'Inativo',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: _status
+                        ? Color.fromARGB(255, 45, 104, 47)
+                        : Color.fromARGB(255, 171, 46, 37),
+                  ),
+                ),
               ],
             ),
             Row(

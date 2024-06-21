@@ -403,7 +403,17 @@ class SetorPageState extends State<SetorPage> {
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).size.height * 0.1,
+            ),
+            child: Image.asset(
+              'images/setor.png',
+              width: 100,
+              height: 100,
+            ),
+          ),
           const SizedBox(height: 10),
           SizedBox(
             height: 50,
@@ -522,7 +532,7 @@ class SetorPageState extends State<SetorPage> {
                 });
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey,
+                backgroundColor: const Color.fromARGB(255, 190, 10, 10),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),

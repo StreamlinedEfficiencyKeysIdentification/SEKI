@@ -108,6 +108,7 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blue,
         title: const Text('Detalhes do Usuário'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -150,44 +151,78 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
           },
         ),
       ),
+      backgroundColor: Colors.blue,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Campo 'usuario' do usuário
-            Text('Usuário: ${_usuario.usuario}'),
-            const SizedBox(height: 16.0),
+            Text(
+              'Usuário: ${_usuario.usuario}',
+              style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 211, 211, 211)),
+            ),
 
             Text(
               'E-mail: $_email',
               style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+                  fontSize: 19,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 211, 211, 211)),
             ),
             // Campos editáveis
-            _buildEditableField(
-              'Nome',
-              _nome,
-              nomeController,
-              (value) => setState(() => _nome = value),
+            const SizedBox(height: 16.0), // Espaçamento
+
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: Color.fromARGB(255, 142, 200, 236),
+              ),
+              child: _buildEditableField(
+                'Nome',
+                _nome,
+                nomeController,
+                (value) => setState(() => _nome = value),
+              ),
             ),
-            ComboBoxEmpresa(
-              empresa: _empresaSelecionada,
-              onEmpresaSelected: (empresa) {
-                setState(() {
-                  _empresaSelecionada = empresa;
-                });
-              },
+            const SizedBox(height: 20),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                color: Color.fromARGB(255, 142, 200, 236),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ComboBoxEmpresa(
+                  empresa: _empresaSelecionada,
+                  onEmpresaSelected: (empresa) {
+                    setState(() {
+                      _empresaSelecionada = empresa;
+                    });
+                  },
+                ),
+              ),
             ),
-            ComboBoxNivelAcesso(
-              nivel: _nivelSelecionado,
-              onNivelSelected: (nivel) {
-                setState(() {
-                  _nivelSelecionado = nivel;
-                });
-              },
+            const SizedBox(height: 20),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                color: Color.fromARGB(255, 142, 200, 236),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ComboBoxNivelAcesso(
+                  nivel: _nivelSelecionado,
+                  onNivelSelected: (nivel) {
+                    setState(() {
+                      _nivelSelecionado = nivel;
+                    });
+                  },
+                ),
+              ),
             ),
             Row(
               children: [
@@ -200,7 +235,14 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
                     });
                   },
                 ),
-                Text(_status ? 'Ativo' : 'Inativo'),
+                Text(
+                  _status ? 'Ativo' : 'Inativo',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: _status ? Colors.white : Colors.white,
+                  ),
+                ),
               ],
             ),
             Row(
@@ -214,9 +256,16 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
                     });
                   },
                 ),
-                Text(_primeiroAcesso
-                    ? 'Primeiro Acesso'
-                    : 'Não é o primeiro acesso'),
+                Text(
+                  _primeiroAcesso
+                      ? 'Primeiro Acesso'
+                      : 'Não é o primeiro acesso',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: _status ? Colors.white : Colors.white,
+                  ),
+                ),
               ],
             ),
             Row(
@@ -230,31 +279,39 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
                     });
                   },
                 ),
-                Text(_redefinirSenha
-                    ? 'Redefinir Senha'
-                    : 'Não é necessário redefinir a senha'),
+                Text(
+                  _redefinirSenha
+                      ? 'Redefinir Senha'
+                      : 'Não é necessário redefinir a senha',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: _status ? Colors.white : Colors.white,
+                  ),
+                ),
               ],
             ),
+            const SizedBox(height: 20),
             Text(
               'Criador: $_criador',
               style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 211, 211, 211)),
             ),
             Text(
               'Criado em: $_dataCriacao',
               style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 211, 211, 211)),
             ),
             Text(
               'Ultimo acesso em: $_dataAcesso',
               style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 211, 211, 211)),
             ),
             Row(
               children: [

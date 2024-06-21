@@ -108,9 +108,11 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
                             });
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                _statusFiltro == 'Ativo' ? Colors.blue : null,
-                          ),
+                              backgroundColor:
+                                  _statusFiltro == 'Ativo' ? Colors.blue : null,
+                              foregroundColor: _statusFiltro == 'Ativo'
+                                  ? Colors.white
+                                  : null),
                           child: const Text('Ativo'),
                         ),
                         ElevatedButton(
@@ -120,9 +122,12 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
                             });
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                _statusFiltro == 'Inativo' ? Colors.blue : null,
-                          ),
+                              backgroundColor: _statusFiltro == 'Inativo'
+                                  ? Colors.blue
+                                  : null,
+                              foregroundColor: _statusFiltro == 'Inativo'
+                                  ? Colors.white
+                                  : null),
                           child: const Text('Inativo'),
                         ),
                         ElevatedButton(
@@ -132,9 +137,11 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
                             });
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                _statusFiltro == 'Ambos' ? Colors.blue : null,
-                          ),
+                              backgroundColor:
+                                  _statusFiltro == 'Ambos' ? Colors.blue : null,
+                              foregroundColor: _statusFiltro == 'Ambos'
+                                  ? Colors.white
+                                  : null),
                           child: const Text('Ambos'),
                         ),
                       ],
