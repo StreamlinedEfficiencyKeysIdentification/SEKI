@@ -107,49 +107,6 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Detalhes do Usuário'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            if (_isDataChanged()) {
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Descartar Alterações?'),
-                    content: const Text(
-                        'Tem certeza que deseja descartar as alterações e sair?'),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          // Resetar os campos para os valores originais
-                          setState(() {
-                            // Resetar os campos para os valores originais
-                            initializeFields();
-                          });
-                          Navigator.pop(context); // Fechar o AlertDialog
-                          Navigator.pushNamed(context, '/view_usuarios');
-                        },
-                        child: const Text('Sim'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context); // Fechar o AlertDialog
-                        },
-                        child: const Text('Não'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            } else {
-              Navigator.pushNamed(context, '/view_usuarios');
-            }
-          },
-        ),
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -264,6 +221,75 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
               ],
             ),
           ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.0),
+            topRight: Radius.circular(20.0),
+          ),
+        ),
+        child: BottomAppBar(
+          color: Colors.transparent,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.arrow_back,
+                ),
+                onPressed: () {
+                  if (_isDataChanged()) {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Descartar Alterações?'),
+                          content: const Text(
+                              'Tem certeza que deseja descartar as alterações e sair?'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                // Resetar os campos para os valores originais
+                                setState(() {
+                                  // Resetar os campos para os valores originais
+                                  initializeFields();
+                                });
+                                Navigator.pop(context); // Fechar o AlertDialog
+                                Navigator.pushNamed(context, '/view_usuarios');
+                              },
+                              child: const Text('Sim'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context); // Fechar o AlertDialog
+                              },
+                              child: const Text('Não'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else {
+                    Navigator.pushNamed(context, '/view_usuarios');
+                  }
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.home),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/home');
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.person),
+                onPressed: () {},
+              ),
+            ],
+          ),
         ),
       ),
     );

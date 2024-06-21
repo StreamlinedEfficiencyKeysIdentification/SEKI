@@ -25,7 +25,6 @@ class HardwarePageState extends State<HardwarePage> {
   final TextEditingController _qrcodeController = TextEditingController();
   final TextEditingController _marcaController = TextEditingController();
   final TextEditingController _modeloController = TextEditingController();
-  final TextEditingController _patrimonioController = TextEditingController();
   String _empresaSelecionada = '';
   String _setorSelecionado = '';
   String _usuarioSelecionado = '';
@@ -103,25 +102,6 @@ class HardwarePageState extends State<HardwarePage> {
                             IconButton(
                               icon: const Icon(Icons.refresh),
                               onPressed: _generateQRCodeHash,
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              flex: 2,
-                              child: TextField(
-                                controller: _patrimonioController,
-                                decoration: InputDecoration(
-                                  labelText: 'Patrimônio',
-                                  filled: true,
-                                  fillColor:
-                                      const Color(0xFF0076BC).withOpacity(0.3),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(50.0),
-                                  ),
-                                  labelStyle: const TextStyle(
-                                    color: Color(0xFF0076BC),
-                                  ),
-                                ),
-                              ),
                             ),
                           ],
                         ),

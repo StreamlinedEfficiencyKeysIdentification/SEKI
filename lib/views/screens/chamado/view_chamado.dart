@@ -35,6 +35,9 @@ class ViewChamadosState extends State<ViewChamados> {
   IconData iconeOrdem = Icons.sort; // Ícone inicial
   String filtroID = ''; // Filtro para o ID do chamado
   final TextEditingController _filtroController = TextEditingController();
+  String selectedFilter = 'none';
+  String selectedStatusFilter = 'none';
+  String selectedLidoFilter = 'none';
 
   @override
   void initState() {
@@ -78,6 +81,70 @@ class ViewChamadosState extends State<ViewChamados> {
     });
   }
 
+  void _showStatusFilterMenu(BuildContext context) {
+    showMenu<String>(
+      context: context,
+      position: const RelativeRect.fromLTRB(200, 80, 0, 0),
+      items: [
+        const PopupMenuItem<String>(
+          value: 'Concluído',
+          child: Text('Status: Concluido'),
+        ),
+        const PopupMenuItem<String>(
+          value: 'Aguardando',
+          child: Text('Status: Aguardando'),
+        ),
+        const PopupMenuItem<String>(
+          value: 'Em andamento',
+          child: Text('Status: Em andamento'),
+        ),
+        const PopupMenuItem<String>(
+          value: 'Não iniciado',
+          child: Text('Status: Não iniciado'),
+        ),
+      ],
+    ).then((value) {
+      if (value != null) {
+        setState(() {
+          selectedStatusFilter = value;
+        });
+      }
+    });
+  }
+
+  void _showLidoFilterMenu(BuildContext context) {
+    showMenu<String>(
+      context: context,
+      position: const RelativeRect.fromLTRB(200, 80, 0, 0),
+      items: [
+        const PopupMenuItem<String>(
+          value: 'lido_true',
+          child: Text('Lido'),
+        ),
+        const PopupMenuItem<String>(
+          value: 'lido_false',
+          child: Text('Não lido'),
+        ),
+      ],
+    ).then((value) {
+      if (value != null) {
+        setState(() {
+          selectedLidoFilter = value;
+        });
+      }
+    });
+  }
+
+  // Função para resetar todos os filtros
+  void _resetFilters() {
+    setState(() {
+      filtroID = '';
+      selectedStatusFilter = 'none';
+      selectedLidoFilter = 'none';
+      _filtroController.clear();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,9 +159,41 @@ class ViewChamadosState extends State<ViewChamados> {
             tooltip:
                 ordemCrescente ? 'Ordenar Decrescente' : 'Ordenar Crescente',
           ),
+          PopupMenuButton<String>(
+            onSelected: (String result) {
+              if (result == 'none') {
+                _resetFilters();
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'none',
+                child: Text('Sem filtro'),
+              ),
+              PopupMenuItem<String>(
+                child: ListTile(
+                  title: const Text('Filtrar por Status'),
+                  trailing: const Icon(Icons.arrow_right),
+                  onTap: () {
+                    Navigator.pop(context); // Fechar o menu principal
+                    _showStatusFilterMenu(context);
+                  },
+                ),
+              ),
+              PopupMenuItem<String>(
+                child: ListTile(
+                  title: const Text('Filtrar por Lido'),
+                  trailing: const Icon(Icons.arrow_right),
+                  onTap: () {
+                    Navigator.pop(context); // Fechar o menu principal
+                    _showLidoFilterMenu(context);
+                  },
+                ),
+              ),
+            ],
+          ),
         ],
       ),
-      backgroundColor: Colors.blue,
       body: Column(
         children: [
           Padding(
@@ -147,28 +246,46 @@ class ViewChamadosState extends State<ViewChamados> {
                       child: Text('Nenhum chamado encontrado.'));
                 } else {
                   // Filtrar chamados com base no ID
-                  final List<Chamado> chamadosFiltrados = filtroID.isNotEmpty
+                  List<Chamado> chamadosFiltrados = filtroID.isNotEmpty
                       ? snapshot.data!
                           .where(
                               (chamado) => chamado.IDchamado.contains(filtroID))
                           .toList()
                       : snapshot.data!;
 
+                  // Aplicar filtros de status e lido
+                  if (selectedStatusFilter != 'none') {
+                    chamadosFiltrados = chamadosFiltrados.where((chamado) {
+                      return chamado.Status == selectedStatusFilter;
+                    }).toList();
+                  }
+                  if (selectedLidoFilter != 'none') {
+                    chamadosFiltrados = chamadosFiltrados.where((chamado) {
+                      return selectedLidoFilter == 'lido_true'
+                          ? chamado.Lido == true
+                          : chamado.Lido == false;
+                    }).toList();
+                  }
+
                   return ListView.builder(
                     itemCount: chamadosFiltrados.length,
                     itemBuilder: (context, index) {
                       final chamado = chamadosFiltrados[index];
-                      return Column(children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Column(
-                            children: [
-                              ListTile(
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Column(
+                          children: [
+                            Container(
+                              decoration: const BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(color: Colors.grey),
+                                ),
+                              ),
+                              child: ListTile(
                                 tileColor:
                                     const Color.fromARGB(255, 255, 255, 255),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      10), // Define o raio do border aqui
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                                 title: Text(chamado.IDchamado),
                                 subtitle: Text(
@@ -205,13 +322,13 @@ class ViewChamadosState extends State<ViewChamados> {
                                   );
                                 },
                               ),
-                              const SizedBox(
-                                height: 10,
-                              )
-                            ],
-                          ),
-                        )
-                      ]);
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                          ],
+                        ),
+                      );
                     },
                   );
                 }
@@ -220,6 +337,7 @@ class ViewChamadosState extends State<ViewChamados> {
           ),
         ],
       ),
+      backgroundColor: Colors.blue,
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
@@ -238,7 +356,7 @@ class ViewChamadosState extends State<ViewChamados> {
                   Icons.arrow_back,
                 ),
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/home');
                 },
               ),
               IconButton(

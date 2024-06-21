@@ -145,7 +145,7 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(12.0, _statusBarHeight + 12.0, 12.0, 12.0),
+        padding: EdgeInsets.fromLTRB(16.0, _statusBarHeight + 16.0, 16.0, 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -153,11 +153,14 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
               children: [
                 Text(
                   'QRcode: $_qrcode',
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                  style: const TextStyle(color: Colors.white, fontSize: 20),
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 18.0),
                 IconButton(
-                  icon: const Icon(Icons.qr_code),
+                  icon: const Icon(
+                    Icons.qr_code,
+                    color: Color.fromARGB(255, 255, 255, 255),
+                  ),
                   onPressed: () {
                     showDialog(
                       context: context,
@@ -201,6 +204,8 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
                 ),
               ],
             ),
+            const SizedBox(height: 18.0),
+
             // Campos editáveis
             _buildEditableField(
               'Marca',
@@ -208,20 +213,37 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
               marcaController,
               (value) => setState(() => _marca = value),
             ),
+            const SizedBox(
+              height: 8.0,
+            ),
+
             _buildEditableField(
               'Modelo',
               _modelo,
               modeloController,
               (value) => setState(() => _modelo = value),
             ),
-            ComboBoxEmpresa(
-              empresa: _empresaSelecionada,
-              onEmpresaSelected: (empresa) {
-                setState(() {
-                  _empresaSelecionada = empresa;
-                });
-              },
+            Row(
+              children: <Widget>[
+                const Icon(
+                  Icons.business,
+                  color: Colors.white,
+                ), // Ícone que você quer adicionar
+                const SizedBox(
+                    width: 8), // Espaçamento entre o ícone e o ComboBoxEmpresa
+                Expanded(
+                  child: ComboBoxEmpresa(
+                    empresa: _empresaSelecionada,
+                    onEmpresaSelected: (empresa) {
+                      setState(() {
+                        _empresaSelecionada = empresa;
+                      });
+                    },
+                  ),
+                ),
+              ],
             ),
+
             ComboBoxSetor(
               encontrado: _setorEncontrado,
               setor: _setorSelecionado,
@@ -232,6 +254,9 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
               },
             ),
             //Chamar novamente esse componente para atualizar o nome do usuário
+            const SizedBox(
+              height: 8.0,
+            ),
 
             if (_usuarioSelecionado.isEmpty && waiting)
               const Text('Deseja anexar um usuário ao equipamento?'),
@@ -245,6 +270,9 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
                   });
                 },
               ),
+            const SizedBox(
+              height: 8.0,
+            ),
             Row(
               children: [
                 Switch(
@@ -252,19 +280,20 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
                   value: _status,
                   onChanged: (value) {
                     setState(() {
-                      _status = !_status;
+                      _status = value;
                     });
                   },
                 ),
                 Text(_status ? 'Ativo' : 'Inativo'),
+                const SizedBox(width: 20), // Espaço entre os widgets (opcional)
               ],
             ),
             Text(
               'Criador: $_criador',
               style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 211, 211, 211)),
             ),
             Row(
               children: [
@@ -355,7 +384,16 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
       TextEditingController controller, ValueChanged<String> onChanged) {
     return TextFormField(
       controller: controller,
-      decoration: InputDecoration(labelText: label),
+      decoration: InputDecoration(
+        labelText: label,
+        filled: true,
+        fillColor: const Color.fromARGB(134, 255, 255, 255),
+        border: OutlineInputBorder(
+          borderRadius:
+              BorderRadius.circular(10.0), // Raio da borda arredondada
+          borderSide: const BorderSide(color: Colors.white), // Cor da borda
+        ),
+      ),
       onChanged: onChanged,
     );
   }

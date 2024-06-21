@@ -278,7 +278,7 @@ class DetalheChamadoState extends State<DetalheChamado> {
                   Icons.arrow_back,
                 ),
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/view_chamados');
                 },
               ),
               IconButton(
@@ -320,17 +320,19 @@ class DetalheChamadoState extends State<DetalheChamado> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          DropdownMenu<String>(
-            initialSelection: dropdownValue,
-            onSelected: (String? value) {
-              setState(() {
-                dropdownValue = value!;
-              });
-            },
-            dropdownMenuEntries:
-                list.map<DropdownMenuEntry<String>>((String value) {
-              return DropdownMenuEntry<String>(value: value, label: value);
-            }).toList(),
+          Center(
+            child: DropdownMenu<String>(
+              initialSelection: dropdownValue,
+              onSelected: (String? value) {
+                setState(() {
+                  dropdownValue = value!;
+                });
+              },
+              dropdownMenuEntries:
+                  list.map<DropdownMenuEntry<String>>((String value) {
+                return DropdownMenuEntry<String>(value: value, label: value);
+              }).toList(),
+            ),
           ),
           const SizedBox(height: 8.0),
           if (waiting)
@@ -400,7 +402,27 @@ class DetalheChamadoState extends State<DetalheChamado> {
         } else if (snapshot.hasError) {
           return const Center(child: Text('Erro ao carregar mensagens'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('Nenhuma mensagem encontrada'));
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    size: 48.0,
+                    color: Colors.grey,
+                  ),
+                  SizedBox(height: 16.0),
+                  Text(
+                    'No momento não há mensagens.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 18.0),
+                  ),
+                ],
+              ),
+            ),
+          );
         } else {
           return ListView.builder(
             shrinkWrap: true,
@@ -408,14 +430,14 @@ class DetalheChamadoState extends State<DetalheChamado> {
             itemCount: snapshot.data!.length,
             itemBuilder: (BuildContext context, int index) {
               Map<String, dynamic> mensagemData = snapshot.data![index];
-              bool isMinhaMensagem = mensagemData['Remetente'] ==
-                  'eu'; // Adaptar conforme sua lógica de remetente
+              String usuarioId = mensagemData['IDusuario'];
+              bool isResponsavel = usuarioId == _chamado.Responsavel;
 
               return _buildMessageBubble(
                 mensagemData['Mensagem'],
                 mensagemData['NomeUsuario'],
                 mensagemData['DataMensagem'] as Timestamp,
-                isMinhaMensagem,
+                isResponsavel,
               );
             },
           );
@@ -425,17 +447,17 @@ class DetalheChamadoState extends State<DetalheChamado> {
   }
 
   Widget _buildMessageBubble(String mensagem, String nomeUsuario,
-      Timestamp timestamp, bool isMinhaMensagem) {
+      Timestamp timestamp, bool isResponsavel) {
     CrossAxisAlignment alignment =
-        isMinhaMensagem ? CrossAxisAlignment.end : CrossAxisAlignment.start;
-    Color bubbleColor = isMinhaMensagem ? Colors.blue[200]! : Colors.grey[300]!;
+        isResponsavel ? CrossAxisAlignment.end : CrossAxisAlignment.start;
+    Color bubbleColor = isResponsavel ? Colors.blue[200]! : Colors.grey[300]!;
 
     DateTime dateTime = timestamp.toDate();
     String formattedDate =
         DateFormat('dd/MM/yyyy \'às\' HH:mm:ss').format(dateTime);
 
     return Align(
-      alignment: isMinhaMensagem ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: isResponsavel ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
         padding: const EdgeInsets.all(12.0),
