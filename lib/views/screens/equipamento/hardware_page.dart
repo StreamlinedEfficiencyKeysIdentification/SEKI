@@ -72,30 +72,33 @@ class HardwarePageState extends State<HardwarePage> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: TextField(
-                        controller: _qrcodeController,
-                        decoration: InputDecoration(
-                          labelText: 'QR Code',
-                          filled: true,
-                          fillColor: const Color(0xFF0076BC).withOpacity(0.3),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(50.0),
-                          ),
-                          labelStyle: const TextStyle(
-                            color: Color(0xFF0076BC),
-                          ),
-                        ),
-                        enabled: false,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.refresh),
-                      onPressed: _generateQRCodeHash,
-                    ),
+               Row(
+  children: [
+    Expanded(
+      flex: 2,
+      child: TextField(
+        controller: _qrcodeController,
+        readOnly: true, 
+        enableInteractiveSelection: false, 
+        decoration: InputDecoration(
+          labelText: 'QR Code',
+          filled: true,
+          fillColor: const Color(0xFF0076BC).withOpacity(0.3),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(50.0),
+          ),
+          labelStyle: const TextStyle(
+            color: Color(0xFF0076BC),
+          ),
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _generateQRCodeHash,
+          ),
+        ),
+        
+      ),
+    ),
+  
                     const SizedBox(width: 16),
                     Expanded(
                       flex: 2,
@@ -154,51 +157,49 @@ class HardwarePageState extends State<HardwarePage> {
                     ),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 16.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50.0),
-                            color: const Color(0xFF0076BC).withOpacity(0.3),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
-                          child: ComboBoxEmpresa(
-                            empresa: _empresaSelecionada,
-                            onEmpresaSelected: (empresa) {
-                              setState(() {
-                                _empresaSelecionada = empresa;
-                              });
-                            },
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50.0),
-                            color: const Color(0xFF0076BC).withOpacity(0.3),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 8),
-                          child: ComboBoxSetor(
-                            encontrado: true,
-                            setor: _setorSelecionado,
-                            onSetorSelected: (setor) {
-                              setState(() {
-                                _setorSelecionado = setor;
-                              });
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+               Padding(
+  padding: const EdgeInsets.only(top: 16.0),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+     Container(
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(50.0),
+    color: const Color(0xFF0076BC).withOpacity(0.3),
+  ),
+  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+  child: Center(
+    child: ComboBoxEmpresa(
+      empresa: _empresaSelecionada,
+      onEmpresaSelected: (empresa) {
+        setState(() {
+          _empresaSelecionada = empresa;
+        });
+      },
+    ),
+  ),
+),
+
+      const SizedBox(height: 16),
+      Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(50.0),
+          color: const Color(0xFF0076BC).withOpacity(0.3),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        child: ComboBoxSetor(
+          encontrado: true,
+          setor: _setorSelecionado,
+          onSetorSelected: (setor) {
+            setState(() {
+              _setorSelecionado = setor;
+            });
+          },
+        ),
+      ),
+    ],
+  ),
+),
                 const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -221,7 +222,7 @@ class HardwarePageState extends State<HardwarePage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 5),
                 usuarioValue
                     ? AutocompleteUsuarioExample(
                         user: _usuarioSelecionado,
@@ -233,7 +234,7 @@ class HardwarePageState extends State<HardwarePage> {
                         },
                       )
                     : const SizedBox.shrink(),
-                const SizedBox(height: 16),
+                const SizedBox(height: 5),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
