@@ -81,6 +81,7 @@ class ViewChamadosState extends State<ViewChamados> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blue,
         title: const Text('Visualizar Chamados'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -97,6 +98,7 @@ class ViewChamadosState extends State<ViewChamados> {
           ),
         ],
       ),
+      backgroundColor: Colors.blue,
       body: Column(
         children: [
           Padding(
@@ -106,7 +108,10 @@ class ViewChamadosState extends State<ViewChamados> {
               onChanged: _atualizarFiltro,
               decoration: InputDecoration(
                 labelText: 'Filtrar por ID do Chamado',
-                border: const OutlineInputBorder(),
+                filled: true,
+                fillColor: const Color.fromARGB(150, 255, 255, 255),
+                contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 12.0),
                 suffixIcon: filtroID.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.clear),
@@ -117,6 +122,15 @@ class ViewChamadosState extends State<ViewChamados> {
                         },
                       )
                     : null,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(50.0),
+                  borderSide: const BorderSide(
+                      color: Color.fromARGB(253, 255, 255, 255)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(50.0),
+                  borderSide: const BorderSide(color: Colors.transparent),
+                ),
               ),
             ),
           ),
@@ -148,30 +162,59 @@ class ViewChamadosState extends State<ViewChamados> {
                     itemCount: chamadosFiltrados.length,
                     itemBuilder: (context, index) {
                       final chamado = chamadosFiltrados[index];
-                      return ListTile(
-                        title: Text(chamado.IDchamado),
-                        subtitle: Text(chamado.Titulo),
-                        trailing: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(chamado.Status),
-                            Text(chamado.Lido ? 'Lido' : 'Não lido'),
-                          ],
-                        ),
-                        onTap: () {
-                          // Navegação para a tela de detalhes
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DetalheChamado(
-                                  chamado: chamado,
-                                  nivel: user.nivel,
-                                  uid: user.uid,
-                                  empresa: user.empresa),
-                            ),
-                          );
-                        },
-                      );
+                      return Column(children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Column(
+                            children: [
+                              ListTile(
+                                tileColor:const Color.fromARGB(255, 255, 255, 255),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      10), // Define o raio do border aqui
+                                ),
+                                title: Text(chamado.IDchamado),
+                                subtitle: Text(
+                                    '${chamado.Titulo}\n${chamado.DataCriacao}'),
+                                trailing: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(chamado.Status),
+                                    Text(
+                                      chamado.Lido ? 'Lido' : 'Não lido',
+                                      style: TextStyle(
+                                        color: chamado.Lido
+                                            ? const Color.fromARGB(
+                                                255, 170, 241, 173)
+                                            : const Color.fromARGB(
+                                                255, 77, 75, 75),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                onTap: () {
+                                  // Vai para a tela de detalhes chamado
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => DetalheChamado(
+                                        chamado: chamado,
+                                        nivel: user.nivel,
+                                        uid: user.uid,
+                                        empresa: user.empresa,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              )
+                            ],
+                          ),
+                        )
+                      ]);
                     },
                   );
                 }

@@ -39,6 +39,8 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
 
     return Scaffold(
       appBar: AppBar(
+                          backgroundColor: const Color.fromARGB(33, 166, 214, 253),
+
         title: const Text('Visualizar Equipamentos'),
         leading: hasConnection
             ? IconButton(
@@ -48,7 +50,9 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
                 },
               )
             : Container(),
+
       ),
+      backgroundColor: const Color.fromARGB(75, 166, 214, 253),
       body: hasConnection
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -61,10 +65,11 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
                         padding: EdgeInsets.only(top: 20, bottom: 10),
                         child: Icon(
                           Icons.computer, // Ícone de usuário
-                          color: Color(0xFF0073BC),
+                          color: Colors.blue,
                           size: 140, // Tamanho do ícone
                         ),
                       ),
+                      
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
@@ -113,9 +118,13 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
                           });
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              _statusFiltro == 'Ativo' ? Colors.blue : null,
-                        ),
+                            backgroundColor:
+                                _statusFiltro == 'Ativo' ? Colors.blue : null,
+                            foregroundColor: _statusFiltro == 'Ativo'
+                                ? Colors.white
+                                : null // Cor do texto branca
+
+                            ),
                         child: const Text('Ativo'),
                       ),
                       ElevatedButton(
@@ -125,9 +134,10 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
                           });
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              _statusFiltro == 'Inativo' ? Colors.blue : null,
-                        ),
+                            backgroundColor:
+                                _statusFiltro == 'Inativo' ? Colors.blue : null,
+                            foregroundColor:
+                                _statusFiltro == 'Inativo' ? Colors.white : null),
                         child: const Text('Inativo'),
                       ),
                       ElevatedButton(
@@ -139,7 +149,12 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
                               _statusFiltro == 'Ambos' ? Colors.blue : null,
+                              foregroundColor:
+                                _statusFiltro == 'Ambos' ? Colors.white : null
+                              
                         ),
+                        
+
                         child: const Text('Ambos'),
                       ),
                     ],

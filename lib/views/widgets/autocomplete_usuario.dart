@@ -112,7 +112,7 @@ class AutocompleteUsuarioExampleState
                             color: Color(0xFF0076BC), // Cor do texto de dica
                           ),
                           filled: true,
-                          fillColor: const Color(0xFF0076BC)
+                          fillColor: const Color.fromARGB(255, 255, 255, 255)
                               .withOpacity(0.3), // Cor de fundo com opacidade
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 8),
