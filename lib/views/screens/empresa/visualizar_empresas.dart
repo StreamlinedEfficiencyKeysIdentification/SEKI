@@ -245,7 +245,7 @@ class _VisualizarEmpresasState extends State<VisualizarEmpresas> {
                   Icons.arrow_back,
                 ),
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/home');
                 },
               ),
               IconButton(
