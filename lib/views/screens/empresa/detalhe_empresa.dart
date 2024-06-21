@@ -107,7 +107,7 @@ class DetalhesEmpresaPageState extends State<DetalhesEmpresaPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         title: const Text('Detalhes da Empresa'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -150,7 +150,7 @@ class DetalhesEmpresaPageState extends State<DetalhesEmpresaPage> {
           },
         ),
       ),
-      backgroundColor: Colors.blue,
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -192,14 +192,14 @@ class DetalhesEmpresaPageState extends State<DetalhesEmpresaPage> {
               style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white),
+                  color: Color.fromARGB(255, 0, 0, 0)),
             ),
             Text(
               'Criador: $_criador',
               style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white),
+                  color: Color.fromARGB(255, 0, 0, 0)),
             ),
             Row(
               children: [

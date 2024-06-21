@@ -108,7 +108,7 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         title: const Text('Detalhes do Usuário'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -151,7 +151,7 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
           },
         ),
       ),
-      backgroundColor: Colors.blue,
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -163,7 +163,7 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
               style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 211, 211, 211)),
+                  color: Color.fromARGB(255, 0, 0, 0)),
             ),
 
             Text(
@@ -171,7 +171,7 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
               style: const TextStyle(
                   fontSize: 19,
                   fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 211, 211, 211)),
+                  color: Color.fromARGB(255, 0, 0, 0)),
             ),
             // Campos editáveis
             const SizedBox(height: 16.0), // Espaçamento
@@ -240,7 +240,9 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: _status ? Colors.white : Colors.white,
+                    color: _status
+                        ? const Color.fromARGB(255, 0, 0, 0)
+                        : const Color.fromARGB(255, 0, 0, 0),
                   ),
                 ),
               ],
@@ -263,7 +265,9 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: _status ? Colors.white : Colors.white,
+                    color: _status
+                        ? const Color.fromARGB(255, 0, 0, 0)
+                        : const Color.fromARGB(255, 0, 0, 0),
                   ),
                 ),
               ],
@@ -286,7 +290,7 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: _status ? Colors.white : Colors.white,
+                    color: _status ? Colors.black : Colors.black,
                   ),
                 ),
               ],
@@ -297,21 +301,21 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
               style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 211, 211, 211)),
+                  color: Color.fromARGB(255, 0, 0, 0)),
             ),
             Text(
               'Criado em: $_dataCriacao',
               style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 211, 211, 211)),
+                  color: Color.fromARGB(255, 0, 0, 0)),
             ),
             Text(
               'Ultimo acesso em: $_dataAcesso',
               style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 211, 211, 211)),
+                  color: Color.fromARGB(255, 0, 0, 0)),
             ),
             Row(
               children: [
