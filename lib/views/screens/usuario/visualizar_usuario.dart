@@ -262,7 +262,7 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
                   Icons.arrow_back,
                 ),
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/home');
                 },
               ),
               IconButton(

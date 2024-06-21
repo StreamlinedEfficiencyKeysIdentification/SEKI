@@ -271,7 +271,7 @@ class _VisualizarEquipamentosState extends State<VisualizarEquipamentos> {
                   Icons.arrow_back,
                 ),
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/home');
                 },
               ),
               IconButton(
