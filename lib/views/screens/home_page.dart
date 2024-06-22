@@ -1055,14 +1055,7 @@ class HomePageState extends State<HomePage> {
                       color: Color(0xFF0076BC),
                       size: 32,
                     ),
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SkeletonItem(),
-                        ),
-                      );
-                    },
+                    onPressed: () {},
                   ),
                 ],
               ),
