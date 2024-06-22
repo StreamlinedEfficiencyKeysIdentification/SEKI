@@ -174,21 +174,68 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
                   color: Color.fromARGB(255, 0, 0, 0)),
             ),
             // Campos editáveis
+
+            ///////////////////////////
             const SizedBox(height: 16.0), // Espaçamento
 
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: Color.fromARGB(255, 142, 200, 236),
+            TextField(
+              controller: nomeController,
+              onChanged: (value) => setState(() {
+                _nome = value;
+              }),
+              style: const TextStyle(
+                color: Color(0xFF0076BC),
               ),
-              child: _buildEditableField(
-                'Nome',
-                _nome,
-                nomeController,
-                (value) => setState(() => _nome = value),
+              decoration: InputDecoration(
+                labelText: 'Nome',
+                labelStyle: const TextStyle(
+                  color: Colors.lightBlueAccent,
+                ),
+                filled: true,
+                fillColor: const Color.fromARGB(255, 255, 255, 255),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(50.0),
+                  borderSide: const BorderSide(
+                    width: 1.0,
+                    color: Colors.lightBlueAccent,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(50.0),
+                  borderSide: const BorderSide(
+                    width: 2.0,
+                    color: Colors
+                        .lightBlueAccent, // Cor da borda quando o campo está habilitado
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(50.0),
+                  borderSide: const BorderSide(
+                    width: 2.0,
+                    color: Color(0xFF0076BC),
+                  ),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(50.0),
+                  borderSide: const BorderSide(
+                    width: 1.0,
+                    color: Colors.red, // Cor da borda quando há um erro
+                  ),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(50.0),
+                  borderSide: const BorderSide(
+                    width: 2.0,
+                    color: Colors
+                        .red, // Cor da borda quando o campo está focado e há um erro
+                  ),
+                ),
               ),
             ),
+
+            ////////////////////////////////////
             const SizedBox(height: 20),
+
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(30),
@@ -206,6 +253,7 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
                 ),
               ),
             ),
+
             const SizedBox(height: 20),
             Container(
               decoration: BoxDecoration(

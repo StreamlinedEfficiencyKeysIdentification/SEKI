@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../controllers/empresa_controller.dart';
 import '../../../models/empresa_model.dart';
 import 'setor_page.dart';
@@ -34,11 +35,21 @@ class DetalhesEmpresaPageState extends State<DetalhesEmpresaPage> {
   late String _matriz = '';
   late String _criador = '';
   bool _status = true;
+  double _statusBarHeight = 0;
 
   @override
   void initState() {
     super.initState();
     _fetchEmpresa();
+
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: [SystemUiOverlay.top]);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _statusBarHeight = MediaQuery.of(context).padding.top;
   }
 
   void _fetchEmpresa() async {
@@ -106,187 +117,300 @@ class DetalhesEmpresaPageState extends State<DetalhesEmpresaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-        title: const Text('Detalhes da Empresa'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            if (_isDataChanged()) {
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Descartar Alterações?'),
-                    content: const Text(
-                        'Tem certeza que deseja descartar as alterações e sair?'),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          // Resetar os campos para os valores originais
-                          setState(() {
-                            // Resetar os campos para os valores originais
-                            initializeFields();
-                          });
-                          Navigator.pop(context); // Fechar o AlertDialog
-                          Navigator.pushNamed(context, '/view_empresas');
-                        },
-                        child: const Text('Sim'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context); // Fechar o AlertDialog
-                        },
-                        child: const Text('Não'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            } else {
-              Navigator.pushNamed(context, '/view_empresas');
-            }
-          },
-        ),
-      ),
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: Color.fromARGB(255, 142, 200, 236),
-              ),
-              child: _buildEditableField(
-                'Razão Social',
-                _razaoSocial,
-                razaoSocialController,
-                (value) => setState(() => _razaoSocial = value),
-              ),
-            ),
-
-            const SizedBox(height: 16.0), // Espaçamento
-
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: Color.fromARGB(255, 142, 200, 236),
-              ),
-              child: _buildEditableField(
-                'CNPJ',
-                _cnpj,
-                cnpjController,
-                (value) => setState(() => _cnpj = value),
-              ),
-            ),
-
-            // Campos editáveis
-
-            Text(
-              'Matriz: $_matriz',
-              style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 0, 0, 0)),
-            ),
-            Text(
-              'Criador: $_criador',
-              style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 0, 0, 0)),
-            ),
-            Row(
+      body: Center(
+        // Centraliza o conteúdo na tela
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(16.0, _statusBarHeight, 16.0, 16.0),
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.center, // Centraliza horizontalmente
+              mainAxisSize: MainAxisSize
+                  .min, // Ajusta a altura da coluna para seu conteúdo
               children: [
-                Switch(
-                  thumbIcon: thumbIcon,
-                  value: _status,
-                  onChanged: (value) {
-                    setState(() {
-                      _status = !_status;
-                    });
-                  },
+                TextField(
+                  controller: razaoSocialController,
+                  onChanged: (value) => setState(() {
+                    _razaoSocial = value;
+                  }),
+                  style: const TextStyle(
+                    color: Color(0xFF0076BC),
+                  ),
+                  decoration: InputDecoration(
+                    labelText: 'Razão Social',
+                    labelStyle: const TextStyle(
+                      color: Colors.lightBlueAccent,
+                    ),
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 255, 255, 255),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 1.0,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Colors
+                            .lightBlueAccent, // Cor da borda quando o campo está habilitado
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Color(0xFF0076BC),
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 1.0,
+                        color: Colors.red, // Cor da borda quando há um erro
+                      ),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Colors
+                            .red, // Cor da borda quando o campo está focado e há um erro
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                TextField(
+                  controller: cnpjController,
+                  onChanged: (value) => setState(() {
+                    _cnpj = value;
+                  }),
+                  style: const TextStyle(
+                    color: Color(0xFF0076BC),
+                  ),
+                  decoration: InputDecoration(
+                    labelText: 'CNPJ',
+                    labelStyle: const TextStyle(
+                      color: Colors.lightBlueAccent,
+                    ),
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 255, 255, 255),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 1.0,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Colors
+                            .lightBlueAccent, // Cor da borda quando o campo está habilitado
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Color(0xFF0076BC),
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 1.0,
+                        color: Colors.red, // Cor da borda quando há um erro
+                      ),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Colors
+                            .red, // Cor da borda quando o campo está focado e há um erro
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                Text(
+                  'Matriz: $_matriz',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Text(
-                  _status ? 'Ativo' : 'Inativo',
-                  style: TextStyle(
-                    fontSize: 16,
+                  'Criador: $_criador',
+                  style: const TextStyle(
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: _status
-                        ? Color.fromARGB(255, 45, 104, 47)
-                        : Color.fromARGB(255, 171, 46, 37),
                   ),
+                ),
+                Row(
+                  children: [
+                    Switch(
+                      thumbIcon: thumbIcon,
+                      value: _status,
+                      onChanged: (value) {
+                        setState(() {
+                          _status = !_status;
+                        });
+                      },
+                    ),
+                    Text(_status ? 'Ativo' : 'Inativo'),
+                  ],
+                ),
+                Row(
+                  children: [
+                    if (widget.setorVisibility)
+                      ElevatedButton(
+                        onPressed: () {
+                          if (_isDataChanged()) {
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Descartar Alterações?'),
+                                  content: const Text(
+                                      'Tem certeza que deseja descartar as alterações e sair?'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        // Resetar os campos para os valores originais
+                                        setState(() {
+                                          // Resetar os campos para os valores originais
+                                          initializeFields();
+                                        });
+                                        Navigator.pop(
+                                            context); // Fechar o AlertDialog
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                SetorPage(empresa: _empresa),
+                                          ),
+                                        );
+                                      },
+                                      child: const Text('Sim'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(
+                                            context); // Fechar o AlertDialog
+                                      },
+                                      child: const Text('Não'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    SetorPage(empresa: _empresa),
+                              ),
+                            );
+                          }
+                        },
+                        child: const Text('Editar Setores'),
+                      ),
+
+                    // Botão Salvar (visível apenas se houver alterações)
+                    if (_isDataChanged()) _buildSaveButton(),
+                    if (_isDataChanged()) _buildCancelButton(),
+                  ],
                 ),
               ],
             ),
-            Row(
-              children: [
-                if (widget.setorVisibility)
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_isDataChanged()) {
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text('Descartar Alterações?'),
-                              content: const Text(
-                                  'Tem certeza que deseja descartar as alterações e sair?'),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () {
-                                    // Resetar os campos para os valores originais
-                                    setState(() {
-                                      // Resetar os campos para os valores originais
-                                      initializeFields();
-                                    });
-                                    Navigator.pop(
-                                        context); // Fechar o AlertDialog
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            SetorPage(empresa: _empresa),
-                                      ),
-                                    );
-                                  },
-                                  child: const Text('Sim'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(
-                                        context); // Fechar o AlertDialog
-                                  },
-                                  child: const Text('Não'),
-                                ),
-                              ],
-                            );
-                          },
+          ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.0),
+            topRight: Radius.circular(20.0),
+          ),
+        ),
+        child: BottomAppBar(
+          color: Colors.transparent,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Color(0xFF0076BC),
+                  size: 32,
+                ),
+                onPressed: () {
+                  if (_isDataChanged()) {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Descartar Alterações?'),
+                          content: const Text(
+                              'Tem certeza que deseja descartar as alterações e sair?'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                // Resetar os campos para os valores originais
+                                setState(() {
+                                  // Resetar os campos para os valores originais
+                                  initializeFields();
+                                });
+                                Navigator.pop(context); // Fechar o AlertDialog
+                                Navigator.pushNamed(context, '/view_empresas');
+                              },
+                              child: const Text('Sim'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context); // Fechar o AlertDialog
+                              },
+                              child: const Text('Não'),
+                            ),
+                          ],
                         );
-                      } else {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SetorPage(empresa: _empresa),
-                          ),
-                        );
-                      }
-                    },
-                    child: const Text('Editar Setores'),
-                  ),
-
-                // Botão Salvar (visível apenas se houver alterações)
-                if (_isDataChanged()) _buildSaveButton(),
-                if (_isDataChanged()) _buildCancelButton(),
-              ],
-            ),
-          ],
+                      },
+                    );
+                  } else {
+                    Navigator.pushNamed(context, '/view_empresas');
+                  }
+                },
+              ),
+              IconButton(
+                icon: const Icon(
+                  Icons.home,
+                  color: Color(0xFF0076BC),
+                  size: 32,
+                ),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/home');
+                },
+              ),
+              IconButton(
+                icon: const Icon(
+                  Icons.person,
+                  color: Color(0xFF0076BC),
+                  size: 32,
+                ),
+                onPressed: () {},
+              ),
+            ],
+          ),
         ),
       ),
     );
