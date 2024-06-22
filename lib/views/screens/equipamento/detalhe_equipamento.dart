@@ -115,6 +115,7 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
 
   void fetchUsuario() async {
     if (_equipamento.usuario.isEmpty) {
+      waiting = true;
       return;
     }
     DocumentSnapshot usuarioSnapshot = await FirebaseFirestore.instance
@@ -137,175 +138,276 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
       if (states.contains(MaterialState.selected)) {
         return const Icon(Icons.check);
       }
-      return const Icon(Icons.close);
+      return null;
     },
   );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(16.0, _statusBarHeight + 16.0, 16.0, 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+      body: Center(
+        // Centraliza o conteúdo na tela
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(16.0, _statusBarHeight, 16.0, 16.0),
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.center, // Centraliza horizontalmente
+              mainAxisSize: MainAxisSize
+                  .min, // Ajusta a altura da coluna para seu conteúdo
               children: [
-                Text(
-                  'QRcode: $_qrcode',
-                  style: const TextStyle(color: Colors.white, fontSize: 20),
-                ),
-                const SizedBox(height: 18.0),
-                IconButton(
-                  icon: const Icon(
-                    Icons.qr_code,
-                    color: Color.fromARGB(255, 255, 255, 255),
-                  ),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Visualização do QR Code'),
-                          content: const Text('Deseja salvar o QR Code?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context); // Fechar o AlertDialog
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return QRImage(
-                                        _qrcode,
-                                        _equipamento.empresa,
-                                        sourceRoute: ModalRoute.of(context)
-                                            ?.settings
-                                            .name,
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                              child: const Text('Sim'),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: const Text('Cancelar'),
-                            ),
-                          ],
+                Column(
+                  children: [
+                    IconButton(
+                      icon: const Icon(
+                        Icons.qr_code,
+                        color: Color(0xFF0076BC),
+                        size: 100,
+                      ),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Visualização do QR Code'),
+                              content: const Text('Deseja salvar o QR Code?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(
+                                        context); // Fechar o AlertDialog
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return QRImage(
+                                            _qrcode,
+                                            _equipamento.empresa,
+                                            sourceRoute: ModalRoute.of(context)
+                                                ?.settings
+                                                .name,
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                  child: const Text('Sim'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('Cancelar'),
+                                ),
+                              ],
+                            );
+                          },
                         );
                       },
-                    );
-                  },
+                    ),
+                    const SizedBox(height: 8.0),
+                    Text(
+                      'QRcode: $_qrcode',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            const SizedBox(height: 18.0),
-
-            // Campos editáveis
-            _buildEditableField(
-              'Marca',
-              _marca,
-              marcaController,
-              (value) => setState(() => _marca = value),
-            ),
-            const SizedBox(
-              height: 8.0,
-            ),
-
-            _buildEditableField(
-              'Modelo',
-              _modelo,
-              modeloController,
-              (value) => setState(() => _modelo = value),
-            ),
-            Row(
-              children: <Widget>[
-                const Icon(
-                  Icons.business,
-                  color: Colors.white,
-                ), // Ícone que você quer adicionar
-                const SizedBox(
-                    width: 8), // Espaçamento entre o ícone e o ComboBoxEmpresa
-                Expanded(
-                  child: ComboBoxEmpresa(
-                    empresa: _empresaSelecionada,
-                    onEmpresaSelected: (empresa) {
-                      setState(() {
-                        _empresaSelecionada = empresa;
-                      });
-                    },
+                const SizedBox(height: 16.0),
+                TextField(
+                  controller: marcaController,
+                  onChanged: (value) => setState(() {
+                    _marca = value;
+                  }),
+                  style: const TextStyle(
+                    color: Color(0xFF0076BC),
+                  ),
+                  decoration: InputDecoration(
+                    labelText: 'Marca',
+                    labelStyle: const TextStyle(
+                      color: Colors.lightBlueAccent,
+                    ),
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 255, 255, 255),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 1.0,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Colors
+                            .lightBlueAccent, // Cor da borda quando o campo está habilitado
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Color(0xFF0076BC),
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 1.0,
+                        color: Colors.red, // Cor da borda quando há um erro
+                      ),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Colors
+                            .red, // Cor da borda quando o campo está focado e há um erro
+                      ),
+                    ),
                   ),
                 ),
-              ],
-            ),
-
-            ComboBoxSetor(
-              encontrado: _setorEncontrado,
-              setor: _setorSelecionado,
-              onSetorSelected: (empresa) {
-                setState(() {
-                  _setorSelecionado = empresa;
-                });
-              },
-            ),
-            //Chamar novamente esse componente para atualizar o nome do usuário
-            const SizedBox(
-              height: 8.0,
-            ),
-
-            if (_usuarioSelecionado.isEmpty && waiting)
-              const Text('Deseja anexar um usuário ao equipamento?'),
-            if (waiting)
-              AutocompleteUsuarioExample(
-                user: _usuario,
-                key: _autocompleteKey,
-                onUsuarioSelected: (usuario) {
-                  setState(() {
-                    _usuarioSelecionado = usuario;
-                  });
-                },
-              ),
-            const SizedBox(
-              height: 8.0,
-            ),
-            Row(
-              children: [
-                Switch(
-                  thumbIcon: thumbIcon,
-                  value: _status,
-                  onChanged: (value) {
+                const SizedBox(height: 8.0),
+                TextField(
+                  controller: modeloController,
+                  onChanged: (value) => setState(() {
+                    _modelo = value;
+                  }),
+                  style: const TextStyle(
+                    color: Color(0xFF0076BC),
+                  ),
+                  decoration: InputDecoration(
+                    labelText: 'Modelo',
+                    labelStyle: const TextStyle(
+                      color: Colors.lightBlueAccent,
+                    ),
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 255, 255, 255),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 1.0,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Colors
+                            .lightBlueAccent, // Cor da borda quando o campo está habilitado
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Color(0xFF0076BC),
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 1.0,
+                        color: Colors.red, // Cor da borda quando há um erro
+                      ),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Colors
+                            .red, // Cor da borda quando o campo está focado e há um erro
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                ComboBoxEmpresa(
+                  empresa: _empresaSelecionada,
+                  onEmpresaSelected: (empresa) {
                     setState(() {
-                      _status = value;
+                      _empresaSelecionada = empresa;
                     });
                   },
                 ),
-                Text(_status ? 'Ativo' : 'Inativo'),
-                const SizedBox(width: 20), // Espaço entre os widgets (opcional)
+                const SizedBox(height: 8.0),
+                ComboBoxSetor(
+                  encontrado: _setorEncontrado,
+                  setor: _setorSelecionado,
+                  onSetorSelected: (empresa) {
+                    setState(() {
+                      _setorSelecionado = empresa;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16.0),
+                if (waiting)
+                  const Text('Deseja anexar um usuário ao equipamento?'),
+                if (waiting)
+                  AutocompleteUsuarioExample(
+                    user: _usuario,
+                    key: _autocompleteKey,
+                    onUsuarioSelected: (usuario) {
+                      setState(() {
+                        _usuarioSelecionado = usuario;
+                      });
+                    },
+                  ),
+                const SizedBox(height: 8.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _status ? 'Ativo' : 'Inativo',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: _status ? const Color(0xFF0076BC) : Colors.grey,
+                      ),
+                    ),
+                    Switch(
+                      activeColor: const Color(0xFF0076BC),
+                      thumbIcon: thumbIcon,
+                      value: _status,
+                      onChanged: (value) {
+                        setState(() {
+                          _status = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8.0),
+                Container(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    'Criador: $_criador',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    // Botão Salvar (visível apenas se houver alterações)
+                    if (_isDataChanged()) _buildSaveButton(),
+                    const SizedBox(width: 8.0),
+                    if (_isDataChanged()) _buildCancelButton(),
+                  ],
+                ),
               ],
             ),
-            Text(
-              'Criador: $_criador',
-              style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 211, 211, 211)),
-            ),
-            Row(
-              children: [
-                // Botão Salvar (visível apenas se houver alterações)
-                if (_isDataChanged()) _buildSaveButton(),
-                if (_isDataChanged()) _buildCancelButton(),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
-      backgroundColor: Colors.blue,
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
@@ -322,6 +424,8 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
               IconButton(
                 icon: const Icon(
                   Icons.arrow_back,
+                  color: Color(0xFF0076BC),
+                  size: 32,
                 ),
                 onPressed: () {
                   if (_isDataChanged()) {
@@ -363,38 +467,27 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.home),
+                icon: const Icon(
+                  Icons.home,
+                  color: Color(0xFF0076BC),
+                  size: 32,
+                ),
                 onPressed: () {
                   Navigator.pushNamed(context, '/home');
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.person),
+                icon: const Icon(
+                  Icons.person,
+                  color: Color(0xFF0076BC),
+                  size: 32,
+                ),
                 onPressed: () {},
               ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  // Constrói um campo de texto editável
-  Widget _buildEditableField(String label, String value,
-      TextEditingController controller, ValueChanged<String> onChanged) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        filled: true,
-        fillColor: const Color.fromARGB(134, 255, 255, 255),
-        border: OutlineInputBorder(
-          borderRadius:
-              BorderRadius.circular(10.0), // Raio da borda arredondada
-          borderSide: const BorderSide(color: Colors.white), // Cor da borda
-        ),
-      ),
-      onChanged: onChanged,
     );
   }
 
@@ -414,6 +507,11 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
   Widget _buildSaveButton() {
     String status = _status ? 'Ativo' : 'Inativo';
     return ElevatedButton(
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all<Color>(
+          Colors.white,
+        ),
+      ),
       onPressed: () async {
         try {
           // Atualizar os dados no banco de dados
@@ -448,12 +546,22 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
           print('Erro ao salvar dados: $e');
         }
       },
-      child: const Text('Salvar'),
+      child: const Text(
+        'Salvar',
+        style: TextStyle(
+          color: Color(0xFF0076BC),
+        ),
+      ),
     );
   }
 
   Widget _buildCancelButton() {
     return ElevatedButton(
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all<Color>(
+          Colors.white,
+        ),
+      ),
       onPressed: () {
         setState(() {
           // Resetar os campos para os valores originais
@@ -461,7 +569,12 @@ class DetalhesEquipamentoPageState extends State<DetalhesEquipamentoPage> {
           _autocompleteKey.currentState?.reconstruirWidget();
         });
       },
-      child: const Text('Cancelar'),
+      child: const Text(
+        'Cancelar',
+        style: TextStyle(
+          color: Color(0xFF0076BC),
+        ),
+      ),
     );
   }
 

@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../controllers/usuario_controller.dart';
 import '../../../models/usuario_model.dart';
 import '../../widgets/combo_box_empresa.dart';
@@ -42,12 +43,22 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
   late String _criador = '';
   String _empresaSelecionada = '';
   String _nivelSelecionado = '';
+  double _statusBarHeight = 0;
 
   @override
   void initState() {
     super.initState();
     // Inicialize os campos editáveis com os valores do usuário
     _fetchUsuario();
+
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: [SystemUiOverlay.top]);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _statusBarHeight = MediaQuery.of(context).padding.top;
   }
 
   void _fetchUsuario() async {
@@ -100,127 +111,240 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
       if (states.contains(MaterialState.selected)) {
         return const Icon(Icons.check);
       }
-      return const Icon(Icons.close);
+      return null;
     },
   );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Campo 'usuario' do usuário
-            Text('Usuário: ${_usuario.usuario}'),
-            const SizedBox(height: 16.0),
-
-            Text(
-              'E-mail: $_email',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            // Campos editáveis
-            _buildEditableField(
-              'Nome',
-              _nome,
-              nomeController,
-              (value) => setState(() => _nome = value),
-            ),
-            ComboBoxEmpresa(
-              empresa: _empresaSelecionada,
-              onEmpresaSelected: (empresa) {
-                setState(() {
-                  _empresaSelecionada = empresa;
-                });
-              },
-            ),
-            ComboBoxNivelAcesso(
-              nivel: _nivelSelecionado,
-              onNivelSelected: (nivel) {
-                setState(() {
-                  _nivelSelecionado = nivel;
-                });
-              },
-            ),
-            Row(
+      body: Center(
+        // Centraliza o conteúdo na tela
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(16.0, _statusBarHeight, 16.0, 16.0),
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.center, // Centraliza horizontalmente
+              mainAxisSize: MainAxisSize
+                  .min, // Ajusta a altura da coluna para seu conteúdo
               children: [
-                Switch(
-                  thumbIcon: thumbIcon,
-                  value: _status,
-                  onChanged: (value) {
+                Column(
+                  children: [
+                    const Icon(
+                      Icons.person,
+                      color: Color(0xFF0076BC),
+                      size: 100,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      _usuario.usuario,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16.0),
+                Text(
+                  'E-mail: $_email',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                TextField(
+                  controller: nomeController,
+                  onChanged: (value) => setState(() {
+                    _nome = value;
+                  }),
+                  style: const TextStyle(
+                    color: Color(0xFF0076BC),
+                  ),
+                  decoration: InputDecoration(
+                    labelText: 'Nome',
+                    labelStyle: const TextStyle(
+                      color: Colors.lightBlueAccent,
+                    ),
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 255, 255, 255),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 1.0,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Colors
+                            .lightBlueAccent, // Cor da borda quando o campo está habilitado
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Color(0xFF0076BC),
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 1.0,
+                        color: Colors.red, // Cor da borda quando há um erro
+                      ),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Colors
+                            .red, // Cor da borda quando o campo está focado e há um erro
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                ComboBoxEmpresa(
+                  empresa: _empresaSelecionada,
+                  onEmpresaSelected: (empresa) {
                     setState(() {
-                      _status = !_status;
+                      _empresaSelecionada = empresa;
                     });
                   },
                 ),
-                Text(_status ? 'Ativo' : 'Inativo'),
-              ],
-            ),
-            Row(
-              children: [
-                Switch(
-                  thumbIcon: thumbIcon,
-                  value: _primeiroAcesso,
-                  onChanged: (value) {
+                const SizedBox(height: 8.0),
+                ComboBoxNivelAcesso(
+                  nivel: _nivelSelecionado,
+                  onNivelSelected: (nivel) {
                     setState(() {
-                      _primeiroAcesso = !_primeiroAcesso;
+                      _nivelSelecionado = nivel;
                     });
                   },
                 ),
-                Text(_primeiroAcesso
-                    ? 'Primeiro Acesso'
-                    : 'Não é o primeiro acesso'),
-              ],
-            ),
-            Row(
-              children: [
-                Switch(
-                  thumbIcon: thumbIcon,
-                  value: _redefinirSenha,
-                  onChanged: (value) {
-                    setState(() {
-                      _redefinirSenha = !_redefinirSenha;
-                    });
-                  },
+                const SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _status ? 'Ativo' : 'Inativo',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: _status ? const Color(0xFF0076BC) : Colors.grey,
+                      ),
+                    ),
+                    Switch(
+                      activeColor: const Color(0xFF0076BC),
+                      thumbIcon: thumbIcon,
+                      value: _status,
+                      onChanged: (value) {
+                        setState(() {
+                          _status = !_status;
+                        });
+                      },
+                    ),
+                  ],
                 ),
-                Text(_redefinirSenha
-                    ? 'Redefinir Senha'
-                    : 'Não é necessário redefinir a senha'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _primeiroAcesso
+                          ? 'Primeiro Acesso'
+                          : 'Não é o primeiro acesso',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: _primeiroAcesso
+                            ? const Color(0xFF0076BC)
+                            : Colors.grey,
+                      ),
+                    ),
+                    Switch(
+                      activeColor: const Color(0xFF0076BC),
+                      thumbIcon: thumbIcon,
+                      value: _primeiroAcesso,
+                      onChanged: (value) {
+                        setState(() {
+                          _primeiroAcesso = !_primeiroAcesso;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _redefinirSenha
+                          ? 'Redefinir Senha'
+                          : 'Não é necessário redefinir a senha',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: _redefinirSenha
+                            ? const Color(0xFF0076BC)
+                            : Colors.grey,
+                      ),
+                    ),
+                    Switch(
+                      activeColor: const Color(0xFF0076BC),
+                      thumbIcon: thumbIcon,
+                      value: _redefinirSenha,
+                      onChanged: (value) {
+                        setState(() {
+                          _redefinirSenha = !_redefinirSenha;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16.0),
+                Container(
+                  alignment: Alignment.centerRight,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Criador: $_criador',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      Text(
+                        'Criado em: $_dataCriacao',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      Text(
+                        'Ultimo acesso em: $_dataAcesso',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
+                  children: [
+                    // Botão Salvar (visível apenas se houver alterações)
+                    if (_isDataChanged()) _buildSaveButton(),
+                    if (_isDataChanged()) _buildCancelButton(),
+                  ],
+                ),
               ],
             ),
-            Text(
-              'Criador: $_criador',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              'Criado em: $_dataCriacao',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              'Ultimo acesso em: $_dataAcesso',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Row(
-              children: [
-                // Botão Salvar (visível apenas se houver alterações)
-                if (_isDataChanged()) _buildSaveButton(),
-                if (_isDataChanged()) _buildCancelButton(),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
       bottomNavigationBar: Container(
@@ -239,6 +363,8 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
               IconButton(
                 icon: const Icon(
                   Icons.arrow_back,
+                  color: Color(0xFF0076BC),
+                  size: 32,
                 ),
                 onPressed: () {
                   if (_isDataChanged()) {
@@ -279,29 +405,27 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.home),
+                icon: const Icon(
+                  Icons.home,
+                  color: Color(0xFF0076BC),
+                  size: 32,
+                ),
                 onPressed: () {
                   Navigator.pushNamed(context, '/home');
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.person),
+                icon: const Icon(
+                  Icons.person,
+                  color: Color(0xFF0076BC),
+                  size: 32,
+                ),
                 onPressed: () {},
               ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  // Constrói um campo de texto editável
-  Widget _buildEditableField(String label, String value,
-      TextEditingController controller, ValueChanged<String> onChanged) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(labelText: label),
-      onChanged: onChanged,
     );
   }
 

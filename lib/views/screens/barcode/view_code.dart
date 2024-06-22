@@ -164,6 +164,11 @@ class QRImageState extends State<QRImage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                      Colors.white,
+                    ),
+                  ),
                   onPressed: () {
                     // Voltar para a rota de origem
                     if (widget.sourceRoute != null) {
@@ -172,14 +177,29 @@ class QRImageState extends State<QRImage> {
                       Navigator.pop(context);
                     }
                   },
-                  child: const Text('Sair'),
+                  child: const Text(
+                    'Sair',
+                    style: TextStyle(
+                      color: Color(0xFF0076BC),
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 20),
                 ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                      Colors.white,
+                    ),
+                  ),
                   onPressed: () {
                     _captureAndSavePng();
                   },
-                  child: const Text('Salvar'),
+                  child: const Text(
+                    'Salvar',
+                    style: TextStyle(
+                      color: Color(0xFF0076BC),
+                    ),
+                  ),
                 ),
               ],
             ),

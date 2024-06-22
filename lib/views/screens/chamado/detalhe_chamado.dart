@@ -240,7 +240,7 @@ class DetalheChamadoState extends State<DetalheChamado> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(12.0, _statusBarHeight + 12.0, 12.0, 12.0),
+        padding: EdgeInsets.fromLTRB(16.0, _statusBarHeight + 16.0, 16.0, 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -248,18 +248,38 @@ class DetalheChamadoState extends State<DetalheChamado> {
             const SizedBox(height: 16.0),
             _buildDropdownAndResponsavel(),
             const SizedBox(height: 16.0),
+            Container(
+              alignment: Alignment.centerRight,
+              child: Column(
+                children: [
+                  Text(
+                    'Criado em: ${_chamado.DataCriacao}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  Text(
+                    'Atualizado: ${_chamado.DataAtualizacao}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 16.0),
             _buildAssumirButton(),
             const SizedBox(height: 16.0),
             _buildSaveAndCancelButton(),
             const SizedBox(height: 16.0),
             _buildNovaMensagemButton(),
-            const SizedBox(height: 16.0),
             _buildMensagensList(),
           ],
         ),
       ),
-      backgroundColor: Colors.blue,
+      backgroundColor: const Color.fromARGB(255, 228, 242, 253),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
@@ -276,19 +296,33 @@ class DetalheChamadoState extends State<DetalheChamado> {
               IconButton(
                 icon: const Icon(
                   Icons.arrow_back,
+                  color: Color(0xFF0076BC),
+                  size: 32,
                 ),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/view_chamados');
+                  if (nivelUsuario == 4) {
+                    Navigator.pop(context);
+                  } else {
+                    Navigator.pushNamed(context, '/view_chamados');
+                  }
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.home),
+                icon: const Icon(
+                  Icons.home,
+                  color: Color(0xFF0076BC),
+                  size: 32,
+                ),
                 onPressed: () {
                   Navigator.pushNamed(context, '/home');
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.person),
+                icon: const Icon(
+                  Icons.person,
+                  color: Color(0xFF0076BC),
+                  size: 32,
+                ),
                 onPressed: () {},
               ),
             ],
@@ -303,35 +337,144 @@ class DetalheChamadoState extends State<DetalheChamado> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildBoldText('Chamado: ${_chamado.IDchamado}'),
-        _buildTextCausa(_chamado.Titulo),
-        _buildTextProblema('Problema: ${_chamado.Descricao}'),
-        _buildText(nivelUsuario == 4 ? 'Status: ${_chamado.Status}' : ''),
-        _buildText(nivelUsuario == 4 ? 'Responsável: $user' : ''),
         _buildTextEmpresa(' $_empresa'),
-        _buildText('Criado em: ${_chamado.DataCriacao}'),
-        _buildText('Atualizado: ${_chamado.DataAtualizacao}'),
-        _buildText('Lido: ${_chamado.Lido ? 'Sim' : 'Não'}'),
+        const SizedBox(height: 8.0),
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 8.0),
+          decoration: BoxDecoration(
+            color: Colors.blue[200],
+            borderRadius:
+                BorderRadius.circular(10.0), // Adicionando borda arredondada
+            border: Border.all(
+              color: Colors.lightBlueAccent,
+              width: 1.0,
+            ),
+          ),
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Text(
+                _chamado.Titulo,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 23, 36, 49),
+                ),
+              ),
+              Text(
+                'Problema: ${_chamado.Descricao}',
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Color.fromARGB(255, 7, 7, 46),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          alignment: Alignment.centerRight,
+          child: _chamado.Lido
+              ? const Row(
+                  children: [
+                    Icon(
+                      Icons.visibility,
+                      color: Colors.green,
+                      size: 16,
+                    ),
+                    SizedBox(width: 4.0),
+                    Text(
+                      'Lido',
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                )
+              : const Row(
+                  children: [
+                    Icon(
+                      Icons.visibility_off,
+                      color: Colors.red,
+                      size: 16,
+                    ),
+                    SizedBox(width: 4.0),
+                    Text(
+                      'Não lido',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+        ),
+        const SizedBox(height: 8.0),
+        Text(
+          nivelUsuario == 4 ? 'Status: ${_chamado.Status}' : '',
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        Text(
+          nivelUsuario == 4 ? 'Responsável: $user' : '',
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ],
     );
   }
 
   Widget _buildDropdownAndResponsavel() {
-    if (nivelUsuario <= 3) {
+    if (nivelUsuario <= 3 && waiting) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
-            child: DropdownMenu<String>(
-              initialSelection: dropdownValue,
-              onSelected: (String? value) {
-                setState(() {
-                  dropdownValue = value!;
-                });
-              },
-              dropdownMenuEntries:
-                  list.map<DropdownMenuEntry<String>>((String value) {
-                return DropdownMenuEntry<String>(value: value, label: value);
-              }).toList(),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(50.0),
+                border: Border.all(
+                  color: Colors.lightBlueAccent,
+                  width: 2.0,
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  hint: const Text(
+                    'Selecione o status',
+                    style: TextStyle(
+                      color: Colors.lightBlueAccent,
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  borderRadius: BorderRadius.circular(25.0),
+                  iconEnabledColor: Colors.blue,
+                  style: const TextStyle(
+                    color: Color(0xFF0076BC),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                  value: dropdownValue,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      dropdownValue = newValue!;
+                    });
+                  },
+                  items: list.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      alignment: Alignment.center,
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 8.0),
@@ -358,7 +501,15 @@ class DetalheChamadoState extends State<DetalheChamado> {
         widget.uid != _chamado.Responsavel) {
       return ElevatedButton(
         onPressed: _assumirChamado,
-        child: const Text('Assumir'),
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+        ),
+        child: const Text(
+          'Assumir',
+          style: TextStyle(
+            color: Color(0xFF0076BC),
+          ),
+        ),
       );
     } else {
       return const SizedBox.shrink();
@@ -379,13 +530,83 @@ class DetalheChamadoState extends State<DetalheChamado> {
     }
   }
 
-  Widget _buildNovaMensagemButton() {
+  Widget _buildSaveButton() {
     return ElevatedButton(
-      onPressed: _showNovaMensagemDialog,
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+      ),
+      onPressed: () async {
+        try {
+          // Atualizar os dados no banco de dados
+          await ChamadoController.atualizarChamado(
+            _chamado.IDdoc,
+            _chamado.IDchamado,
+            _usuarioSelecionado,
+            dropdownValue,
+          );
+
+          fetchChamado();
+
+          // Mostrar uma mensagem de sucesso
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('As informações foram salvas com sucesso.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } catch (e) {
+          print('Erro ao salvar dados: $e');
+        }
+      },
       child: const Text(
-        'Nova Mensagem',
+        'Salvar',
         style: TextStyle(
-          color: Colors.blue,
+          color: Color(0xFF0076BC),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCancelButton() {
+    return ElevatedButton(
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+      ),
+      onPressed: () {
+        setState(() {
+          // Resetar os campos para os valores originais
+          fetchChamado();
+          _autocompleteKey.currentState?.reconstruirWidget();
+        });
+      },
+      child: const Text(
+        'Cancelar',
+        style: TextStyle(
+          color: Color(0xFF0076BC),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNovaMensagemButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: _showNovaMensagemDialog,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF0076BC),
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(50.0),
+          ),
+        ),
+        child: const Text(
+          'Nova Mensagem',
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
       ),
     );
@@ -450,7 +671,7 @@ class DetalheChamadoState extends State<DetalheChamado> {
       Timestamp timestamp, bool isResponsavel) {
     CrossAxisAlignment alignment =
         isResponsavel ? CrossAxisAlignment.end : CrossAxisAlignment.start;
-    Color bubbleColor = isResponsavel ? Colors.blue[200]! : Colors.grey[300]!;
+    Color bubbleColor = isResponsavel ? Colors.blue[200]! : Colors.white;
 
     DateTime dateTime = timestamp.toDate();
     String formattedDate =
@@ -489,33 +710,17 @@ class DetalheChamadoState extends State<DetalheChamado> {
       children: [
         Image.asset(
           'images/chatsupport.png',
-          height: 24,
-          width: 36,
+          height: 32,
+          width: 32,
+          color: Colors.black,
         ),
         const SizedBox(width: 8),
         Text(
           text,
           style: const TextStyle(
-              fontWeight: FontWeight.w200, color: Colors.white, fontSize: 20),
+              fontWeight: FontWeight.bold, color: Colors.black, fontSize: 18),
         ),
       ],
-    );
-  }
-
-  Widget _buildText(String text) {
-    return Text(
-      text,
-      style: const TextStyle(fontSize: 15),
-    );
-  }
-
-  Widget _buildTextCausa(String text) {
-    return Text(
-      text,
-      style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: Color.fromARGB(255, 23, 36, 49)),
     );
   }
 
@@ -525,74 +730,24 @@ class DetalheChamadoState extends State<DetalheChamado> {
       children: [
         Image.asset(
           'images/empresa.png',
-          height: 24,
-          width: 36,
-          color: Colors.white,
+          height: 16,
+          width: 16,
+          color: Colors.black,
         ),
         const SizedBox(width: 8),
         Text(
           text,
           style: const TextStyle(
-              fontWeight: FontWeight.w200,
-              color: Color.fromARGB(255, 220, 220, 221),
-              fontSize: 18),
+            color: Colors.black,
+            fontSize: 14,
+          ),
         ),
       ],
-    );
-  }
-
-  Widget _buildTextProblema(String text) {
-    return Text(
-      text,
-      style:
-          const TextStyle(fontSize: 16, color: Color.fromARGB(255, 7, 7, 46)),
     );
   }
 
   bool _isDataChanged() {
     return dropdownValue != _chamado.Status ||
         _usuarioSelecionado != _chamado.Responsavel;
-  }
-
-  Widget _buildSaveButton() {
-    return ElevatedButton(
-      onPressed: () async {
-        try {
-          // Atualizar os dados no banco de dados
-          await ChamadoController.atualizarChamado(
-            _chamado.IDdoc,
-            _chamado.IDchamado,
-            _usuarioSelecionado,
-            dropdownValue,
-          );
-
-          fetchChamado();
-
-          // Mostrar uma mensagem de sucesso
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('As informações foram salvas com sucesso.'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        } catch (e) {
-          print('Erro ao salvar dados: $e');
-        }
-      },
-      child: const Text('Salvar'),
-    );
-  }
-
-  Widget _buildCancelButton() {
-    return ElevatedButton(
-      onPressed: () {
-        setState(() {
-          // Resetar os campos para os valores originais
-          fetchChamado();
-          _autocompleteKey.currentState?.reconstruirWidget();
-        });
-      },
-      child: const Text('Cancelar'),
-    );
   }
 }

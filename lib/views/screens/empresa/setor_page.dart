@@ -455,7 +455,7 @@ class SetorPageState extends State<SetorPage> {
                     });
                   },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
+              backgroundColor: const Color(0xFF0076BC),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -634,8 +634,18 @@ class _ListBuilderState extends State<ListBuilder> {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 20.0),
             child: ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(
+                  Colors.white,
+                ),
+              ),
               onPressed: widget.onAddField,
-              child: const Text('Adicionar Campo'),
+              child: const Text(
+                'Adicionar Campo',
+                style: TextStyle(
+                  color: Color(0xFF0076BC),
+                ),
+              ),
             ),
           );
         }

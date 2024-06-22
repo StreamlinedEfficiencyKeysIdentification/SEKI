@@ -120,6 +120,7 @@ class ComboBoxSetorState extends State<ComboBoxSetor> {
                         items: setor.map<DropdownMenuItem<String>>(
                             (Map<String, dynamic> setor) {
                           return DropdownMenuItem<String>(
+                            alignment: Alignment.center,
                             value: setor['ID'] as String,
                             child: Text(setor['Descricao'] as String),
                           );
