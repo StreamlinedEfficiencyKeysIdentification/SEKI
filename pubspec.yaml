@@ -42,5 +42,3 @@ flutter:
     - assets/qrcode.png
     - assets/SEKI.png
   uses-material-design: true
-  assets:
-    - images/userlogin.png
