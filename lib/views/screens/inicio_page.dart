@@ -14,7 +14,11 @@ class InicioPage extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    Image.asset('assets/qrcode.png'),
+                    Image.asset(
+                      'assets/qrcode.png',
+                      width: 175,
+                      height: 175,
+                    ),
                     const SizedBox(height: 10.0),
                     Image.asset('assets/SEKI.png'),
                     const SizedBox(height: 10.0),

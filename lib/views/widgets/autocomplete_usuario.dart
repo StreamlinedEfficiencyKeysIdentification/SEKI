@@ -112,7 +112,7 @@ class AutocompleteUsuarioExampleState
                         decoration: InputDecoration(
                           labelText: 'Digite o nome do usuário',
                           labelStyle: const TextStyle(
-                            color: Colors.lightBlueAccent,
+                            color: Colors.black,
                           ),
                           filled: true,
                           fillColor: const Color.fromARGB(255, 255, 255, 255),

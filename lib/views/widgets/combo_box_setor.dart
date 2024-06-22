@@ -95,7 +95,7 @@ class ComboBoxSetorState extends State<ComboBoxSetor> {
                         hint: const Text(
                           'Selecione um setor',
                           style: TextStyle(
-                            color: Colors.lightBlueAccent,
+                            color: Colors.black,
                           ),
                         ),
                         alignment: Alignment.center,

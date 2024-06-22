@@ -83,7 +83,7 @@ class ComboBoxEmpresaState extends State<ComboBoxEmpresa> {
                   hint: const Text(
                     'Selecione uma empresa',
                     style: TextStyle(
-                      color: Colors.lightBlueAccent,
+                      color: Colors.black,
                     ),
                   ),
                   alignment: Alignment.center,

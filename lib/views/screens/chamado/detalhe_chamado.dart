@@ -83,6 +83,7 @@ class DetalheChamadoState extends State<DetalheChamado> {
       );
       setState(() {
         _chamado = chamado;
+        waiting = false;
 
         initializeFields();
         fetchUsuario();
@@ -103,6 +104,9 @@ class DetalheChamadoState extends State<DetalheChamado> {
 
   void fetchUsuario() async {
     if (_chamado.Responsavel.isEmpty) {
+      setState(() {
+        waiting = true;
+      });
       return;
     }
     DocumentSnapshot usuarioSnapshot = await FirebaseFirestore.instance
@@ -145,15 +149,14 @@ class DetalheChamadoState extends State<DetalheChamado> {
   }
 
   Future<void> _assumirChamado() async {
-    if (_chamado.Responsavel != widget.uid &&
-        nivelUsuario <= 3 &&
-        widget.uid == widget.chamado.Responsavel) {
+    if (_chamado.Responsavel != widget.uid && nivelUsuario <= 3) {
       try {
         await ChamadoController.assumirChamado(
           _chamado.IDdoc,
           _chamado.IDchamado,
           widget.uid,
         );
+        fetchChamado();
       } catch (e) {
         print('Erro ao assumir chamado: $e');
       }
@@ -507,7 +510,7 @@ class DetalheChamadoState extends State<DetalheChamado> {
         child: const Text(
           'Assumir',
           style: TextStyle(
-            color: Color(0xFF0076BC),
+            color: Colors.white,
           ),
         ),
       );

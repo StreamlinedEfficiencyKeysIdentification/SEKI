@@ -88,7 +88,7 @@ class HardwarePageState extends State<HardwarePage> {
                   decoration: InputDecoration(
                     labelText: 'QR Code',
                     labelStyle: const TextStyle(
-                      color: Colors.lightBlueAccent,
+                      color: Colors.black,
                     ),
                     filled: true,
                     fillColor: const Color.fromARGB(255, 255, 255, 255),
@@ -151,7 +151,7 @@ class HardwarePageState extends State<HardwarePage> {
                         decoration: InputDecoration(
                           labelText: 'Marca',
                           labelStyle: const TextStyle(
-                            color: Colors.lightBlueAccent,
+                            color: Colors.black,
                           ),
                           filled: true,
                           fillColor: const Color.fromARGB(255, 255, 255, 255),
@@ -206,7 +206,7 @@ class HardwarePageState extends State<HardwarePage> {
                         decoration: InputDecoration(
                           labelText: 'Modelo',
                           labelStyle: const TextStyle(
-                            color: Colors.lightBlueAccent,
+                            color: Colors.black,
                           ),
                           filled: true,
                           fillColor: const Color.fromARGB(255, 255, 255, 255),
@@ -392,7 +392,7 @@ class HardwarePageState extends State<HardwarePage> {
                   size: 32,
                 ),
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/home');
                 },
               ),
               IconButton(

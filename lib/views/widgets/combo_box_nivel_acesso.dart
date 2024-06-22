@@ -84,7 +84,7 @@ class ComboBoxNivelAcessoState extends State<ComboBoxNivelAcesso> {
                   hint: const Text(
                     'Selecione um nível de acesso',
                     style: TextStyle(
-                      color: Colors.lightBlueAccent,
+                      color: Colors.black,
                     ),
                   ),
                   alignment: Alignment.center,

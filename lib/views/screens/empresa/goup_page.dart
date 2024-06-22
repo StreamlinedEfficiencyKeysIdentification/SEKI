@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../controllers/usuario_controller.dart';
@@ -87,6 +89,18 @@ class GroupPageState extends State<GroupPage> {
 
     // Adiciona os dados do documento na coleção 'Empresa'
     await novoDocumento.set(dadosEmpresa);
+    setState(() {
+      _cnpjController.clear();
+      _razaosocialController.clear();
+      _switchValue = false;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Empresa registrada com sucesso!'),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 
   @override
@@ -119,16 +133,14 @@ class GroupPageState extends State<GroupPage> {
               const SizedBox(height: 16),
               TextField(
                 controller: _cnpjController,
+                keyboardType: TextInputType.number,
                 style: const TextStyle(
                   color: Color(0xFF0076BC),
                 ),
                 decoration: InputDecoration(
                   labelText: 'CNPJ',
                   labelStyle: const TextStyle(
-                    color: Colors.lightBlueAccent,
-                  ),
-                  hintStyle: const TextStyle(
-                    color: Colors.lightBlueAccent, // Cor do texto de dica
+                    color: Colors.black,
                   ),
                   filled: true,
                   fillColor: const Color.fromARGB(255, 255, 255, 255),
@@ -180,10 +192,7 @@ class GroupPageState extends State<GroupPage> {
                 decoration: InputDecoration(
                   labelText: 'Razão Social',
                   labelStyle: const TextStyle(
-                    color: Colors.lightBlueAccent,
-                  ),
-                  hintStyle: const TextStyle(
-                    color: Colors.lightBlueAccent, // Cor do texto de dica
+                    color: Colors.black,
                   ),
                   filled: true,
                   fillColor: const Color.fromARGB(255, 255, 255, 255),
@@ -277,11 +286,7 @@ class GroupPageState extends State<GroupPage> {
                           decoration: InputDecoration(
                             labelText: 'Empresa Pai',
                             labelStyle: const TextStyle(
-                              color: Colors.lightBlueAccent,
-                            ),
-                            hintStyle: const TextStyle(
-                              color: Colors
-                                  .lightBlueAccent, // Cor do texto de dica
+                              color: Colors.black,
                             ),
                             filled: true,
                             fillColor: const Color.fromARGB(255, 255, 255, 255),

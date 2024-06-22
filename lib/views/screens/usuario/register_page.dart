@@ -24,6 +24,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String _nivelSelecionado = '';
   bool _switchValue = false;
   double _statusBarHeight = 0;
+  bool waiting = false;
 
   final TextEditingController _usuarioController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -83,10 +84,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   decoration: InputDecoration(
                     labelText: 'Usuário',
                     labelStyle: const TextStyle(
-                      color: Colors.lightBlueAccent,
-                    ),
-                    hintStyle: const TextStyle(
-                      color: Colors.lightBlueAccent, // Cor do texto de dica
+                      color: Colors.black,
                     ),
                     filled: true,
                     fillColor: const Color.fromARGB(255, 255, 255, 255),
@@ -138,10 +136,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   decoration: InputDecoration(
                     labelText: 'E-mail',
                     labelStyle: const TextStyle(
-                      color: Colors.lightBlueAccent,
-                    ),
-                    hintStyle: const TextStyle(
-                      color: Colors.lightBlueAccent, // Cor do texto de dica
+                      color: Colors.black,
                     ),
                     filled: true,
                     fillColor: const Color.fromARGB(255, 255, 255, 255),
@@ -193,10 +188,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   decoration: InputDecoration(
                     labelText: 'Nome',
                     labelStyle: const TextStyle(
-                      color: Colors.lightBlueAccent,
-                    ),
-                    hintStyle: const TextStyle(
-                      color: Colors.lightBlueAccent, // Cor do texto de dica
+                      color: Colors.black,
                     ),
                     filled: true,
                     fillColor: const Color.fromARGB(255, 255, 255, 255),
@@ -298,29 +290,34 @@ class _RegisterPageState extends State<RegisterPage> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      String user = _usuarioController.text.trim();
-                      String email = _emailController.text.trim();
-                      String nome = _nomeController.text.trim();
+                    onPressed: !waiting
+                        ? () {
+                            String user = _usuarioController.text.trim();
+                            String email = _emailController.text.trim();
+                            String nome = _nomeController.text.trim();
 
-                      if (user.isEmpty ||
-                          email.isEmpty ||
-                          nome.isEmpty ||
-                          _empresaSelecionada.isEmpty ||
-                          _nivelSelecionado.isEmpty) {
-                        // Se algum dos campos estiver vazio, informe ao usuário e não prossiga com o registro
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content:
-                                Text('Por favor, preencha todos os campos.'),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      } else {
-                        _register(
-                            context, _empresaSelecionada, _nivelSelecionado);
-                      }
-                    },
+                            if (user.isEmpty ||
+                                email.isEmpty ||
+                                nome.isEmpty ||
+                                _empresaSelecionada.isEmpty ||
+                                _nivelSelecionado.isEmpty) {
+                              // Se algum dos campos estiver vazio, informe ao usuário e não prossiga com o registro
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      'Por favor, preencha todos os campos.'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            } else {
+                              _register(context, _empresaSelecionada,
+                                  _nivelSelecionado);
+                              setState(() {
+                                waiting = true;
+                              });
+                            }
+                          }
+                        : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0076BC),
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -478,6 +475,16 @@ class _RegisterPageState extends State<RegisterPage> {
         message: message,
       );
 
+      setState(() {
+        _usuarioController.clear();
+        _emailController.clear();
+        _nomeController.clear();
+        _empresaSelecionada = '';
+        _nivelSelecionado = '';
+        _switchValue = false;
+        waiting = false;
+      });
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Usuário registrado com sucesso!'),
@@ -502,6 +509,10 @@ class _RegisterPageState extends State<RegisterPage> {
       } else {
         errorMessage = 'Erro ao fazer login.';
       }
+
+      setState(() {
+        waiting = false;
+      });
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

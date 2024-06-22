@@ -362,6 +362,7 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
   Widget _buildMatrizTile(Empresa matriz, List<Empresa> todasEmpresas,
       List<Usuario> usuarios, Usuario usuario) {
     int nivel = int.parse(usuario.nivel);
+    String uid = usuario.uid;
     final filiais = todasEmpresas
         .where((e) => e.matriz == matriz.id && e.id != matriz.id)
         .toList();
@@ -373,6 +374,7 @@ class _VisualizarUsuariosState extends State<VisualizarUsuarios> {
       final usersInFilial = usuarios
           .where((usuario) =>
               usuario.empresa == filial.id &&
+              usuario.uid != uid &&
               (_statusFiltro == 'Ambos' || usuario.status == _statusFiltro))
           .toList();
       return usersInFilial.isNotEmpty;

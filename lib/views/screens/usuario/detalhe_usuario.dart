@@ -44,6 +44,7 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
   String _empresaSelecionada = '';
   String _nivelSelecionado = '';
   double _statusBarHeight = 0;
+  bool waiting = false;
 
   @override
   void initState() {
@@ -100,6 +101,8 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
     if (usuarioSnapshot.exists) {
       setState(() {
         _criador = usuarioSnapshot['Usuario'];
+
+        waiting = true;
       });
     }
   }
@@ -219,14 +222,15 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
                   },
                 ),
                 const SizedBox(height: 8.0),
-                ComboBoxNivelAcesso(
-                  nivel: _nivelSelecionado,
-                  onNivelSelected: (nivel) {
-                    setState(() {
-                      _nivelSelecionado = nivel;
-                    });
-                  },
-                ),
+                if (waiting)
+                  ComboBoxNivelAcesso(
+                    nivel: _nivelSelecionado,
+                    onNivelSelected: (nivel) {
+                      setState(() {
+                        _nivelSelecionado = nivel;
+                      });
+                    },
+                  ),
                 const SizedBox(height: 16.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -251,9 +255,36 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
                     ),
                   ],
                 ),
-                Row(
+                Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          _redefinirSenha
+                              ? 'Redefinir Senha'
+                              : 'Não é necessário redefinir a senha',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: _redefinirSenha
+                                ? const Color(0xFF0076BC)
+                                : Colors.grey,
+                          ),
+                        ),
+                        Switch(
+                          activeColor: const Color(0xFF0076BC),
+                          thumbIcon: thumbIcon,
+                          value: _redefinirSenha,
+                          onChanged: (value) {
+                            setState(() {
+                              _redefinirSenha = !_redefinirSenha;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
                     Text(
                       _primeiroAcesso
                           ? 'Primeiro Acesso'
@@ -265,43 +296,6 @@ class DetalhesUsuarioPageState extends State<DetalhesUsuarioPage> {
                             ? const Color(0xFF0076BC)
                             : Colors.grey,
                       ),
-                    ),
-                    Switch(
-                      activeColor: const Color(0xFF0076BC),
-                      thumbIcon: thumbIcon,
-                      value: _primeiroAcesso,
-                      onChanged: (value) {
-                        setState(() {
-                          _primeiroAcesso = !_primeiroAcesso;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      _redefinirSenha
-                          ? 'Redefinir Senha'
-                          : 'Não é necessário redefinir a senha',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: _redefinirSenha
-                            ? const Color(0xFF0076BC)
-                            : Colors.grey,
-                      ),
-                    ),
-                    Switch(
-                      activeColor: const Color(0xFF0076BC),
-                      thumbIcon: thumbIcon,
-                      value: _redefinirSenha,
-                      onChanged: (value) {
-                        setState(() {
-                          _redefinirSenha = !_redefinirSenha;
-                        });
-                      },
                     ),
                   ],
                 ),

@@ -324,7 +324,7 @@ class ChamadoState extends State<Chamado> {
                       ),
                       labelText: 'Insira um equipamento',
                       labelStyle: TextStyle(
-                        color: _isValid ? Colors.green : Colors.lightBlueAccent,
+                        color: _isValid ? Colors.green : Colors.black,
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
@@ -393,7 +393,7 @@ class ChamadoState extends State<Chamado> {
                     decoration: InputDecoration(
                       labelText: 'Insira um Titulo',
                       labelStyle: const TextStyle(
-                        color: Colors.lightBlueAccent,
+                        color: Colors.black,
                       ),
                       filled: true,
                       fillColor: const Color.fromARGB(255, 255, 255, 255),
@@ -457,11 +457,14 @@ class ChamadoState extends State<Chamado> {
                   TextFormField(
                     controller: _descricaoController,
                     maxLines: 5,
+                    style: const TextStyle(
+                      color: Color(0xFF0076BC),
+                    ),
                     decoration: InputDecoration(
                       labelText: 'Insira a descrição',
                       alignLabelWithHint: true,
                       labelStyle: const TextStyle(
-                        color: Colors.lightBlueAccent,
+                        color: Colors.black,
                       ),
                       filled: true,
                       fillColor: const Color.fromARGB(255, 255, 255, 255),
