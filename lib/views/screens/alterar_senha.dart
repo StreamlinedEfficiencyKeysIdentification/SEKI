@@ -28,37 +28,85 @@ class FirstAccessPageState extends State<FirstAccessPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextFormField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Nova Senha'),
-              obscureText: true,
-              onChanged: (_) => _validatePassword(),
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+          automaticallyImplyLeading: false,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).size.height * 0.1,
+                  ),
+                  child: Image.asset(
+                    'images/redefinir_senha.png',
+                    width: 100,
+                    height: 100,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Center(
+                  child: Text(
+                    'Defina sua senha',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                const SizedBox(height: 60),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: const Color.fromRGBO(0, 115, 188, 0.2),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: TextFormField(
+                      controller: _passwordController,
+                      decoration: const InputDecoration(
+                        hintText: 'Nova Senha',
+                        border: InputBorder.none,
+                      ),
+                      obscureText: true,
+                      onChanged: (_) => _validatePassword(),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8.0),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: const Color.fromRGBO(0, 115, 188, 0.2),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: TextFormField(
+                      controller: _confirmPasswordController,
+                      decoration: const InputDecoration(
+                        hintText: 'Confirmar Senha',
+                        border: InputBorder.none,
+                      ),
+                      obscureText: true,
+                      onChanged: (_) => _validatePassword(),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8.0),
+                _buildPasswordRequirements(),
+                const SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed:
+                      _isPasswordValid ? () => _changePassword(context) : null,
+                  child: const Text('Alterar Senha'),
+                ),
+              ],
             ),
-            const SizedBox(height: 8.0),
-            TextFormField(
-              controller: _confirmPasswordController,
-              decoration: const InputDecoration(labelText: 'Confirmar Senha'),
-              obscureText: true,
-              onChanged: (_) => _validatePassword(),
-            ),
-            const SizedBox(height: 8.0),
-            _buildPasswordRequirements(),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed:
-                  _isPasswordValid ? () => _changePassword(context) : null,
-              child: const Text('Alterar Senha'),
-            ),
-          ],
+          ),
         ),
       ),
     );

@@ -3,53 +3,191 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import '../../main.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key});
 
   @override
-  ResetPasswordPageState createState() => ResetPasswordPageState();
+  State<ResetPasswordPage> createState() => ResetPasswordPageState();
 }
 
 class ResetPasswordPageState extends State<ResetPasswordPage> {
   final TextEditingController _emailController = TextEditingController();
   bool _isLoading = false;
   String _errorMessage = '';
+  double _statusBarHeight = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: [SystemUiOverlay.top]);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _statusBarHeight = MediaQuery.of(context).padding.top;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final hasConnection = ConnectionNotifer.of(context).value;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Redefinir Senha'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextFormField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'E-mail'),
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _isLoading ? null : _resetPassword,
-              child: const Text('Enviar E-mail de Redefinição'),
-            ),
-            if (_errorMessage.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(
-                  _errorMessage,
-                  style: const TextStyle(color: Colors.red),
+      body: Center(
+        // Centraliza o conteúdo na tela
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(16.0, _statusBarHeight, 16.0, 16.0),
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.center, // Centraliza horizontalmente
+              mainAxisSize: MainAxisSize
+                  .min, // Ajusta a altura da coluna para seu conteúdo
+              children: [
+                Column(
+                  children: [
+                    Image.asset(
+                      'images/cadeado.png',
+                      width: 100,
+                      height: 100,
+                    ),
+                    const Text(
+                      'Recuperar Senha',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
+                const SizedBox(height: 32),
+                TextField(
+                  controller: _emailController,
+                  style: const TextStyle(
+                    color: Color(0xFF0076BC),
+                  ),
+                  decoration: InputDecoration(
+                    labelText: 'E-mail',
+                    labelStyle: const TextStyle(
+                      color: Colors.lightBlueAccent,
+                    ),
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 255, 255, 255),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 1.0,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Colors
+                            .lightBlueAccent, // Cor da borda quando o campo está habilitado
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Color(0xFF0076BC),
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 1.0,
+                        color: Colors.red, // Cor da borda quando há um erro
+                      ),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: const BorderSide(
+                        width: 2.0,
+                        color: Colors
+                            .red, // Cor da borda quando o campo está focado e há um erro
+                      ),
+                    ),
+                  ),
+                ),
+                if (_errorMessage.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(
+                      _errorMessage,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: hasConnection
+                        ? _isLoading
+                            ? null
+                            : _resetPassword
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF0076BC),
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                      ),
+                    ),
+                    child: Text(
+                      hasConnection
+                          ? 'Enviar E-mail de Redefinição'
+                          : 'Sem Conexão',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                if (_isLoading)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                    child: CircularProgressIndicator(),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.0),
+            topRight: Radius.circular(20.0),
+          ),
+        ),
+        child: BottomAppBar(
+          color: Colors.transparent,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Color(0xFF0076BC),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
               ),
-            if (_isLoading)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 8.0),
-                child: CircularProgressIndicator(),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );

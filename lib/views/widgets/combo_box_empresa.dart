@@ -5,9 +5,11 @@ import '../../models/usuario_model.dart';
 
 class ComboBoxEmpresa extends StatefulWidget {
   final void Function(String) onEmpresaSelected;
+  final String empresa;
 
   const ComboBoxEmpresa({
     required this.onEmpresaSelected,
+    required this.empresa,
     super.key,
   });
 
@@ -63,26 +65,56 @@ class ComboBoxEmpresaState extends State<ComboBoxEmpresa> {
                   };
                 }).toList() ??
                 [];
-
-            return DropdownButton<String>(
-              hint: const Text('Selecione uma empresa'),
-              value:
-                  _empresaSelecionada.isNotEmpty ? _empresaSelecionada : null,
-              onChanged: (String? newValue) {
-                if (newValue != null) {
-                  setState(() {
-                    _empresaSelecionada = newValue;
-                  });
-                  widget.onEmpresaSelected(newValue);
-                }
-              },
-              items: empresas.map<DropdownMenuItem<String>>(
-                  (Map<String, dynamic> empresa) {
-                return DropdownMenuItem<String>(
-                  value: empresa['ID'] as String,
-                  child: Text(empresa['RazaoSocial'] as String),
-                );
-              }).toList(),
+            if (widget.empresa.isNotEmpty) {
+              _empresaSelecionada = widget.empresa;
+            }
+            return Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50.0),
+                border: Border.all(
+                  color: Colors
+                      .lightBlueAccent, // Cor da borda quando o campo está habilitado
+                  width: 2.0,
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  hint: const Text(
+                    'Selecione uma empresa',
+                    style: TextStyle(
+                      color: Colors.lightBlueAccent,
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  borderRadius: BorderRadius.circular(25.0),
+                  iconEnabledColor: Colors.blue,
+                  style: const TextStyle(
+                    color: Color(0xFF0076BC),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                  value: _empresaSelecionada.isNotEmpty
+                      ? _empresaSelecionada
+                      : null,
+                  onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      setState(() {
+                        _empresaSelecionada = newValue;
+                      });
+                      widget.onEmpresaSelected(newValue);
+                    }
+                  },
+                  items: empresas.map<DropdownMenuItem<String>>(
+                      (Map<String, dynamic> empresa) {
+                    return DropdownMenuItem<String>(
+                      alignment: Alignment.center,
+                      value: empresa['ID'] as String,
+                      child: Text(empresa['RazaoSocial'] as String),
+                    );
+                  }).toList(),
+                ),
+              ),
             );
           },
         );

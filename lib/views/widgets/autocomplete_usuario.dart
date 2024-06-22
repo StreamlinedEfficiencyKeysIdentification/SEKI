@@ -1,15 +1,37 @@
+// ignore_for_file: overridden_fields, annotate_overrides
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:testeseki/models/usuario_model.dart';
 import '../../controllers/usuario_controller.dart';
 
-class AutocompleteUsuarioExample extends StatelessWidget {
+class AutocompleteUsuarioExample extends StatefulWidget {
   final void Function(String) onUsuarioSelected;
+  final String user;
+  final Key key;
 
   const AutocompleteUsuarioExample({
     required this.onUsuarioSelected,
-    super.key,
-  });
+    required this.user,
+    required this.key,
+  }) : super(key: key);
+
+  @override
+  AutocompleteUsuarioExampleState createState() =>
+      AutocompleteUsuarioExampleState();
+}
+
+class AutocompleteUsuarioExampleState
+    extends State<AutocompleteUsuarioExample> {
+  // Defina uma chave única para o widget
+  GlobalKey<AutocompleteUsuarioExampleState> _key = GlobalKey();
+
+  // Método para reconstruir o widget com a chave atualizada
+  void reconstruirWidget() {
+    setState(() {
+      _key = GlobalKey();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +64,11 @@ class AutocompleteUsuarioExample extends StatelessWidget {
                     .map((doc) => doc['Nome'] as String)
                     .toList() ??
                 []; // Obter os nomes das empresas
+            late String userInitial = '';
+
+            if (widget.user.isNotEmpty) {
+              userInitial = widget.user;
+            }
 
             return SingleChildScrollView(
               child: Padding(
@@ -49,7 +76,9 @@ class AutocompleteUsuarioExample extends StatelessWidget {
                   bottom: MediaQuery.of(context).viewInsets.bottom,
                 ),
                 child: SizedBox(
+                  key: _key,
                   child: Autocomplete<String>(
+                    initialValue: TextEditingValue(text: userInitial),
                     optionsBuilder: (TextEditingValue textEditingValue) {
                       if (textEditingValue.text.isEmpty) {
                         return const Iterable<String>.empty();
@@ -71,8 +100,68 @@ class AutocompleteUsuarioExample extends StatelessWidget {
                         // Obter o UID do usuário
                         String usuarioUid = querySnapshot.docs.first.id;
                         // Chamar a função onUsuarioSelected passando o UID do usuário
-                        onUsuarioSelected(usuarioUid);
+                        widget.onUsuarioSelected(usuarioUid);
                       }
+                    },
+                    fieldViewBuilder:
+                        (context, controller, focusNode, onEditingComplete) {
+                      return TextField(
+                        style: const TextStyle(
+                          color: Color(0xFF0076BC),
+                        ),
+                        decoration: InputDecoration(
+                          labelText: 'Digite o nome do usuário',
+                          labelStyle: const TextStyle(
+                            color: Colors.lightBlueAccent,
+                          ),
+                          filled: true,
+                          fillColor: const Color.fromARGB(255, 255, 255, 255),
+                          prefixIcon: const Icon(
+                            Icons.person,
+                            color: Colors.blue,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                            borderSide: const BorderSide(
+                              width: 1.0,
+                              color: Colors.lightBlueAccent,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                            borderSide: const BorderSide(
+                              width: 2.0,
+                              color: Colors.lightBlueAccent,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                            borderSide: const BorderSide(
+                              width: 2.0,
+                              color: Color(0xFF0076BC),
+                            ),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                            borderSide: const BorderSide(
+                              width: 1.0,
+                              color:
+                                  Colors.red, // Cor da borda quando há um erro
+                            ),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.0),
+                            borderSide: const BorderSide(
+                              width: 2.0,
+                              color: Colors
+                                  .red, // Cor da borda quando o campo está focado e há um erro
+                            ),
+                          ),
+                        ),
+                        controller: controller,
+                        focusNode: focusNode,
+                        onEditingComplete: onEditingComplete,
+                      );
                     },
                   ),
                 ),

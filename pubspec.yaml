@@ -18,9 +18,11 @@ dependencies:
   mailer: ^6.1.0
   shared_preferences: ^2.2.2
   qr_flutter: ^4.1.0
-  qr_code_scanner: ^1.0.1
-  mobile_scanner: ^4.0.1
+  mobile_scanner: ^5.1.1
   intl: ^0.19.0
+  internet_connection_checker_plus: ^2.3.0
+  shimmer: ^3.0.0
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:
@@ -28,6 +30,17 @@ dev_dependencies:
   flutter_lints: ^3.0.0
 
 flutter:
+  assets:
+    - images/setor.png
+    - images/chatsupport.png
+    - images/userlogin.png
+    - images/cadeado.png
+    - images/usuario.png
+    - images/redefinir_senha.png
+    - images/empresa.png
+    - assets/no_internet.png
+    - assets/qrcode.png
+    - assets/SEKI.png
   uses-material-design: true
   assets:
     - images/userlogin.png
